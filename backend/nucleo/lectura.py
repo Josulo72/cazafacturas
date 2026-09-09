@@ -15,6 +15,7 @@ claro en vez de reventar.
 from __future__ import annotations
 
 import io
+import time
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -30,6 +31,29 @@ MIN_CARACTERES_CAPA_TEXTO = 40
 # Escala de rasterizado para OCR. 300 ppp equivalentes; subirlo mejora
 # el reconocimiento de letra pequeña a costa de memoria y tiempo.
 ESCALA_RASTER = 300 / 72
+
+# ---------------------------------------------------------------------------
+# Límites de recursos
+# ---------------------------------------------------------------------------
+# Un PDF que llega de fuera es código hostil hasta que se demuestre lo
+# contrario, y este es el único sitio del programa donde se parsea algo que
+# ha escrito un tercero. Sin topes, un documento de tres mil páginas —o uno
+# de una sola página de diez metros de lado— deja la máquina clavada. No hay
+# que romperse la cabeza para fabricarlo: basta con un bucle.
+#
+# Los topes se eligen por lo que es una factura de verdad, no por lo que
+# aguanta el ordenador: una factura de más de treinta páginas no existe.
+
+MAX_PAGINAS = 30
+
+# Presupuesto de reloj por documento. Se comprueba entre páginas, que es
+# donde se puede cortar sin dejar el estado a medias.
+MAX_SEGUNDOS_DOCUMENTO = 60.0
+
+# Una página de tamaño absurdo revienta la memoria al rasterizarla, y ese es
+# el vector clásico de bomba de descompresión en PDF: poco fichero, mucha
+# superficie. A 300 ppp, un A4 son 8,7 millones de píxeles.
+MAX_PIXELES_PAGINA = 50_000_000
 
 
 class Origen(str, Enum):
@@ -190,16 +214,25 @@ def _ocr_imagen(datos: bytes, pagina: int, escala: float = 1.0) -> tuple[str, li
 # ---------------------------------------------------------------------------
 
 def _rasterizar(ruta_o_bytes, indice: int) -> tuple[bytes, float]:
-    """Convierte una página de PDF en PNG. Devuelve los bytes y la escala."""
+    """Convierte una página de PDF en PNG. Devuelve los bytes y la escala.
+
+    Si la página es enorme se baja la escala en vez de rechazarla: un plano
+    A0 escaneado es un documento legítimo, y prefiero leerlo a menos
+    resolución que negarme a leerlo.
+    """
     import pypdfium2 as pdfium
 
     pdf = pdfium.PdfDocument(ruta_o_bytes)
     try:
         pagina = pdf[indice]
-        imagen = pagina.render(scale=ESCALA_RASTER).to_pil()
+        escala = ESCALA_RASTER
+        pixeles = pagina.get_width() * pagina.get_height() * escala * escala
+        if pixeles > MAX_PIXELES_PAGINA:
+            escala *= (MAX_PIXELES_PAGINA / pixeles) ** 0.5
+        imagen = pagina.render(scale=escala).to_pil()
         buffer = io.BytesIO()
         imagen.save(buffer, format="PNG")
-        return buffer.getvalue(), ESCALA_RASTER
+        return buffer.getvalue(), escala
     finally:
         pdf.close()
 
@@ -209,9 +242,27 @@ def _leer_pdf(contenido: bytes, nombre: str, permitir_ocr: bool) -> Documento:
 
     doc = Documento(ruta=None, nombre=nombre)
     caps = capacidades()
+    arranque = time.monotonic()
 
     with pdfplumber.open(io.BytesIO(contenido)) as pdf:
-        for i, pagina in enumerate(pdf.pages):
+        total = len(pdf.pages)
+        if total > MAX_PAGINAS:
+            doc.avisos.append(
+                f"El documento tiene {total} páginas y solo se leen las "
+                f"{MAX_PAGINAS} primeras. Una factura no las necesita."
+            )
+
+        for i, pagina in enumerate(pdf.pages[:MAX_PAGINAS]):
+            # El corte va entre páginas: ahí se puede parar sin dejar el
+            # documento a medio construir.
+            if time.monotonic() - arranque > MAX_SEGUNDOS_DOCUMENTO:
+                doc.avisos.append(
+                    f"Lectura interrumpida en la página {i + 1}: el documento "
+                    f"ha superado los {MAX_SEGUNDOS_DOCUMENTO:.0f} s. "
+                    "Lo leído hasta aquí sí se ha analizado."
+                )
+                break
+
             texto = pagina.extract_text() or ""
             palabras: list[Palabra] = []
 

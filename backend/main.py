@@ -17,6 +17,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
+from backend import seguridad
 from backend.nucleo import historial as hist
 from backend.nucleo.analizador import (
     analizar_bytes,
@@ -46,6 +47,14 @@ app = FastAPI(
 
 _DATOS = hist.dir_datos(RAIZ)
 _historial = hist.Historial(_DATOS / "lotes")
+
+# El secreto de esta ejecución. Cambia en cada arranque, así que un enlace
+# viejo no sirve, y se guarda en disco para que el lanzador pueda abrir el
+# navegador por la puerta buena.
+TESTIGO = seguridad.crear_testigo(_DATOS)
+
+app.add_middleware(seguridad.Guardian, testigo=TESTIGO)
+seguridad.cabeceras_duras(app)
 
 _trabajos: dict[str, dict] = {}
 _lock = threading.Lock()
@@ -349,24 +358,33 @@ def api_muestra(grupo: str, nombre: str):
 # Frontend
 # --------------------------------------------------------------------------
 
+def _pagina(nombre: str, respaldo: str | None = None) -> FileResponse:
+    """Sirve una página y, de paso, entrega el testigo de sesión.
+
+    La puerta de entrada es la única que reparte credencial: quien llega
+    aquí ya ha pasado la comprobación de Host, así que está en esta máquina.
+    """
+    ruta = RAIZ / "frontend" / nombre
+    if not ruta.is_file() and respaldo:
+        ruta = RAIZ / "frontend" / respaldo
+    return seguridad.sellar(FileResponse(ruta), TESTIGO)
+
+
 @app.get("/")
 def portada():
     """La presentación cuando exista; mientras tanto, la aplicación."""
-    presentacion = RAIZ / "frontend" / "presentacion.html"
-    if presentacion.is_file():
-        return FileResponse(presentacion)
-    return FileResponse(RAIZ / "frontend" / "index.html")
+    return _pagina("presentacion.html", respaldo="index.html")
 
 
 @app.get("/app")
 def aplicacion():
-    return FileResponse(RAIZ / "frontend" / "index.html")
+    return _pagina("index.html")
 
 
 @app.get("/bocetos")
 def bocetos():
     """Los bocetos de la animación, para decidir cuál se desarrolla."""
-    return FileResponse(RAIZ / "frontend" / "bocetos.html")
+    return _pagina("bocetos.html")
 
 
 app.mount("/static", StaticFiles(directory=RAIZ / "frontend"), name="static")
@@ -388,10 +406,15 @@ def main() -> None:
                         help="No abrir el navegador al arrancar")
     args = parser.parse_args()
 
+    direccion = "127.0.0.1" if args.host in ("0.0.0.0", "::") else args.host
+    print(f"Cazafacturas en http://{direccion}:{args.port}")
+    if seguridad.abierto():
+        print("  AVISO: modo abierto, sin comprobaciones de seguridad.")
+
     if not args.no_browser:
         def _abrir() -> None:
             import webbrowser
-            webbrowser.open(f"http://{args.host}:{args.port}")
+            webbrowser.open(f"http://{direccion}:{args.port}")
 
         threading.Timer(1.0, _abrir).start()
 
