@@ -1,0 +1,60 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/9978",
+  "fecha_emision": "2025-11-25",
+  "fecha_vencimiento": "2025-12-25",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Valencia",
+      "provincia": "Valencia",
+      "codigo_postal": "46001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 3.0,
+      "precio_unitario": 29.99,
+      "importe": 89.97
+    },
+    {
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 8.0,
+      "precio_unitario": 129.99,
+      "importe": 1039.92
+    },
+    {
+      "descripcion": "Ratón ergonómico vertical",
+      "cantidad": 1.0,
+      "precio_unitario": 69.95,
+      "importe": 69.95
+    }
+  ],
+  "base_imponible": 1199.84,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 1199.84,
+      "cuota": 251.97
+    }
+  ],
+  "retencion": null,
+  "total": 1451.81,
+  "observaciones": null,
+  "clave_operacion": null
+}

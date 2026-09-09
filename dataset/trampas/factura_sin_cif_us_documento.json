@@ -1,0 +1,48 @@
+{
+  "tipo": "completa",
+  "pais": "ES",
+  "numero": "F/2026/3658",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Madrid",
+      "provincia": "Madrid",
+      "codigo_postal": "28001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 2.0,
+      "precio_unitario": 599.0,
+      "importe": 1198.0
+    }
+  ],
+  "base_imponible": 1198.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 1198.0,
+      "cuota": 251.58
+    }
+  ],
+  "retencion": null,
+  "total": 1449.58,
+  "observaciones": null,
+  "clave_operacion": null
+}

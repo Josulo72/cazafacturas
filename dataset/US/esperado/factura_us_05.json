@@ -1,0 +1,62 @@
+{
+  "pais": "US",
+  "numero": "US/2026/0917",
+  "fecha_emision": "2025-07-09",
+  "fecha_vencimiento": "2025-08-08",
+  "emisor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "58-5528972",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "US"
+    }
+  },
+  "receptor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "97-6440561",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "US"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 2.0,
+      "precio_unitario": 599.0,
+      "importe": 1198.0
+    },
+    {
+      "descripcion": "Silla ergonómica de oficina",
+      "cantidad": 10.0,
+      "precio_unitario": 349.0,
+      "importe": 3490.0
+    },
+    {
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 3.0,
+      "precio_unitario": 129.99,
+      "importe": 389.97
+    }
+  ],
+  "base_imponible": 5077.97,
+  "iva": [
+    {
+      "porcentaje": 7.0,
+      "base_imponible": 5077.97,
+      "cuota": 355.46
+    }
+  ],
+  "retencion": null,
+  "total": 5433.43,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

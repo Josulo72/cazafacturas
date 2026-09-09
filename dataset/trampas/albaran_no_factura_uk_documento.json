@@ -1,0 +1,34 @@
+{
+  "titulo": "ALBARÁN DE ENTREGA Nº 4419",
+  "fecha": "15/06/2025",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "GB162275869",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
+      "pais": "UK"
+    }
+  },
+  "receptor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "GB140260662",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "UK"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 2,
+      "precio_unitario": 599.0
+    }
+  ],
+  "nota": "Documento sin validez fiscal. No constituye factura."
+}

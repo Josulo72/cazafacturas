@@ -1,0 +1,52 @@
+{
+  "pais": "ES",
+  "numero": "F/2026/1029",
+  "fecha_emision": "2026-11-08",
+  "fecha_vencimiento": "2026-12-08",
+  "emisor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Zaragoza",
+      "provincia": "Zaragoza",
+      "codigo_postal": "50001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B12345678",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Altavoces de escritorio stereo",
+      "cantidad": 10.0,
+      "precio_unitario": 79.99,
+      "importe": 799.9
+    }
+  ],
+  "base_imponible": 799.9,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 799.9,
+      "cuota": 167.98
+    }
+  ],
+  "retencion": null,
+  "total": 967.88,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": [
+    "fecha_emision_futura"
+  ]
+}

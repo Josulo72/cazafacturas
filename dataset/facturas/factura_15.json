@@ -1,0 +1,76 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/8424",
+  "fecha_emision": "2025-08-13",
+  "fecha_vencimiento": "2025-09-12",
+  "emisor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B12345678",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Cable HDMI 2.1 3m",
+      "cantidad": 6.0,
+      "precio_unitario": 18.5,
+      "importe": 111.0
+    },
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 1.0,
+      "precio_unitario": 29.99,
+      "importe": 29.99
+    },
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 10.0,
+      "precio_unitario": 599.0,
+      "importe": 5990.0
+    },
+    {
+      "descripcion": "Impresora láser monocromática",
+      "cantidad": 9.0,
+      "precio_unitario": 249.0,
+      "importe": 2241.0
+    },
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 4.0,
+      "precio_unitario": 499.0,
+      "importe": 1996.0
+    }
+  ],
+  "base_imponible": 10367.99,
+  "iva": [
+    {
+      "porcentaje": 10.0,
+      "base_imponible": 10367.99,
+      "cuota": 1036.8
+    }
+  ],
+  "retencion": {
+    "porcentaje": 1.04,
+    "base_imponible": 10367.99,
+    "cuota": 107.83
+  },
+  "total": 11296.96,
+  "observaciones": null,
+  "clave_operacion": null
+}

@@ -1,0 +1,54 @@
+{
+  "pais": "ES",
+  "numero": "F/2026/0751",
+  "fecha_emision": "2025-07-13",
+  "fecha_vencimiento": "2025-08-12",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Webcam 4K con micrófono",
+      "cantidad": 5.0,
+      "precio_unitario": 149.0,
+      "importe": 745.0
+    }
+  ],
+  "base_imponible": 745.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 745.0,
+      "cuota": 156.45
+    }
+  ],
+  "retencion": {
+    "porcentaje": 4.71,
+    "base_imponible": 745.0,
+    "cuota": 35.09
+  },
+  "total": 866.36,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

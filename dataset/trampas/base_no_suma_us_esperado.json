@@ -1,0 +1,70 @@
+{
+  "pais": "ES",
+  "numero": "F/2026/8012",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Valencia",
+      "provincia": "Valencia",
+      "codigo_postal": "46001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Valencia",
+      "provincia": "Valencia",
+      "codigo_postal": "46001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Switch de red gestionable 24 puertos",
+      "cantidad": 5.0,
+      "precio_unitario": 189.0,
+      "importe": 945.0
+    },
+    {
+      "descripcion": "Disco SSD 2TB",
+      "cantidad": 10.0,
+      "precio_unitario": 179.0,
+      "importe": 1790.0
+    },
+    {
+      "descripcion": "Portátil ThinkPad X1 Carbon",
+      "cantidad": 2.0,
+      "precio_unitario": 1899.0,
+      "importe": 3798.0
+    },
+    {
+      "descripcion": "Cable HDMI 2.1 3m",
+      "cantidad": 2.0,
+      "precio_unitario": 18.5,
+      "importe": 37.0
+    }
+  ],
+  "base_imponible": 6571.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 6571.0,
+      "cuota": 1379.91
+    }
+  ],
+  "retencion": null,
+  "total": 7950.91,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": [
+    "base_imponible_no_cuadra"
+  ]
+}

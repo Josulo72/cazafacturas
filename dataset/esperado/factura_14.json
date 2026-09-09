@@ -1,0 +1,55 @@
+{
+  "numero": "F/2026/6119",
+  "fecha_emision": "2025-10-09",
+  "fecha_vencimiento": "2025-11-08",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Málaga",
+      "provincia": "Málaga",
+      "codigo_postal": "29001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 10.0,
+      "precio_unitario": 129.99,
+      "importe": 1299.9
+    },
+    {
+      "descripcion": "Webcam 4K con micrófono",
+      "cantidad": 7.0,
+      "precio_unitario": 149.0,
+      "importe": 1043.0
+    }
+  ],
+  "base_imponible": 2342.9,
+  "iva": [
+    {
+      "porcentaje": 10.0,
+      "base_imponible": 2342.9,
+      "cuota": 234.29
+    }
+  ],
+  "retencion": null,
+  "total": 2577.19,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

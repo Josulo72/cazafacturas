@@ -1,0 +1,72 @@
+{
+  "tipo": "completa",
+  "pais": "ES",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B12345678",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 4.0,
+      "precio_unitario": 450.0,
+      "importe": 1800.0
+    },
+    {
+      "descripcion": "Altavoces de escritorio stereo",
+      "cantidad": 1.0,
+      "precio_unitario": 79.99,
+      "importe": 79.99
+    },
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 9.0,
+      "precio_unitario": 499.0,
+      "importe": 4491.0
+    },
+    {
+      "descripcion": "Ratón ergonómico vertical",
+      "cantidad": 3.0,
+      "precio_unitario": 69.95,
+      "importe": 209.85
+    },
+    {
+      "descripcion": "Switch de red gestionable 24 puertos",
+      "cantidad": 5.0,
+      "precio_unitario": 189.0,
+      "importe": 945.0
+    }
+  ],
+  "base_imponible": 7525.84,
+  "iva": [
+    {
+      "porcentaje": 10.0,
+      "base_imponible": 7525.84,
+      "cuota": 752.58
+    }
+  ],
+  "retencion": null,
+  "total": 8278.42,
+  "observaciones": null,
+  "clave_operacion": null
+}

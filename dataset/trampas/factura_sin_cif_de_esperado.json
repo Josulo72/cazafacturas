@@ -1,0 +1,69 @@
+{
+  "pais": "ES",
+  "numero": "F/2026/9594",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B12345678",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Ratón ergonómico vertical",
+      "cantidad": 9.0,
+      "precio_unitario": 69.95,
+      "importe": 629.55
+    },
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 7.0,
+      "precio_unitario": 29.99,
+      "importe": 209.93
+    },
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 1.0,
+      "precio_unitario": 599.0,
+      "importe": 599.0
+    },
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 10.0,
+      "precio_unitario": 499.0,
+      "importe": 4990.0
+    }
+  ],
+  "base_imponible": 6428.48,
+  "iva": [
+    {
+      "porcentaje": 4.0,
+      "base_imponible": 6428.48,
+      "cuota": 257.14
+    }
+  ],
+  "retencion": null,
+  "total": 6685.62,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": [
+    "cif_emisor_faltante"
+  ]
+}

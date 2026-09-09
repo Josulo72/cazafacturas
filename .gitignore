@@ -1,0 +1,22 @@
+# Dependencias de entorno / claves
+.env
+.env.local
+
+# Datos locales generados (resultados de evaluación)
+resultados/
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Entorno virtual
+.venv/
+venv/
+env/
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

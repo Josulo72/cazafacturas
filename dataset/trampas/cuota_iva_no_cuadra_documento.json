@@ -1,0 +1,73 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/4553",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 3.0,
+      "precio_unitario": 29.99,
+      "importe": 89.97
+    },
+    {
+      "descripcion": "Cable HDMI 2.1 3m",
+      "cantidad": 4.0,
+      "precio_unitario": 18.5,
+      "importe": 74.0
+    },
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 7.0,
+      "precio_unitario": 450.0,
+      "importe": 3150.0
+    },
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 7.0,
+      "precio_unitario": 599.0,
+      "importe": 4193.0
+    },
+    {
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 8.0,
+      "precio_unitario": 129.99,
+      "importe": 1039.92
+    }
+  ],
+  "base_imponible": 8546.89,
+  "iva": [
+    {
+      "porcentaje": 10.0,
+      "base_imponible": 8546.89,
+      "cuota": 864.69
+    }
+  ],
+  "retencion": null,
+  "total": 9411.58,
+  "observaciones": null,
+  "clave_operacion": null,
+  "_observacion": "La cuota de IVA impresa no coincide con base * 21%"
+}

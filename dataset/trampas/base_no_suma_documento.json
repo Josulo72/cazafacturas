@@ -1,0 +1,49 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/9594",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Málaga",
+      "provincia": "Málaga",
+      "codigo_postal": "29001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Altavoces de escritorio stereo",
+      "cantidad": 4.0,
+      "precio_unitario": 79.99,
+      "importe": 319.96
+    }
+  ],
+  "base_imponible": 320.96,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 320.96,
+      "cuota": 67.4
+    }
+  ],
+  "retencion": null,
+  "total": 388.36,
+  "observaciones": null,
+  "clave_operacion": null,
+  "_observacion": "La base impresa no coincide con la suma de líneas"
+}

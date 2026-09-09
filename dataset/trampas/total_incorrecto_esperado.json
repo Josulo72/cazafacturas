@@ -1,0 +1,63 @@
+{
+  "numero": "F/2026/9247",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Webcam 4K con micrófono",
+      "cantidad": 3.0,
+      "precio_unitario": 149.0,
+      "importe": 447.0
+    },
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 2.0,
+      "precio_unitario": 499.0,
+      "importe": 998.0
+    },
+    {
+      "descripcion": "Silla ergonómica de oficina",
+      "cantidad": 10.0,
+      "precio_unitario": 349.0,
+      "importe": 3490.0
+    }
+  ],
+  "base_imponible": 4935.0,
+  "iva": [
+    {
+      "porcentaje": 10.0,
+      "base_imponible": 4935.0,
+      "cuota": 493.5
+    }
+  ],
+  "retencion": null,
+  "total": 8142.75,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": [
+    "total_no_cuadra"
+  ]
+}

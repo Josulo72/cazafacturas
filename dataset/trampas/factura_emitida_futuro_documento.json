@@ -1,0 +1,48 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/9354",
+  "fecha_emision": "2026-11-08",
+  "fecha_vencimiento": "2026-12-08",
+  "emisor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Valencia",
+      "provincia": "Valencia",
+      "codigo_postal": "46001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Webcam 4K con micrófono",
+      "cantidad": 3.0,
+      "precio_unitario": 149.0,
+      "importe": 447.0
+    }
+  ],
+  "base_imponible": 447.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 447.0,
+      "cuota": 93.87
+    }
+  ],
+  "retencion": null,
+  "total": 540.87,
+  "observaciones": null,
+  "clave_operacion": null
+}

@@ -1,0 +1,50 @@
+{
+  "pais": "UK",
+  "numero": "UK/2026/3734",
+  "fecha_emision": "2025-07-13",
+  "fecha_vencimiento": "2025-08-12",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "GB856528252",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "UK"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "GB810026086",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Madrid",
+      "provincia": "Madrid",
+      "codigo_postal": "28001",
+      "pais": "UK"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Webcam 4K con micrófono",
+      "cantidad": 5.0,
+      "precio_unitario": 149.0,
+      "importe": 745.0
+    }
+  ],
+  "base_imponible": 745.0,
+  "iva": [
+    {
+      "porcentaje": 20.0,
+      "base_imponible": 745.0,
+      "cuota": 149.0
+    }
+  ],
+  "retencion": null,
+  "total": 894.0,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

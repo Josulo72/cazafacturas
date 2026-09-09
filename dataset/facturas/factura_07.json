@@ -1,0 +1,54 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/5314",
+  "fecha_emision": "2025-11-08",
+  "fecha_vencimiento": "2025-12-08",
+  "emisor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Webcam 4K con micrófono",
+      "cantidad": 4.0,
+      "precio_unitario": 149.0,
+      "importe": 596.0
+    },
+    {
+      "descripcion": "Portátil ThinkPad X1 Carbon",
+      "cantidad": 3.0,
+      "precio_unitario": 1899.0,
+      "importe": 5697.0
+    }
+  ],
+  "base_imponible": 6293.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 6293.0,
+      "cuota": 1321.53
+    }
+  ],
+  "retencion": null,
+  "total": 7614.53,
+  "observaciones": null,
+  "clave_operacion": null
+}

@@ -1,0 +1,66 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/9655",
+  "fecha_emision": "2025-10-30",
+  "fecha_vencimiento": "2025-11-29",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Málaga",
+      "provincia": "Málaga",
+      "codigo_postal": "29001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 4.0,
+      "precio_unitario": 450.0,
+      "importe": 1800.0
+    },
+    {
+      "descripcion": "Switch de red gestionable 24 puertos",
+      "cantidad": 9.0,
+      "precio_unitario": 189.0,
+      "importe": 1701.0
+    },
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 10.0,
+      "precio_unitario": 29.99,
+      "importe": 299.9
+    },
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 1.0,
+      "precio_unitario": 599.0,
+      "importe": 599.0
+    }
+  ],
+  "base_imponible": 4399.9,
+  "iva": [
+    {
+      "porcentaje": 10.0,
+      "base_imponible": 4399.9,
+      "cuota": 439.99
+    }
+  ],
+  "retencion": null,
+  "total": 4839.89,
+  "observaciones": null,
+  "clave_operacion": null
+}

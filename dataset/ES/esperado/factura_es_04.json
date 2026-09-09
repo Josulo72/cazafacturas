@@ -1,0 +1,50 @@
+{
+  "pais": "ES",
+  "numero": "F/2026/2046",
+  "fecha_emision": "2025-07-14",
+  "fecha_vencimiento": "2025-08-13",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Madrid",
+      "provincia": "Madrid",
+      "codigo_postal": "28001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Disco SSD 2TB",
+      "cantidad": 6.0,
+      "precio_unitario": 179.0,
+      "importe": 1074.0
+    }
+  ],
+  "base_imponible": 1074.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 1074.0,
+      "cuota": 225.54
+    }
+  ],
+  "retencion": null,
+  "total": 1299.54,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

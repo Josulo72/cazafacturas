@@ -1,0 +1,68 @@
+{
+  "pais": "ES",
+  "numero": "F/2026/7360",
+  "fecha_emision": "2025-10-30",
+  "fecha_vencimiento": "2025-11-29",
+  "emisor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 4.0,
+      "precio_unitario": 450.0,
+      "importe": 1800.0
+    },
+    {
+      "descripcion": "Switch de red gestionable 24 puertos",
+      "cantidad": 9.0,
+      "precio_unitario": 189.0,
+      "importe": 1701.0
+    },
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 10.0,
+      "precio_unitario": 29.99,
+      "importe": 299.9
+    },
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 1.0,
+      "precio_unitario": 599.0,
+      "importe": 599.0
+    }
+  ],
+  "base_imponible": 4399.9,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 4399.9,
+      "cuota": 923.98
+    }
+  ],
+  "retencion": null,
+  "total": 5323.88,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

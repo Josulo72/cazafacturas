@@ -1,0 +1,52 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/1308",
+  "fecha_emision": "2025-07-13",
+  "fecha_vencimiento": "2025-08-12",
+  "emisor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B12345678",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Madrid",
+      "provincia": "Madrid",
+      "codigo_postal": "28001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Webcam 4K con micrófono",
+      "cantidad": 5.0,
+      "precio_unitario": 149.0,
+      "importe": 745.0
+    }
+  ],
+  "base_imponible": 745.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 745.0,
+      "cuota": 156.45
+    }
+  ],
+  "retencion": {
+    "porcentaje": 4.46,
+    "base_imponible": 745.0,
+    "cuota": 33.23
+  },
+  "total": 868.22,
+  "observaciones": null,
+  "clave_operacion": null
+}

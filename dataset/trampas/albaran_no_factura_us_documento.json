@@ -1,0 +1,34 @@
+{
+  "titulo": "ALBARÁN DE ENTREGA Nº 4419",
+  "fecha": "15/06/2025",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "17-9513358",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
+      "pais": "US"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "21-8275367",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Madrid",
+      "provincia": "Madrid",
+      "codigo_postal": "28001",
+      "pais": "US"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 2,
+      "precio_unitario": 599.0
+    }
+  ],
+  "nota": "Documento sin validez fiscal. No constituye factura."
+}

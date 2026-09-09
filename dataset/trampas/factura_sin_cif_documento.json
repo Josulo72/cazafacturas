@@ -1,0 +1,47 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/9265",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Madrid",
+      "provincia": "Madrid",
+      "codigo_postal": "28001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 7.0,
+      "precio_unitario": 29.99,
+      "importe": 209.93
+    }
+  ],
+  "base_imponible": 209.93,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 209.93,
+      "cuota": 44.09
+    }
+  ],
+  "retencion": null,
+  "total": 254.02,
+  "observaciones": null,
+  "clave_operacion": null
+}

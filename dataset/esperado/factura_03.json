@@ -1,0 +1,49 @@
+{
+  "numero": "F/2026/5515",
+  "fecha_emision": "2025-05-23",
+  "fecha_vencimiento": "2025-06-22",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Impresora láser monocromática",
+      "cantidad": 3.0,
+      "precio_unitario": 249.0,
+      "importe": 747.0
+    }
+  ],
+  "base_imponible": 747.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 747.0,
+      "cuota": 156.87
+    }
+  ],
+  "retencion": null,
+  "total": 903.87,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

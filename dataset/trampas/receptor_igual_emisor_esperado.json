@@ -1,0 +1,69 @@
+{
+  "numero": "F/2026/9502",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Zaragoza",
+      "provincia": "Zaragoza",
+      "codigo_postal": "50001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Pack de memorias RAM 32GB",
+      "cantidad": 8.0,
+      "precio_unitario": 89.5,
+      "importe": 716.0
+    },
+    {
+      "descripcion": "Impresora láser monocromática",
+      "cantidad": 7.0,
+      "precio_unitario": 249.0,
+      "importe": 1743.0
+    },
+    {
+      "descripcion": "Disco SSD 2TB",
+      "cantidad": 1.0,
+      "precio_unitario": 179.0,
+      "importe": 179.0
+    },
+    {
+      "descripcion": "Switch de red gestionable 24 puertos",
+      "cantidad": 2.0,
+      "precio_unitario": 189.0,
+      "importe": 378.0
+    }
+  ],
+  "base_imponible": 3016.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 3016.0,
+      "cuota": 633.36
+    }
+  ],
+  "retencion": null,
+  "total": 3649.36,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": [
+    "receptor_igual_emisor"
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "tipo": "completa",
+  "pais": "ES",
+  "numero": "F/2026/3576",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Madrid",
+      "provincia": "Madrid",
+      "codigo_postal": "28001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 6.0,
+      "precio_unitario": 129.99,
+      "importe": 779.94
+    },
+    {
+      "descripcion": "Portátil ThinkPad X1 Carbon",
+      "cantidad": 1.0,
+      "precio_unitario": 1899.0,
+      "importe": 1899.0
+    },
+    {
+      "descripcion": "Ratón ergonómico vertical",
+      "cantidad": 8.0,
+      "precio_unitario": 69.95,
+      "importe": 559.6
+    },
+    {
+      "descripcion": "Silla ergonómica de oficina",
+      "cantidad": 6.0,
+      "precio_unitario": 349.0,
+      "importe": 2094.0
+    }
+  ],
+  "base_imponible": 5332.54,
+  "iva": [
+    {
+      "porcentaje": 4.0,
+      "base_imponible": 5332.54,
+      "cuota": 223.3
+    }
+  ],
+  "retencion": null,
+  "total": 5555.84,
+  "observaciones": null,
+  "clave_operacion": null,
+  "_observacion": "La cuota de IVA impresa no coincide con base * 21%"
+}

@@ -1,0 +1,56 @@
+{
+  "tipo": "completa",
+  "pais": "ES",
+  "numero": "F/2026/3576",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Madrid",
+      "provincia": "Madrid",
+      "codigo_postal": "28001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Cable HDMI 2.1 3m",
+      "cantidad": 6.0,
+      "precio_unitario": 18.5,
+      "importe": 111.0
+    },
+    {
+      "descripcion": "Cable HDMI 2.1 3m",
+      "cantidad": 0,
+      "precio_unitario": 18.5,
+      "importe": 0.0
+    }
+  ],
+  "base_imponible": 111.0,
+  "iva": [
+    {
+      "porcentaje": 4.0,
+      "base_imponible": 111.0,
+      "cuota": 4.44
+    }
+  ],
+  "retencion": null,
+  "total": 115.44,
+  "observaciones": null,
+  "clave_operacion": null,
+  "_observacion": "Línea con cantidad cero incluida"
+}

@@ -1,0 +1,50 @@
+{
+  "pais": "US",
+  "numero": "US/2026/1536",
+  "fecha_emision": "2025-11-24",
+  "fecha_vencimiento": "2025-12-24",
+  "emisor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "23-2458591",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Valencia",
+      "provincia": "Valencia",
+      "codigo_postal": "46001",
+      "pais": "US"
+    }
+  },
+  "receptor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "14-1499914",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Málaga",
+      "provincia": "Málaga",
+      "codigo_postal": "29001",
+      "pais": "US"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 5.0,
+      "precio_unitario": 450.0,
+      "importe": 2250.0
+    }
+  ],
+  "base_imponible": 2250.0,
+  "iva": [
+    {
+      "porcentaje": 7.0,
+      "base_imponible": 2250.0,
+      "cuota": 157.5
+    }
+  ],
+  "retencion": null,
+  "total": 2407.5,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

@@ -1,0 +1,74 @@
+{
+  "tipo": "completa",
+  "pais": "ES",
+  "numero": "F/2026/4000",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Valencia",
+      "provincia": "Valencia",
+      "codigo_postal": "46001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 9.0,
+      "precio_unitario": 450.0,
+      "importe": 4050.0
+    },
+    {
+      "descripcion": "Altavoces de escritorio stereo",
+      "cantidad": 7.0,
+      "precio_unitario": 79.99,
+      "importe": 559.93
+    },
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 6.0,
+      "precio_unitario": 599.0,
+      "importe": 3594.0
+    },
+    {
+      "descripcion": "Cable HDMI 2.1 3m",
+      "cantidad": 8.0,
+      "precio_unitario": 18.5,
+      "importe": 148.0
+    },
+    {
+      "descripcion": "Silla ergonómica de oficina",
+      "cantidad": 10.0,
+      "precio_unitario": 349.0,
+      "importe": 3490.0
+    }
+  ],
+  "base_imponible": 11842.93,
+  "iva": [
+    {
+      "porcentaje": 10.0,
+      "base_imponible": 11842.93,
+      "cuota": 1184.29
+    }
+  ],
+  "retencion": null,
+  "total": 13027.22,
+  "observaciones": null,
+  "clave_operacion": null,
+  "_observacion": "La base impresa no coincide con la suma de líneas"
+}

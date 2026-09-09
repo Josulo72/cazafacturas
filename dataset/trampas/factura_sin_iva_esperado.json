@@ -1,0 +1,63 @@
+{
+  "numero": "F/2026/8388",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B12345678",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Disco SSD 2TB",
+      "cantidad": 4.0,
+      "precio_unitario": 179.0,
+      "importe": 716.0
+    },
+    {
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 2.0,
+      "precio_unitario": 129.99,
+      "importe": 259.98
+    },
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 10.0,
+      "precio_unitario": 599.0,
+      "importe": 5990.0
+    },
+    {
+      "descripcion": "Pack de memorias RAM 32GB",
+      "cantidad": 5.0,
+      "precio_unitario": 89.5,
+      "importe": 447.5
+    }
+  ],
+  "base_imponible": 7413.48,
+  "iva": [],
+  "retencion": null,
+  "total": 7413.48,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": [
+    "iva_faltante"
+  ]
+}

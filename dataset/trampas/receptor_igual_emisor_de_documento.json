@@ -1,0 +1,50 @@
+{
+  "tipo": "completa",
+  "pais": "ES",
+  "numero": "F/2026/9470",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 2.0,
+      "precio_unitario": 499.0,
+      "importe": 998.0
+    }
+  ],
+  "base_imponible": 998.0,
+  "iva": [
+    {
+      "porcentaje": 10.0,
+      "base_imponible": 998.0,
+      "cuota": 99.8
+    }
+  ],
+  "retencion": null,
+  "total": 1097.8,
+  "observaciones": null,
+  "clave_operacion": null,
+  "_observacion": "El receptor tiene el mismo NIF que el emisor"
+}

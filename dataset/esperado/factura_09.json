@@ -1,0 +1,67 @@
+{
+  "numero": "F/2026/2267",
+  "fecha_emision": "2025-12-02",
+  "fecha_vencimiento": "2026-01-01",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Málaga",
+      "provincia": "Málaga",
+      "codigo_postal": "29001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Ratón ergonómico vertical",
+      "cantidad": 5.0,
+      "precio_unitario": 69.95,
+      "importe": 349.75
+    },
+    {
+      "descripcion": "Silla ergonómica de oficina",
+      "cantidad": 3.0,
+      "precio_unitario": 349.0,
+      "importe": 1047.0
+    },
+    {
+      "descripcion": "Cable HDMI 2.1 3m",
+      "cantidad": 4.0,
+      "precio_unitario": 18.5,
+      "importe": 74.0
+    },
+    {
+      "descripcion": "Pack de memorias RAM 32GB",
+      "cantidad": 9.0,
+      "precio_unitario": 89.5,
+      "importe": 805.5
+    }
+  ],
+  "base_imponible": 2276.25,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 2276.25,
+      "cuota": 478.01
+    }
+  ],
+  "retencion": null,
+  "total": 2754.26,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

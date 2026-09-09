@@ -1,0 +1,50 @@
+{
+  "pais": "DE",
+  "numero": "DE/2026/5821",
+  "fecha_emision": "2025-05-29",
+  "fecha_vencimiento": "2025-06-28",
+  "emisor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "DE586845604",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "DE"
+    }
+  },
+  "receptor": {
+    "nombre": "Suministros Express",
+    "nif": "DE497478786",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Valencia",
+      "provincia": "Valencia",
+      "codigo_postal": "46001",
+      "pais": "DE"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 4.0,
+      "precio_unitario": 499.0,
+      "importe": 1996.0
+    }
+  ],
+  "base_imponible": 1996.0,
+  "iva": [
+    {
+      "porcentaje": 7.0,
+      "base_imponible": 1996.0,
+      "cuota": 139.72
+    }
+  ],
+  "retencion": null,
+  "total": 2135.72,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

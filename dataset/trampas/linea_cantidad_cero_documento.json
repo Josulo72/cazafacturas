@@ -1,0 +1,73 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/2754",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Málaga",
+      "provincia": "Málaga",
+      "codigo_postal": "29001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Zaragoza",
+      "provincia": "Zaragoza",
+      "codigo_postal": "50001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 8.0,
+      "precio_unitario": 29.99,
+      "importe": 239.92
+    },
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 2.0,
+      "precio_unitario": 499.0,
+      "importe": 998.0
+    },
+    {
+      "descripcion": "Switch de red gestionable 24 puertos",
+      "cantidad": 1.0,
+      "precio_unitario": 189.0,
+      "importe": 189.0
+    },
+    {
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 5.0,
+      "precio_unitario": 129.99,
+      "importe": 649.95
+    },
+    {
+      "descripcion": "Cable HDMI 2.1 3m",
+      "cantidad": 0,
+      "precio_unitario": 18.5,
+      "importe": 0.0
+    }
+  ],
+  "base_imponible": 2076.87,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 2076.87,
+      "cuota": 436.14
+    }
+  ],
+  "retencion": null,
+  "total": 2513.01,
+  "observaciones": null,
+  "clave_operacion": null,
+  "_observacion": "Línea con cantidad cero incluida"
+}

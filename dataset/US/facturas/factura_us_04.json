@@ -1,0 +1,73 @@
+{
+  "tipo": "completa",
+  "pais": "US",
+  "numero": "US/2026/2665",
+  "fecha_emision": "2025-02-10",
+  "fecha_vencimiento": "2025-03-12",
+  "emisor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "22-7377459",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "US"
+    }
+  },
+  "receptor": {
+    "nombre": "Suministros Express",
+    "nif": "91-7120868",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "US"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 10.0,
+      "precio_unitario": 129.99,
+      "importe": 1299.9
+    },
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 4.0,
+      "precio_unitario": 499.0,
+      "importe": 1996.0
+    },
+    {
+      "descripcion": "Silla ergonómica de oficina",
+      "cantidad": 2.0,
+      "precio_unitario": 349.0,
+      "importe": 698.0
+    },
+    {
+      "descripcion": "Altavoces de escritorio stereo",
+      "cantidad": 1.0,
+      "precio_unitario": 79.99,
+      "importe": 79.99
+    },
+    {
+      "descripcion": "Disco SSD 2TB",
+      "cantidad": 4.0,
+      "precio_unitario": 179.0,
+      "importe": 716.0
+    }
+  ],
+  "base_imponible": 4789.89,
+  "iva": [
+    {
+      "porcentaje": 8.25,
+      "base_imponible": 4789.89,
+      "cuota": 395.17
+    }
+  ],
+  "retencion": null,
+  "total": 5185.06,
+  "observaciones": null,
+  "clave_operacion": null
+}

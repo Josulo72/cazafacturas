@@ -1,0 +1,74 @@
+{
+  "tipo": "completa",
+  "pais": "ES",
+  "numero": "F/2026/7475",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Zaragoza",
+      "provincia": "Zaragoza",
+      "codigo_postal": "50001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Ratón ergonómico vertical",
+      "cantidad": 8.0,
+      "precio_unitario": 69.95,
+      "importe": 559.6
+    },
+    {
+      "descripcion": "Pack de memorias RAM 32GB",
+      "cantidad": 7.0,
+      "precio_unitario": 89.5,
+      "importe": 626.5
+    },
+    {
+      "descripcion": "Impresora láser monocromática",
+      "cantidad": 1.0,
+      "precio_unitario": 249.0,
+      "importe": 249.0
+    },
+    {
+      "descripcion": "Disco SSD 2TB",
+      "cantidad": 2.0,
+      "precio_unitario": 179.0,
+      "importe": 358.0
+    },
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 9.0,
+      "precio_unitario": 499.0,
+      "importe": 4491.0
+    }
+  ],
+  "base_imponible": 6284.1,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 6284.1,
+      "cuota": 1319.66
+    }
+  ],
+  "retencion": null,
+  "total": 7603.76,
+  "observaciones": null,
+  "clave_operacion": null,
+  "_observacion": "El receptor tiene el mismo NIF que el emisor"
+}

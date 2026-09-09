@@ -1,0 +1,56 @@
+{
+  "pais": "US",
+  "numero": "US/2026/6925",
+  "fecha_emision": "2025-04-22",
+  "fecha_vencimiento": "2025-05-22",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "38-8536477",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Málaga",
+      "provincia": "Málaga",
+      "codigo_postal": "29001",
+      "pais": "US"
+    }
+  },
+  "receptor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "10-3678638",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "US"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Webcam 4K con micrófono",
+      "cantidad": 1.0,
+      "precio_unitario": 149.0,
+      "importe": 149.0
+    },
+    {
+      "descripcion": "Altavoces de escritorio stereo",
+      "cantidad": 9.0,
+      "precio_unitario": 79.99,
+      "importe": 719.91
+    }
+  ],
+  "base_imponible": 868.91,
+  "iva": [
+    {
+      "porcentaje": 7.0,
+      "base_imponible": 868.91,
+      "cuota": 60.82
+    }
+  ],
+  "retencion": null,
+  "total": 929.73,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

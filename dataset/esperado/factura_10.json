@@ -1,0 +1,71 @@
+{
+  "numero": "F/2026/4372",
+  "fecha_emision": "2025-09-18",
+  "fecha_vencimiento": "2025-10-18",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B12345678",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 3.0,
+      "precio_unitario": 29.99,
+      "importe": 89.97
+    },
+    {
+      "descripcion": "Impresora láser monocromática",
+      "cantidad": 3.0,
+      "precio_unitario": 249.0,
+      "importe": 747.0
+    },
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 7.0,
+      "precio_unitario": 450.0,
+      "importe": 3150.0
+    },
+    {
+      "descripcion": "Switch de red gestionable 24 puertos",
+      "cantidad": 10.0,
+      "precio_unitario": 189.0,
+      "importe": 1890.0
+    }
+  ],
+  "base_imponible": 5876.97,
+  "iva": [
+    {
+      "porcentaje": 10.0,
+      "base_imponible": 5876.97,
+      "cuota": 587.7
+    }
+  ],
+  "retencion": {
+    "porcentaje": 3.31,
+    "base_imponible": 5876.97,
+    "cuota": 194.53
+  },
+  "total": 6270.14,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

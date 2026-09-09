@@ -1,0 +1,54 @@
+{
+  "tipo": "completa",
+  "numero": "F/2026/1833",
+  "fecha_emision": "2025-04-12",
+  "fecha_vencimiento": "2025-05-12",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Zaragoza",
+      "provincia": "Zaragoza",
+      "codigo_postal": "50001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Madrid",
+      "provincia": "Madrid",
+      "codigo_postal": "28001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Disco SSD 2TB",
+      "cantidad": 3.0,
+      "precio_unitario": 179.0,
+      "importe": 537.0
+    },
+    {
+      "descripcion": "Impresora láser monocromática",
+      "cantidad": 9.0,
+      "precio_unitario": 249.0,
+      "importe": 2241.0
+    }
+  ],
+  "base_imponible": 2778.0,
+  "iva": [
+    {
+      "porcentaje": 10.0,
+      "base_imponible": 2778.0,
+      "cuota": 277.8
+    }
+  ],
+  "retencion": null,
+  "total": 3055.8,
+  "observaciones": null,
+  "clave_operacion": null
+}

@@ -1,0 +1,62 @@
+{
+  "tipo": "completa",
+  "pais": "ES",
+  "numero": "F/2026/4553",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Pack de memorias RAM 32GB",
+      "cantidad": 7.0,
+      "precio_unitario": 89.5,
+      "importe": 626.5
+    },
+    {
+      "descripcion": "Portátil ThinkPad X1 Carbon",
+      "cantidad": 7.0,
+      "precio_unitario": 1899.0,
+      "importe": 13293.0
+    },
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 8.0,
+      "precio_unitario": 599.0,
+      "importe": 4792.0
+    }
+  ],
+  "base_imponible": 18711.5,
+  "iva": [
+    {
+      "porcentaje": 4.0,
+      "base_imponible": 18711.5,
+      "cuota": 758.46
+    }
+  ],
+  "retencion": null,
+  "total": 19469.96,
+  "observaciones": null,
+  "clave_operacion": null,
+  "_observacion": "La cuota de IVA impresa no coincide con base * 21%"
+}

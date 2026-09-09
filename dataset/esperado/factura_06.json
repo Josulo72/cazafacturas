@@ -1,0 +1,49 @@
+{
+  "numero": "F/2026/1170",
+  "fecha_emision": "2025-04-30",
+  "fecha_vencimiento": "2025-05-30",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "B11223344",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Valencia",
+      "provincia": "Valencia",
+      "codigo_postal": "46001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Ratón ergonómico vertical",
+      "cantidad": 5.0,
+      "precio_unitario": 69.95,
+      "importe": 349.75
+    }
+  ],
+  "base_imponible": 349.75,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 349.75,
+      "cuota": 73.45
+    }
+  ],
+  "retencion": null,
+  "total": 423.2,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

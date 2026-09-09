@@ -1,0 +1,61 @@
+{
+  "numero": "F/2026/7788",
+  "fecha_emision": "2025-07-05",
+  "fecha_vencimiento": "2025-08-04",
+  "emisor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B12345678",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Valencia",
+      "provincia": "Valencia",
+      "codigo_postal": "46001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 10.0,
+      "precio_unitario": 599.0,
+      "importe": 5990.0
+    },
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 2.0,
+      "precio_unitario": 450.0,
+      "importe": 900.0
+    },
+    {
+      "descripcion": "Switch de red gestionable 24 puertos",
+      "cantidad": 2.0,
+      "precio_unitario": 189.0,
+      "importe": 378.0
+    }
+  ],
+  "base_imponible": 7268.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 7268.0,
+      "cuota": 1526.28
+    }
+  ],
+  "retencion": null,
+  "total": 8794.28,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

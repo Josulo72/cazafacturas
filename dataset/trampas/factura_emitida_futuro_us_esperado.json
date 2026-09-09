@@ -1,0 +1,76 @@
+{
+  "pais": "ES",
+  "numero": "F/2026/8712",
+  "fecha_emision": "2026-11-08",
+  "fecha_vencimiento": "2026-12-08",
+  "emisor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B12345678",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 10.0,
+      "precio_unitario": 499.0,
+      "importe": 4990.0
+    },
+    {
+      "descripcion": "Silla ergonómica de oficina",
+      "cantidad": 4.0,
+      "precio_unitario": 349.0,
+      "importe": 1396.0
+    },
+    {
+      "descripcion": "Pack de memorias RAM 32GB",
+      "cantidad": 6.0,
+      "precio_unitario": 89.5,
+      "importe": 537.0
+    },
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 2.0,
+      "precio_unitario": 29.99,
+      "importe": 59.98
+    },
+    {
+      "descripcion": "Altavoces de escritorio stereo",
+      "cantidad": 9.0,
+      "precio_unitario": 79.99,
+      "importe": 719.91
+    }
+  ],
+  "base_imponible": 7702.89,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 7702.89,
+      "cuota": 1617.61
+    }
+  ],
+  "retencion": null,
+  "total": 9320.5,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": [
+    "fecha_emision_futura"
+  ]
+}

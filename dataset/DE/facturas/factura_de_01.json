@@ -1,0 +1,49 @@
+{
+  "tipo": "completa",
+  "pais": "DE",
+  "numero": "DE/2026/9675",
+  "fecha_emision": "2025-11-24",
+  "fecha_vencimiento": "2025-12-24",
+  "emisor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "DE890779946",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Valencia",
+      "provincia": "Valencia",
+      "codigo_postal": "46001",
+      "pais": "DE"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "DE193349856",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
+      "pais": "DE"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 5.0,
+      "precio_unitario": 450.0,
+      "importe": 2250.0
+    }
+  ],
+  "base_imponible": 2250.0,
+  "iva": [
+    {
+      "porcentaje": 7.0,
+      "base_imponible": 2250.0,
+      "cuota": 157.5
+    }
+  ],
+  "retencion": null,
+  "total": 2407.5,
+  "observaciones": null,
+  "clave_operacion": null
+}

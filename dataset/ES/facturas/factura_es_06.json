@@ -1,0 +1,55 @@
+{
+  "tipo": "completa",
+  "pais": "ES",
+  "numero": "F/2026/5821",
+  "fecha_emision": "2025-12-05",
+  "fecha_vencimiento": "2026-01-04",
+  "emisor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "A87654321",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Zaragoza",
+      "provincia": "Zaragoza",
+      "codigo_postal": "50001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Impresora láser monocromática",
+      "cantidad": 2.0,
+      "precio_unitario": 249.0,
+      "importe": 498.0
+    },
+    {
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 4.0,
+      "precio_unitario": 129.99,
+      "importe": 519.96
+    }
+  ],
+  "base_imponible": 1017.96,
+  "iva": [
+    {
+      "porcentaje": 4.0,
+      "base_imponible": 1017.96,
+      "cuota": 40.72
+    }
+  ],
+  "retencion": null,
+  "total": 1058.68,
+  "observaciones": null,
+  "clave_operacion": null
+}

@@ -1,0 +1,52 @@
+{
+  "pais": "ES",
+  "numero": "F/2026/5686",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Suministros Express",
+    "nif": "A99887766",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Málaga",
+      "provincia": "Málaga",
+      "codigo_postal": "29001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 5.0,
+      "precio_unitario": 450.0,
+      "importe": 2250.0
+    }
+  ],
+  "base_imponible": 2250.0,
+  "iva": [
+    {
+      "porcentaje": 21.0,
+      "base_imponible": 2250.0,
+      "cuota": 472.5
+    }
+  ],
+  "retencion": null,
+  "total": 2722.5,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": [
+    "receptor_igual_emisor"
+  ]
+}

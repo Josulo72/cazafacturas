@@ -1,0 +1,50 @@
+{
+  "pais": "UK",
+  "numero": "UK/2026/2046",
+  "fecha_emision": "2025-02-22",
+  "fecha_vencimiento": "2025-03-24",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "GB384027113",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
+      "pais": "UK"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "GB675770529",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "UK"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Ratón ergonómico vertical",
+      "cantidad": 2.0,
+      "precio_unitario": 69.95,
+      "importe": 139.9
+    }
+  ],
+  "base_imponible": 139.9,
+  "iva": [
+    {
+      "porcentaje": 20.0,
+      "base_imponible": 139.9,
+      "cuota": 27.98
+    }
+  ],
+  "retencion": null,
+  "total": 167.88,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

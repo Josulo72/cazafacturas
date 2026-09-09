@@ -1,0 +1,64 @@
+{
+  "pais": "ES",
+  "numero": "F/2026/7768",
+  "fecha_emision": "2025-06-15",
+  "fecha_vencimiento": "2025-07-15",
+  "emisor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "B55667788",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
+      "pais": "ES"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "B12345678",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "ES"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 10.0,
+      "precio_unitario": 450.0,
+      "importe": 4500.0
+    },
+    {
+      "descripcion": "Silla ergonómica de oficina",
+      "cantidad": 6.0,
+      "precio_unitario": 349.0,
+      "importe": 2094.0
+    },
+    {
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 6.0,
+      "precio_unitario": 29.99,
+      "importe": 179.94
+    },
+    {
+      "descripcion": "Webcam 4K con micrófono",
+      "cantidad": 6.0,
+      "precio_unitario": 149.0,
+      "importe": 894.0
+    }
+  ],
+  "base_imponible": 7667.94,
+  "iva": [],
+  "retencion": null,
+  "total": 7667.94,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": [
+    "iva_faltante"
+  ]
+}

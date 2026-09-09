@@ -1,0 +1,50 @@
+{
+  "pais": "US",
+  "numero": "US/2026/2341",
+  "fecha_emision": "2025-04-28",
+  "fecha_vencimiento": "2025-05-28",
+  "emisor": {
+    "nombre": "Suministros Express",
+    "nif": "37-6279418",
+    "direccion": {
+      "calle": "Polígono Las Merindades, Valladolid",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "US"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "60-8698256",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "US"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Impresora láser monocromática",
+      "cantidad": 6.0,
+      "precio_unitario": 249.0,
+      "importe": 1494.0
+    }
+  ],
+  "base_imponible": 1494.0,
+  "iva": [
+    {
+      "porcentaje": 9.0,
+      "base_imponible": 1494.0,
+      "cuota": 134.46
+    }
+  ],
+  "retencion": null,
+  "total": 1628.46,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}

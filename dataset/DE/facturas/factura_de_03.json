@@ -1,0 +1,55 @@
+{
+  "tipo": "completa",
+  "pais": "DE",
+  "numero": "DE/2026/5515",
+  "fecha_emision": "2025-08-03",
+  "fecha_vencimiento": "2025-09-02",
+  "emisor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "DE398362082",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Zaragoza",
+      "provincia": "Zaragoza",
+      "codigo_postal": "50001",
+      "pais": "DE"
+    }
+  },
+  "receptor": {
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "DE919795579",
+    "direccion": {
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
+      "pais": "DE"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Cable HDMI 2.1 3m",
+      "cantidad": 5.0,
+      "precio_unitario": 18.5,
+      "importe": 92.5
+    },
+    {
+      "descripcion": "Altavoces de escritorio stereo",
+      "cantidad": 1.0,
+      "precio_unitario": 79.99,
+      "importe": 79.99
+    }
+  ],
+  "base_imponible": 172.49,
+  "iva": [
+    {
+      "porcentaje": 7.0,
+      "base_imponible": 172.49,
+      "cuota": 12.07
+    }
+  ],
+  "retencion": null,
+  "total": 184.56,
+  "observaciones": null,
+  "clave_operacion": null
+}

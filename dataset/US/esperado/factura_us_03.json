@@ -1,0 +1,62 @@
+{
+  "pais": "US",
+  "numero": "US/2026/6202",
+  "fecha_emision": "2025-06-24",
+  "fecha_vencimiento": "2025-07-24",
+  "emisor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "54-5437923",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Zaragoza",
+      "provincia": "Zaragoza",
+      "codigo_postal": "50001",
+      "pais": "US"
+    }
+  },
+  "receptor": {
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "78-3094235",
+    "direccion": {
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
+      "pais": "US"
+    }
+  },
+  "lineas": [
+    {
+      "descripcion": "Pack de memorias RAM 32GB",
+      "cantidad": 6.0,
+      "precio_unitario": 89.5,
+      "importe": 537.0
+    },
+    {
+      "descripcion": "Monitor ultrawide 34 pulgadas",
+      "cantidad": 2.0,
+      "precio_unitario": 599.0,
+      "importe": 1198.0
+    },
+    {
+      "descripcion": "Impresora láser monocromática",
+      "cantidad": 2.0,
+      "precio_unitario": 249.0,
+      "importe": 498.0
+    }
+  ],
+  "base_imponible": 2233.0,
+  "iva": [
+    {
+      "porcentaje": 9.0,
+      "base_imponible": 2233.0,
+      "cuota": 200.97
+    }
+  ],
+  "retencion": null,
+  "total": 2433.97,
+  "observaciones": null,
+  "clave_operacion": null,
+  "tipo_documento": "factura",
+  "anomalias": []
+}
