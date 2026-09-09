@@ -1,0 +1,327 @@
+/* La portada. Un escritorio a media luz, la hoja del talonario encima, y
+   al final la puerta. Nada de esto se hereda de la aplicación: la portada y
+   la webapp son dos cosas distintas y se ven distintas. */
+
+:root {
+  --papel:    #EDE7D7;
+  --tinta:    #23211C;
+  --bic:      #23368E;
+  --rojo:     #C0271C;
+  --oro:      #B4903E;
+  --oro-luz:  #E7CE8A;
+  --mesa:     #221C15;
+
+  --maquina: 'Courier Prime', 'Courier New', monospace;
+  --mano:    'Caveat', 'Segoe Script', cursive;
+  --rotulo:  'Prata', Georgia, serif;
+  --imprenta:'Archivo', 'Helvetica Neue', Arial, sans-serif;
+
+  --salida: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+/* El atributo `hidden` gana siempre: una clase con `display:flex` no puede
+   resucitar un elemento que el código ha decidido ocultar. */
+[hidden] { display: none !important; }
+
+.portada {
+  margin: 0;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  overflow: hidden;
+  font-family: var(--maquina);
+  color: #E9E1CB;
+  background:
+    radial-gradient(115% 85% at 42% 26%, #453A2B 0%, var(--mesa) 58%, #14100B 100%);
+}
+
+/* La veta de la mesa y el halo de la lámpara. */
+.portada::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.007 0.55' numOctaves='4' seed='12'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='420' height='420' filter='url(%23v)'/%3E%3C/svg%3E");
+}
+
+.tinta { position: absolute; width: 0; height: 0; }
+
+/* ------------------------------------------------------------------ */
+/* El teatro                                                           */
+/* ------------------------------------------------------------------ */
+
+.teatro {
+  position: relative;
+  width: min(64rem, 100%);
+  aspect-ratio: 880 / 500;
+  display: grid;
+  place-items: center;
+}
+
+.acto {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, transform 0.42s var(--salida);
+}
+.acto.en-escena { opacity: 1; visibility: visible; }
+
+/* La hoja se retira como se retira una de verdad: se va hacia arriba y
+   gira un poco, porque nadie tira de un papel perfectamente recto. */
+.acto.se-retira {
+  opacity: 0;
+  transform: translateY(-14%) rotate(-2.4deg) scale(0.97);
+}
+
+.hoja-svg { width: 100%; height: auto; display: block; }
+
+/* ------------------------------------------------------------------ */
+/* El bolígrafo sobre el papel                                         */
+/* ------------------------------------------------------------------ */
+
+.traza {
+  fill: none;
+  stroke: var(--bic);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: var(--largo);
+  stroke-dashoffset: var(--largo);
+  animation: dibujar var(--dur, 0.7s) linear var(--esp, 0s) forwards;
+}
+.traza-roja { stroke: var(--rojo); }
+@keyframes dibujar { to { stroke-dashoffset: 0; } }
+
+/* Lo que la hoja ya trae impreso del talonario, cuando llega impresa. */
+.ya-impreso { stroke: var(--bic); fill: none; }
+
+.escrito {
+  clip-path: inset(0 100% 0 0);
+  animation: escribir var(--dur, 0.8s) linear var(--esp, 0s) forwards;
+}
+@keyframes escribir { to { clip-path: inset(0 -2% 0 0); } }
+
+.impreso { opacity: 0; animation: aparecer 0.4s ease-out var(--esp, 0s) forwards; }
+@keyframes aparecer { to { opacity: 1; } }
+
+.puntos {
+  stroke: #6E6552; stroke-width: 1.1; stroke-linecap: round;
+  stroke-dasharray: 0.8 4.4; opacity: 0.75; fill: none;
+}
+
+/* La imprenta y la mano no comparten voz. */
+text { font-family: var(--maquina); fill: var(--tinta); }
+.impreso text, .ya-impreso-g text, text.tenue, .impreso-fijo { font-family: var(--imprenta); }
+.tenue { fill: #6E6552; }
+.mano { font-family: var(--mano); fill: var(--bic); }
+.rotulo { font-family: var(--rotulo); fill: var(--tinta); }
+.roja { fill: var(--rojo); }
+.c-der { text-anchor: end; }
+
+.punta { opacity: 0; }
+.punta circle { fill: var(--bic); }
+
+/* ------------------------------------------------------------------ */
+/* El sello                                                            */
+/* ------------------------------------------------------------------ */
+
+/* Baja, golpea y para. El caucho no tiene muelle: no rebota. */
+.sello {
+  color: var(--bic);
+  filter: url(#sello-cargado);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: estampar 0.34s cubic-bezier(0.4, 0, 0.2, 1) var(--esp) forwards;
+}
+.sello-mal { color: var(--rojo); }
+.sello rect { stroke: currentColor; fill: none; }
+.sello text { fill: currentColor; }
+
+@keyframes estampar {
+  0%   { opacity: 0; transform: scale(1.9) rotate(-11deg); }
+  70%  { opacity: 1; transform: scale(1) rotate(-4.5deg); }
+  100% { opacity: 0.97; transform: scale(1) rotate(-4.5deg); }
+}
+.sello-mal { animation-name: estampar-mal; }
+@keyframes estampar-mal {
+  0%   { opacity: 0; transform: scale(1.9) rotate(9deg); }
+  70%  { opacity: 1; transform: scale(1) rotate(2.6deg); }
+  100% { opacity: 0.97; transform: scale(1) rotate(2.6deg); }
+}
+
+/* ------------------------------------------------------------------ */
+/* La puerta                                                           */
+/* ------------------------------------------------------------------ */
+
+.acto-final { place-items: center; }
+
+.membrete { text-align: center; max-width: 44rem; }
+
+.acto-final.en-escena .membrete > * {
+  animation: subir 0.75s var(--salida) both;
+}
+.acto-final.en-escena .anagrama { animation-delay: 0.05s; }
+.acto-final.en-escena .marca    { animation-delay: 0.14s; }
+.acto-final.en-escena .lema     { animation-delay: 0.26s; }
+.acto-final.en-escena .puerta   { animation-delay: 0.38s; }
+.acto-final.en-escena .cifras   { animation-delay: 0.5s; }
+/* Quien salta o repite no necesita ver entrar el cartel otra vez. */
+.acto-final.sin-entrada .membrete > * { animation: none; }
+
+@keyframes subir {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.anagrama {
+  width: clamp(2.5rem, 5vw, 3.25rem);
+  height: clamp(2.5rem, 5vw, 3.25rem);
+  color: var(--oro);
+  margin-bottom: 0.75rem;
+}
+
+.marca {
+  font-family: var(--rotulo);
+  font-weight: 400;
+  font-size: clamp(2.75rem, 11vw, 6rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  margin: 0;
+  color: #F6F0DE;
+  text-shadow: 3px 3px 0 rgba(35, 54, 142, 0.85);
+}
+
+.lema {
+  margin: 1.25rem auto 0;
+  max-width: 40ch;
+  font-size: clamp(0.8125rem, 1.6vw, 0.9375rem);
+  line-height: 1.75;
+  color: #B9AF95;
+}
+.lema b { color: var(--oro-luz); font-weight: 700; }
+
+.puerta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 2.25rem;
+}
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: transform 0.14s ease-out, background 0.14s linear,
+              color 0.14s linear, border-color 0.14s linear;
+}
+.boton:active { transform: scale(0.97); }
+
+.boton-entrar {
+  color: #1B160D;
+  background: var(--oro);
+  border: 1px solid var(--oro);
+}
+.boton-entrar:hover { background: var(--oro-luz); border-color: var(--oro-luz); }
+
+.boton-tenue {
+  color: #CDC3A8;
+  background: transparent;
+  border: 1px solid rgba(205, 195, 168, 0.35);
+}
+.boton-tenue:hover { color: #FFF6E2; border-color: var(--oro-luz); }
+
+.cifras {
+  margin: 2rem 0 0;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8B8168;
+}
+
+/* ------------------------------------------------------------------ */
+/* Mandos                                                              */
+/* ------------------------------------------------------------------ */
+
+.saltar {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font: inherit;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9C927A;
+  background: transparent;
+  border: 1px solid rgba(156, 146, 122, 0.35);
+  border-radius: 2px;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  transition: color 0.14s linear, border-color 0.14s linear, transform 0.14s ease-out;
+}
+.saltar:hover { color: var(--oro-luz); border-color: var(--oro-luz); }
+.saltar:active { transform: scale(0.97); }
+
+.firma-portada {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  position: fixed;
+  left: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7D745E;
+}
+.firma-portada a {
+  color: #9C927A;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(156, 146, 122, 0.4);
+}
+.pie-sep { width: 1px; height: 0.7rem; background: rgba(156, 146, 122, 0.4); }
+.firma-portada a:hover { color: var(--oro-luz); border-bottom-color: var(--oro-luz); }
+
+:focus-visible { outline: 2px solid var(--oro-luz); outline-offset: 3px; }
+
+/* ------------------------------------------------------------------ */
+/* Adaptación                                                          */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 46rem) {
+  .teatro { width: 100%; }
+  .puerta { flex-direction: column; align-items: stretch; }
+  .boton { justify-content: center; }
+  .firma-portada { position: static; justify-content: center; margin-top: 1.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acto, .traza, .escrito, .impreso, .sello,
+  .acto-final.en-escena .membrete > * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .traza { stroke-dashoffset: 0; }
+  .escrito { clip-path: none; }
+  .impreso, .sello { opacity: 1; }
+}

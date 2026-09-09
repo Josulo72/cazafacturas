@@ -1,49 +1,73 @@
 {
   "tipo": "completa",
   "pais": "UK",
-  "numero": "UK/2026/2046",
-  "fecha_emision": "2025-02-22",
-  "fecha_vencimiento": "2025-03-24",
+  "numero": "UK/2026/3734",
+  "fecha_emision": "2025-06-26",
+  "fecha_vencimiento": "2025-07-26",
   "emisor": {
-    "nombre": "Suministros Express",
-    "nif": "GB384027113",
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "GB968636167",
     "direccion": {
-      "calle": "Polígono Las Merindades, Valladolid",
-      "ciudad": "Palma",
-      "provincia": "Baleares",
-      "codigo_postal": "07001",
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Zaragoza",
+      "provincia": "Zaragoza",
+      "codigo_postal": "50001",
       "pais": "UK"
     }
   },
   "receptor": {
-    "nombre": "Tecnología del Sur S.L.",
-    "nif": "GB675770529",
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "GB076880527",
     "direccion": {
-      "calle": "Calle Gran Vía 42, Madrid",
-      "ciudad": "Murcia",
-      "provincia": "Murcia",
-      "codigo_postal": "30001",
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
       "pais": "UK"
     }
   },
   "lineas": [
     {
-      "descripcion": "Ratón ergonómico vertical",
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 9.0,
+      "precio_unitario": 129.99,
+      "importe": 1169.91
+    },
+    {
+      "descripcion": "Impresora láser monocromática",
       "cantidad": 2.0,
-      "precio_unitario": 69.95,
-      "importe": 139.9
+      "precio_unitario": 249.0,
+      "importe": 498.0
+    },
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 7.0,
+      "precio_unitario": 450.0,
+      "importe": 3150.0
+    },
+    {
+      "descripcion": "Portátil ThinkPad X1 Carbon",
+      "cantidad": 2.0,
+      "precio_unitario": 1899.0,
+      "importe": 3798.0
+    },
+    {
+      "descripcion": "Cable HDMI 2.1 3m",
+      "cantidad": 9.0,
+      "precio_unitario": 18.5,
+      "importe": 166.5
     }
   ],
-  "base_imponible": 139.9,
+  "base_imponible": 8782.41,
   "iva": [
     {
       "porcentaje": 20.0,
-      "base_imponible": 139.9,
-      "cuota": 27.98
+      "base_imponible": 8782.41,
+      "cuota": 1756.48
     }
   ],
   "retencion": null,
-  "total": 167.88,
+  "total": 10538.89,
   "observaciones": null,
   "clave_operacion": null
 }

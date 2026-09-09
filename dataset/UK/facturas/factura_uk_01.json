@@ -1,12 +1,12 @@
 {
   "tipo": "completa",
   "pais": "UK",
-  "numero": "UK/2026/9675",
+  "numero": "UK/2026/6913",
   "fecha_emision": "2025-11-24",
   "fecha_vencimiento": "2025-12-24",
   "emisor": {
     "nombre": "Alimentos del Norte S.A.",
-    "nif": "GB890779946",
+    "nif": "GB171958336",
     "direccion": {
       "calle": "Avda. de la Industria 15, Bilbao",
       "ciudad": "Valencia",
@@ -16,13 +16,13 @@
     }
   },
   "receptor": {
-    "nombre": "Tecnología del Sur S.L.",
-    "nif": "GB193349856",
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "GB990682088",
     "direccion": {
-      "calle": "Calle Gran Vía 42, Madrid",
-      "ciudad": "Las Palmas",
-      "provincia": "Las Palmas",
-      "codigo_postal": "35001",
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
       "pais": "UK"
     }
   },

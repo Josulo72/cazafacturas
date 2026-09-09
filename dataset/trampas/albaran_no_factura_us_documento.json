@@ -3,7 +3,7 @@
   "fecha": "15/06/2025",
   "emisor": {
     "nombre": "Suministros Express",
-    "nif": "17-9513358",
+    "nif": "20-9513358",
     "direccion": {
       "calle": "Polígono Las Merindades, Valladolid",
       "ciudad": "Palma",
@@ -14,7 +14,7 @@
   },
   "receptor": {
     "nombre": "Alimentos del Norte S.A.",
-    "nif": "21-8275367",
+    "nif": "24-8275367",
     "direccion": {
       "calle": "Avda. de la Industria 15, Bilbao",
       "ciudad": "Madrid",

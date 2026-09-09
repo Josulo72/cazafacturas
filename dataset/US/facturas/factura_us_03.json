@@ -6,7 +6,7 @@
   "fecha_vencimiento": "2025-07-24",
   "emisor": {
     "nombre": "Tecnología del Sur S.L.",
-    "nif": "54-5437923",
+    "nif": "60-5437923",
     "direccion": {
       "calle": "Calle Gran Vía 42, Madrid",
       "ciudad": "Zaragoza",
@@ -17,7 +17,7 @@
   },
   "receptor": {
     "nombre": "Tecnología del Sur S.L.",
-    "nif": "78-3094235",
+    "nif": "88-3094235",
     "direccion": {
       "calle": "Calle Gran Vía 42, Madrid",
       "ciudad": "Murcia",

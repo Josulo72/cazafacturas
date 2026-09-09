@@ -1,48 +1,48 @@
 {
   "pais": "UK",
-  "numero": "UK/2026/8929",
-  "fecha_emision": "2025-08-05",
-  "fecha_vencimiento": "2025-09-04",
+  "numero": "UK/2026/6874",
+  "fecha_emision": "2025-01-17",
+  "fecha_vencimiento": "2025-02-16",
   "emisor": {
-    "nombre": "Alimentos del Norte S.A.",
-    "nif": "GB746412689",
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "GB044519968",
     "direccion": {
-      "calle": "Avda. de la Industria 15, Bilbao",
-      "ciudad": "Las Palmas",
-      "provincia": "Las Palmas",
-      "codigo_postal": "35001",
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Palma",
+      "provincia": "Baleares",
+      "codigo_postal": "07001",
       "pais": "UK"
     }
   },
   "receptor": {
-    "nombre": "Tecnología del Sur S.L.",
-    "nif": "GB313500298",
+    "nombre": "Materiales de Construcción Hermanos",
+    "nif": "GB914260057",
     "direccion": {
-      "calle": "Calle Gran Vía 42, Madrid",
-      "ciudad": "Las Palmas",
-      "provincia": "Las Palmas",
-      "codigo_postal": "35001",
+      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "ciudad": "Bilbao",
+      "provincia": "Vizcaya",
+      "codigo_postal": "48001",
       "pais": "UK"
     }
   },
   "lineas": [
     {
-      "descripcion": "Licencia software anual",
-      "cantidad": 2.0,
-      "precio_unitario": 450.0,
-      "importe": 900.0
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 4.0,
+      "precio_unitario": 29.99,
+      "importe": 119.96
     }
   ],
-  "base_imponible": 900.0,
+  "base_imponible": 119.96,
   "iva": [
     {
       "porcentaje": 5.0,
-      "base_imponible": 900.0,
-      "cuota": 45.0
+      "base_imponible": 119.96,
+      "cuota": 6.0
     }
   ],
   "retencion": null,
-  "total": 945.0,
+  "total": 125.96,
   "observaciones": null,
   "clave_operacion": null,
   "tipo_documento": "factura",

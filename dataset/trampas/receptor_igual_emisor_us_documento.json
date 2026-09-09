@@ -6,7 +6,7 @@
   "fecha_vencimiento": "2025-07-15",
   "emisor": {
     "nombre": "Materiales de Construcción Hermanos",
-    "nif": "A99887766",
+    "nif": "A99887762",
     "direccion": {
       "calle": "Ctra. de Barcelona km 12, Valencia",
       "ciudad": "Murcia",
@@ -17,7 +17,7 @@
   },
   "receptor": {
     "nombre": "Suministros Express",
-    "nif": "A99887766",
+    "nif": "A99887762",
     "direccion": {
       "calle": "Polígono Las Merindades, Valladolid",
       "ciudad": "Málaga",

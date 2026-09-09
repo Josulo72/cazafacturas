@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cazafacturas</title>
+<meta name="description" content="Extrae y comprueba facturas en local. Sin IA, sin red y sin claves.">
+<link rel="stylesheet" href="/static/fuentes.css">
+<link rel="stylesheet" href="/static/portada.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23EDE7D7'/><g fill='%2323368E'><path d='M8.1 5.2h2.5v16.2H8.1z'/><path d='M13.6 8.1h12.6v1.1H13.6zM13.6 12.7h10.4v1.1H13.6zM13.6 17.3h7.6v1.1h-7.6z'/><path d='M5 23.2h22v1.9H5zM5 26.8h22v0.9H5z'/></g></svg>">
+</head>
+<body class="portada">
+
+<svg class="tinta" aria-hidden="true" width="0" height="0">
+  <filter id="sombra-hoja" x="-8%" y="-8%" width="118%" height="118%">
+    <feDropShadow dx="3" dy="7" stdDeviation="9" flood-color="#000" flood-opacity="0.30"/>
+  </filter>
+
+  <linearGradient id="doblez-h" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFFDF4" stop-opacity="0"/>
+    <stop offset="0.42" stop-color="#FFFDF4" stop-opacity="0.85"/>
+    <stop offset="0.52" stop-color="#A9997A" stop-opacity="0.42"/>
+    <stop offset="1" stop-color="#A9997A" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="doblez-d" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFFDF4" stop-opacity="0"/>
+    <stop offset="0.45" stop-color="#FFFDF4" stop-opacity="0.7"/>
+    <stop offset="0.55" stop-color="#A9997A" stop-opacity="0.34"/>
+    <stop offset="1" stop-color="#A9997A" stop-opacity="0"/>
+  </linearGradient>
+
+  <filter id="sello-cargado" x="-14%" y="-22%" width="128%" height="144%"
+          color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" seed="5" result="filo"/>
+    <feDisplacementMap in="SourceGraphic" in2="filo" scale="2.2"
+                       xChannelSelector="R" yChannelSelector="G" result="marca"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.017" numOctaves="3" seed="21" result="reparto"/>
+    <feComponentTransfer in="reparto" result="reparto_a">
+      <feFuncA type="linear" slope="4.2" intercept="-0.18"/>
+    </feComponentTransfer>
+    <feComposite in="marca" in2="reparto_a" operator="in" result="paso1"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.11 0.26" numOctaves="2" seed="47" result="seco"/>
+    <feComponentTransfer in="seco" result="seco_a">
+      <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 0.2 1 1 1 0.65 1 1 1 1"/>
+    </feComponentTransfer>
+    <feComposite in="paso1" in2="seco_a" operator="in"/>
+  </filter>
+
+  <filter id="sello-seco" x="-14%" y="-22%" width="128%" height="144%"
+          color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" seed="13" result="filo"/>
+    <feDisplacementMap in="SourceGraphic" in2="filo" scale="2.6"
+                       xChannelSelector="R" yChannelSelector="G" result="marca"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.021" numOctaves="3" seed="34" result="reparto"/>
+    <feComponentTransfer in="reparto" result="reparto_a">
+      <feFuncA type="linear" slope="3.5" intercept="-0.28"/>
+    </feComponentTransfer>
+    <feComposite in="marca" in2="reparto_a" operator="in" result="paso1"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.14 0.3" numOctaves="2" seed="61" result="seco"/>
+    <feComponentTransfer in="seco" result="seco_a">
+      <feFuncA type="discrete" tableValues="1 1 1 1 1 0.15 1 1 0.55 1 1 1 1 0.3 1 1"/>
+    </feComponentTransfer>
+    <feComposite in="paso1" in2="seco_a" operator="in"/>
+  </filter>
+</svg>
+
+<main class="teatro" id="teatro">
+
+  <!-- ================================================================ -->
+  <!-- ACTO I — La factura se levanta y se da por buena.                 -->
+  <!-- ================================================================ -->
+  <section class="acto" id="acto-1" aria-hidden="true">
+    <svg viewBox="0 0 880 500" class="hoja-svg">
+      <g filter="url(#sombra-hoja)">
+        <path d="M34.0 18.0 Q33.3 21.0 34.0 24.0 Q33.4 27.1 33.9 30.1 Q34.6 32.8 33.5 35.4 Q35.3 38.3 33.9 41.2 Q33.4 45.1 33.6 49.0 Q33.1 51.7 34.1 54.4 Q33.1 57.9 33.5 61.3 Q32.7 64.1 34.1 67.0 Q34.9 70.2 33.7 73.3 Q35.1 76.7 33.7 80.1 Q34.6 84.0 33.6 87.9 Q34.5 91.1 34.1 94.4 Q34.9 98.1 34.1 101.9 Q32.5 105.1 34.2 108.3 Q35.3 110.9 34.4 113.6 Q33.0 116.5 34.0 119.5 Q30.7 122.3 33.7 125.0 Q31.2 128.1 34.5 131.2 Q32.5 134.9 33.8 138.6 Q32.4 142.4 33.7 146.2 Q32.9 149.1 33.4 152.0 Q34.9 155.1 34.2 158.2 Q32.8 161.5 34.5 164.8 Q32.5 168.4 33.9 172.1 Q31.7 174.8 33.6 177.4 Q31.6 180.5 33.8 183.5 Q32.5 186.1 33.7 188.7 Q34.9 191.7 34.6 194.7 Q31.7 197.9 33.7 201.1 Q30.5 204.9 33.6 208.6 Q34.5 211.9 34.4 215.2 Q33.2 218.7 34.3 222.2 Q32.6 225.5 34.4 228.8 Q35.5 232.8 34.3 236.7 Q32.9 239.6 33.4 242.4 Q34.8 245.4 33.9 248.3 Q32.3 252.2 33.7 256.0 Q34.7 258.9 34.5 261.8 Q35.1 265.5 33.5 269.2 Q35.6 272.7 34.0 276.2 Q35.4 279.0 34.6 281.8 Q35.0 284.9 33.6 288.0 Q34.7 290.7 33.6 293.4 Q32.3 297.1 34.1 300.8 Q34.5 303.6 34.0 306.3 Q35.0 310.2 33.7 314.0 Q34.9 316.9 33.7 319.8 Q33.3 323.0 33.9 326.1 Q35.6 329.5 34.0 332.8 Q31.2 336.1 33.4 339.4 Q34.7 343.1 34.1 346.8 Q35.1 349.8 33.5 352.8 Q34.8 356.1 34.0 359.4 Q32.6 362.8 34.1 366.1 Q32.9 369.4 34.0 372.6 Q35.6 375.9 34.5 379.1 Q35.2 382.0 33.6 384.9 Q31.5 387.6 34.2 390.3 Q35.6 394.0 34.2 397.6 Q32.4 400.4 34.5 403.1 Q35.1 406.2 33.6 409.3 Q32.9 412.5 33.8 415.7 Q33.5 419.2 33.4 422.8 Q32.8 425.8 34.6 428.8 Q31.4 432.5 34.3 436.1 Q34.7 439.0 34.4 442.0 Q34.7 444.9 34.2 447.8 Q33.4 450.5 33.5 453.1 Q32.7 457.0 34.4 460.9 Q32.5 463.5 34.1 466.2 Q33.2 470.0 33.7 473.9 Q31.5 476.6 33.8 479.3 Q33.2 481.6 33.8 484.0 L846 484 C848 320 844 160 846 18 Z" fill="#F7F3E6"/>
+      </g>
+      <path d="M34.0 18.0 Q33.3 21.0 34.0 24.0 Q33.4 27.1 33.9 30.1 Q34.6 32.8 33.5 35.4 Q35.3 38.3 33.9 41.2 Q33.4 45.1 33.6 49.0 Q33.1 51.7 34.1 54.4 Q33.1 57.9 33.5 61.3 Q32.7 64.1 34.1 67.0 Q34.9 70.2 33.7 73.3 Q35.1 76.7 33.7 80.1 Q34.6 84.0 33.6 87.9 Q34.5 91.1 34.1 94.4 Q34.9 98.1 34.1 101.9 Q32.5 105.1 34.2 108.3 Q35.3 110.9 34.4 113.6 Q33.0 116.5 34.0 119.5 Q30.7 122.3 33.7 125.0 Q31.2 128.1 34.5 131.2 Q32.5 134.9 33.8 138.6 Q32.4 142.4 33.7 146.2 Q32.9 149.1 33.4 152.0 Q34.9 155.1 34.2 158.2 Q32.8 161.5 34.5 164.8 Q32.5 168.4 33.9 172.1 Q31.7 174.8 33.6 177.4 Q31.6 180.5 33.8 183.5 Q32.5 186.1 33.7 188.7 Q34.9 191.7 34.6 194.7 Q31.7 197.9 33.7 201.1 Q30.5 204.9 33.6 208.6 Q34.5 211.9 34.4 215.2 Q33.2 218.7 34.3 222.2 Q32.6 225.5 34.4 228.8 Q35.5 232.8 34.3 236.7 Q32.9 239.6 33.4 242.4 Q34.8 245.4 33.9 248.3 Q32.3 252.2 33.7 256.0 Q34.7 258.9 34.5 261.8 Q35.1 265.5 33.5 269.2 Q35.6 272.7 34.0 276.2 Q35.4 279.0 34.6 281.8 Q35.0 284.9 33.6 288.0 Q34.7 290.7 33.6 293.4 Q32.3 297.1 34.1 300.8 Q34.5 303.6 34.0 306.3 Q35.0 310.2 33.7 314.0 Q34.9 316.9 33.7 319.8 Q33.3 323.0 33.9 326.1 Q35.6 329.5 34.0 332.8 Q31.2 336.1 33.4 339.4 Q34.7 343.1 34.1 346.8 Q35.1 349.8 33.5 352.8 Q34.8 356.1 34.0 359.4 Q32.6 362.8 34.1 366.1 Q32.9 369.4 34.0 372.6 Q35.6 375.9 34.5 379.1 Q35.2 382.0 33.6 384.9 Q31.5 387.6 34.2 390.3 Q35.6 394.0 34.2 397.6 Q32.4 400.4 34.5 403.1 Q35.1 406.2 33.6 409.3 Q32.9 412.5 33.8 415.7 Q33.5 419.2 33.4 422.8 Q32.8 425.8 34.6 428.8 Q31.4 432.5 34.3 436.1 Q34.7 439.0 34.4 442.0 Q34.7 444.9 34.2 447.8 Q33.4 450.5 33.5 453.1 Q32.7 457.0 34.4 460.9 Q32.5 463.5 34.1 466.2 Q33.2 470.0 33.7 473.9 Q31.5 476.6 33.8 479.3 Q33.2 481.6 33.8 484.0" fill="none" stroke="#C4B692" stroke-width="0.9" stroke-linejoin="round"/>
+      <path d="M34.0 18.0 Q33.3 21.0 34.0 24.0 Q33.4 27.1 33.9 30.1 Q34.6 32.8 33.5 35.4 Q35.3 38.3 33.9 41.2 Q33.4 45.1 33.6 49.0 Q33.1 51.7 34.1 54.4 Q33.1 57.9 33.5 61.3 Q32.7 64.1 34.1 67.0 Q34.9 70.2 33.7 73.3 Q35.1 76.7 33.7 80.1 Q34.6 84.0 33.6 87.9 Q34.5 91.1 34.1 94.4 Q34.9 98.1 34.1 101.9 Q32.5 105.1 34.2 108.3 Q35.3 110.9 34.4 113.6 Q33.0 116.5 34.0 119.5 Q30.7 122.3 33.7 125.0 Q31.2 128.1 34.5 131.2 Q32.5 134.9 33.8 138.6 Q32.4 142.4 33.7 146.2 Q32.9 149.1 33.4 152.0 Q34.9 155.1 34.2 158.2 Q32.8 161.5 34.5 164.8 Q32.5 168.4 33.9 172.1 Q31.7 174.8 33.6 177.4 Q31.6 180.5 33.8 183.5 Q32.5 186.1 33.7 188.7 Q34.9 191.7 34.6 194.7 Q31.7 197.9 33.7 201.1 Q30.5 204.9 33.6 208.6 Q34.5 211.9 34.4 215.2 Q33.2 218.7 34.3 222.2 Q32.6 225.5 34.4 228.8 Q35.5 232.8 34.3 236.7 Q32.9 239.6 33.4 242.4 Q34.8 245.4 33.9 248.3 Q32.3 252.2 33.7 256.0 Q34.7 258.9 34.5 261.8 Q35.1 265.5 33.5 269.2 Q35.6 272.7 34.0 276.2 Q35.4 279.0 34.6 281.8 Q35.0 284.9 33.6 288.0 Q34.7 290.7 33.6 293.4 Q32.3 297.1 34.1 300.8 Q34.5 303.6 34.0 306.3 Q35.0 310.2 33.7 314.0 Q34.9 316.9 33.7 319.8 Q33.3 323.0 33.9 326.1 Q35.6 329.5 34.0 332.8 Q31.2 336.1 33.4 339.4 Q34.7 343.1 34.1 346.8 Q35.1 349.8 33.5 352.8 Q34.8 356.1 34.0 359.4 Q32.6 362.8 34.1 366.1 Q32.9 369.4 34.0 372.6 Q35.6 375.9 34.5 379.1 Q35.2 382.0 33.6 384.9 Q31.5 387.6 34.2 390.3 Q35.6 394.0 34.2 397.6 Q32.4 400.4 34.5 403.1 Q35.1 406.2 33.6 409.3 Q32.9 412.5 33.8 415.7 Q33.5 419.2 33.4 422.8 Q32.8 425.8 34.6 428.8 Q31.4 432.5 34.3 436.1 Q34.7 439.0 34.4 442.0 Q34.7 444.9 34.2 447.8 Q33.4 450.5 33.5 453.1 Q32.7 457.0 34.4 460.9 Q32.5 463.5 34.1 466.2 Q33.2 470.0 33.7 473.9 Q31.5 476.6 33.8 479.3 Q33.2 481.6 33.8 484.0" fill="none" stroke="#FFFCF0" stroke-width="0.5" transform="translate(1.1 0)"/>
+      <rect x="34" y="234" width="812" height="10" fill="url(#doblez-h)"/>
+      <path d="M34 239 C280 237.4 560 240.8 846 238.4" fill="none" stroke="#9B8C6D" stroke-width="0.5" opacity="0.45"/>
+      <path d="M36 65 L378 154" stroke="url(#doblez-d)" stroke-width="9" fill="none" opacity="0.9"/>
+
+      <path id="p1-marco" class="traza" style="--dur:2.6s;--esp:0.4s;stroke-width:2"
+            d="M60 46 C280 42 560 48 820 44 C824 160 818 320 821 456 C560 460 300 454 62 458 C58 320 64 160 60 46Z"/>
+      <g class="punta">
+        <circle r="3.4"/>
+        <animateMotion begin="0.4s" dur="2.6s" fill="remove" calcMode="linear">
+          <mpath href="#p1-marco"/></animateMotion>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.03;0.97;1"
+                 begin="0.4s" dur="2.6s" fill="remove"/>
+      </g>
+
+      <g class="impreso" style="--esp:2.9s">
+        <rect x="596" y="56" width="228" height="38" fill="none" stroke="#4A4436" stroke-width="1.4"/>
+        <text x="608" y="81" font-size="15" fill="#4A4436">FACTURA N.º</text>
+        <path class="puntos" d="M716 84 H816"/>
+      </g>
+      <path class="traza" style="--dur:0.8s;--esp:3s;stroke-width:1.5" d="M60 108 C300 105 560 111 820 107"/>
+      <text class="escrito rotulo" style="--dur:1s;--esp:3.2s" x="86" y="88" font-size="30">FACTURA</text>
+      <text class="escrito mano" style="--dur:0.8s;--esp:3.7s" x="722" y="86" font-size="24">1425</text>
+      <text class="escrito mano" style="--dur:1.2s;--esp:4.2s" x="600" y="132" font-size="26">14 de marzo</text>
+
+      <g class="impreso" style="--esp:4.6s">
+        <path class="puntos" d="M150 186 H540"/>
+        <path class="puntos" d="M86 216 H540"/>
+      </g>
+      <text class="tenue" x="86" y="150" font-size="12" letter-spacing="2">EMISOR</text>
+      <text class="escrito mano" style="--dur:1.5s;--esp:5s" x="86" y="182" font-size="26">Tecnología del Sur S.L.</text>
+      <text class="escrito mano" style="--dur:1.2s;--esp:5.8s" x="86" y="212" font-size="22">NIF B12345674</text>
+
+      <path class="traza" style="--dur:0.7s;--esp:6.5s;stroke-width:1.5" d="M60 244 C300 241 560 247 820 243"/>
+      <g class="impreso" style="--esp:6.8s">
+        <path class="puntos" d="M86 308 H640"/>
+        <path class="puntos" d="M86 344 H640"/>
+      </g>
+      <text class="tenue" x="86" y="268" font-size="12" letter-spacing="2">CONCEPTO</text>
+      <text class="tenue c-der" x="820" y="268" font-size="12" letter-spacing="2">IMPORTE</text>
+
+      <text class="escrito mano" style="--dur:1.5s;--esp:7.2s" x="86" y="304" font-size="25">Licencia software anual ×5</text>
+      <text class="escrito mano c-der" style="--dur:0.9s;--esp:8s" x="820" y="304" font-size="25">2.250,00 €</text>
+      <text class="escrito mano" style="--dur:1.4s;--esp:8.5s" x="86" y="340" font-size="25">Soporte trimestral</text>
+      <text class="escrito mano c-der" style="--dur:0.9s;--esp:9.2s" x="820" y="340" font-size="25">180,00 €</text>
+
+      <path class="traza" style="--dur:0.5s;--esp:9.8s;stroke-width:1.5" d="M540 366 C640 364 740 368 820 365"/>
+      <text class="tenue" x="400" y="396" font-size="12" letter-spacing="1.5">BASE IMPONIBLE</text>
+      <text class="escrito mano c-der" style="--dur:0.8s;--esp:10.1s" x="820" y="398" font-size="25">2.430,00 €</text>
+      <text class="tenue" x="400" y="424" font-size="12" letter-spacing="1.5">IVA 21 %</text>
+      <text class="escrito mano c-der" style="--dur:0.8s;--esp:10.6s" x="820" y="426" font-size="25">510,30 €</text>
+
+      <path class="traza" style="--dur:0.4s;--esp:11.2s;stroke-width:1.6" d="M540 440 C640 438 740 442 820 439"/>
+      <path class="traza" style="--dur:0.4s;--esp:11.5s;stroke-width:1.2" d="M540 447 C640 445 740 449 820 446"/>
+      <text class="escrito mano c-der" style="--dur:0.9s;--esp:11.9s" x="820" y="478" font-size="29" font-weight="600">2.940,30 €</text>
+
+      <text class="impreso" style="--esp:12.4s" x="100" y="380" font-size="12" fill="#4A4436">El emisor,</text>
+      <g transform="translate(100 432) scale(0.78)">
+        <path id="p1-firma" class="traza" style="--dur:1.6s;--esp:12.7s;stroke-width:2.31"
+              d="M0 10 C7 -16 21 -30 30 -21 C39 -12 27 12 18 7 C7 1 16 -23 39 -32 C60 -40 74 -21 65 -2 C58 12 46 9 51 -7 C58 -28 81 -37 97 -25 C111 -15 101 7 92 2 C81 -4 92 -25 115 -32 C136 -38 150 -23 145 -7 C141 6 131 9 134 -3 C138 -19 155 -28 174 -21 C188 -15 195 -2 192 8"/>
+        <path class="traza" style="--dur:1.05s;--esp:14.4s;stroke-width:1.92" d="M-18 18 C26 32 110 29 160 10 C192 -2 183 -23 157 -16 C129 -9 113 19 148 26 C181 32 204 12 209 -8"/>
+      </g>
+      <g class="punta">
+        <circle r="3"/>
+        <animateMotion begin="12.7s" dur="1.6s" fill="remove" calcMode="linear"
+                       transform="translate(100 432) scale(0.78)">
+          <mpath href="#p1-firma"/></animateMotion>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.04;0.96;1"
+                 begin="12.7s" dur="1.6s" fill="remove"/>
+      </g>
+
+      <g class="sello" style="--esp:15.6s">
+        <rect x="266" y="136" width="290" height="86" rx="4" stroke-width="4" opacity="0.9"/>
+        <rect x="274" y="144" width="274" height="70" rx="2" stroke-width="1.2" opacity="0.9"/>
+        <text x="411" y="192" font-size="40" text-anchor="middle" letter-spacing="3" font-weight="700">CONFORME</text>
+      </g>
+    </svg>
+  </section>
+
+  <!-- ================================================================ -->
+  <!-- ACTO II — La hoja siguiente del talonario. No es una factura.     -->
+  <!-- ================================================================ -->
+  <section class="acto" id="acto-2" aria-hidden="true">
+    <svg viewBox="0 0 880 500" class="hoja-svg">
+      <g filter="url(#sombra-hoja)">
+        <path d="M34.0 18.0 Q32.4 21.8 34.1 25.7 Q32.9 28.8 33.9 32.0 Q36.3 34.8 33.9 37.7 Q32.6 41.0 34.3 44.2 Q35.3 47.6 33.8 51.0 Q34.9 54.6 33.8 58.2 Q35.1 60.9 33.9 63.5 Q33.3 67.0 34.4 70.4 Q31.7 73.3 34.1 76.1 Q33.1 79.8 33.8 83.5 Q32.8 87.1 34.3 90.8 Q32.5 94.3 34.5 97.8 Q35.6 101.2 33.5 104.6 Q34.5 107.7 34.6 110.9 Q35.6 114.6 34.3 118.2 Q32.3 121.3 33.5 124.3 Q34.7 127.5 33.7 130.7 Q32.9 133.4 34.4 136.1 Q33.0 139.0 33.8 141.9 Q35.5 145.7 33.9 149.5 Q32.5 153.0 33.8 156.5 Q32.6 159.7 34.4 162.8 Q35.3 165.5 34.4 168.2 Q31.0 171.1 33.7 174.0 Q35.1 177.3 33.4 180.7 Q35.4 183.7 33.6 186.8 Q33.3 190.3 33.5 193.8 Q32.9 197.3 34.1 200.9 Q33.1 204.2 34.5 207.5 Q35.1 211.2 34.1 215.0 Q33.1 217.9 34.6 220.9 Q35.0 223.9 34.0 226.9 Q33.2 230.3 33.7 233.6 Q32.5 236.5 34.0 239.4 Q35.2 242.1 33.7 244.9 Q34.8 248.6 33.5 252.4 Q33.2 256.0 34.4 259.7 Q35.4 262.4 33.8 265.1 Q32.4 267.7 34.6 270.4 Q30.9 274.2 34.3 278.0 Q35.4 281.2 34.4 284.4 Q32.8 287.8 33.5 291.2 Q33.3 295.0 34.1 298.7 Q32.5 302.0 34.2 305.3 Q35.6 308.9 34.6 312.5 Q34.7 316.4 34.4 320.4 Q35.0 323.0 34.0 325.6 Q31.4 328.4 34.4 331.3 Q33.0 334.6 34.2 338.0 Q34.7 341.2 34.6 344.4 Q35.2 347.7 34.5 351.0 Q32.7 354.9 34.4 358.8 Q31.8 361.9 34.6 365.0 Q32.6 368.6 33.6 372.2 Q33.4 375.6 34.1 379.0 Q33.4 381.7 34.2 384.4 Q35.2 387.4 34.0 390.4 Q33.1 393.2 33.7 396.0 Q32.8 399.3 34.6 402.5 Q35.4 405.1 33.6 407.7 Q32.4 411.2 34.5 414.7 Q33.4 418.6 33.5 422.5 Q35.4 426.2 34.0 429.8 Q35.2 432.8 34.5 435.7 Q32.6 438.5 34.4 441.4 Q30.9 444.2 34.6 447.0 Q35.5 449.5 34.1 452.1 Q35.3 455.7 33.8 459.4 Q32.9 462.8 34.4 466.1 Q34.9 468.8 34.4 471.4 Q32.5 474.3 33.6 477.1 Q32.3 480.5 34.0 483.9 Q35.1 483.9 34.5 484.0 L846 484 C848 320 844 160 846 18 Z" fill="#EDE3B8"/>
+      </g>
+      <path d="M34.0 18.0 Q32.4 21.8 34.1 25.7 Q32.9 28.8 33.9 32.0 Q36.3 34.8 33.9 37.7 Q32.6 41.0 34.3 44.2 Q35.3 47.6 33.8 51.0 Q34.9 54.6 33.8 58.2 Q35.1 60.9 33.9 63.5 Q33.3 67.0 34.4 70.4 Q31.7 73.3 34.1 76.1 Q33.1 79.8 33.8 83.5 Q32.8 87.1 34.3 90.8 Q32.5 94.3 34.5 97.8 Q35.6 101.2 33.5 104.6 Q34.5 107.7 34.6 110.9 Q35.6 114.6 34.3 118.2 Q32.3 121.3 33.5 124.3 Q34.7 127.5 33.7 130.7 Q32.9 133.4 34.4 136.1 Q33.0 139.0 33.8 141.9 Q35.5 145.7 33.9 149.5 Q32.5 153.0 33.8 156.5 Q32.6 159.7 34.4 162.8 Q35.3 165.5 34.4 168.2 Q31.0 171.1 33.7 174.0 Q35.1 177.3 33.4 180.7 Q35.4 183.7 33.6 186.8 Q33.3 190.3 33.5 193.8 Q32.9 197.3 34.1 200.9 Q33.1 204.2 34.5 207.5 Q35.1 211.2 34.1 215.0 Q33.1 217.9 34.6 220.9 Q35.0 223.9 34.0 226.9 Q33.2 230.3 33.7 233.6 Q32.5 236.5 34.0 239.4 Q35.2 242.1 33.7 244.9 Q34.8 248.6 33.5 252.4 Q33.2 256.0 34.4 259.7 Q35.4 262.4 33.8 265.1 Q32.4 267.7 34.6 270.4 Q30.9 274.2 34.3 278.0 Q35.4 281.2 34.4 284.4 Q32.8 287.8 33.5 291.2 Q33.3 295.0 34.1 298.7 Q32.5 302.0 34.2 305.3 Q35.6 308.9 34.6 312.5 Q34.7 316.4 34.4 320.4 Q35.0 323.0 34.0 325.6 Q31.4 328.4 34.4 331.3 Q33.0 334.6 34.2 338.0 Q34.7 341.2 34.6 344.4 Q35.2 347.7 34.5 351.0 Q32.7 354.9 34.4 358.8 Q31.8 361.9 34.6 365.0 Q32.6 368.6 33.6 372.2 Q33.4 375.6 34.1 379.0 Q33.4 381.7 34.2 384.4 Q35.2 387.4 34.0 390.4 Q33.1 393.2 33.7 396.0 Q32.8 399.3 34.6 402.5 Q35.4 405.1 33.6 407.7 Q32.4 411.2 34.5 414.7 Q33.4 418.6 33.5 422.5 Q35.4 426.2 34.0 429.8 Q35.2 432.8 34.5 435.7 Q32.6 438.5 34.4 441.4 Q30.9 444.2 34.6 447.0 Q35.5 449.5 34.1 452.1 Q35.3 455.7 33.8 459.4 Q32.9 462.8 34.4 466.1 Q34.9 468.8 34.4 471.4 Q32.5 474.3 33.6 477.1 Q32.3 480.5 34.0 483.9 Q35.1 483.9 34.5 484.0" fill="none" stroke="#C4B692" stroke-width="0.9" stroke-linejoin="round"/>
+      <path d="M34.0 18.0 Q32.4 21.8 34.1 25.7 Q32.9 28.8 33.9 32.0 Q36.3 34.8 33.9 37.7 Q32.6 41.0 34.3 44.2 Q35.3 47.6 33.8 51.0 Q34.9 54.6 33.8 58.2 Q35.1 60.9 33.9 63.5 Q33.3 67.0 34.4 70.4 Q31.7 73.3 34.1 76.1 Q33.1 79.8 33.8 83.5 Q32.8 87.1 34.3 90.8 Q32.5 94.3 34.5 97.8 Q35.6 101.2 33.5 104.6 Q34.5 107.7 34.6 110.9 Q35.6 114.6 34.3 118.2 Q32.3 121.3 33.5 124.3 Q34.7 127.5 33.7 130.7 Q32.9 133.4 34.4 136.1 Q33.0 139.0 33.8 141.9 Q35.5 145.7 33.9 149.5 Q32.5 153.0 33.8 156.5 Q32.6 159.7 34.4 162.8 Q35.3 165.5 34.4 168.2 Q31.0 171.1 33.7 174.0 Q35.1 177.3 33.4 180.7 Q35.4 183.7 33.6 186.8 Q33.3 190.3 33.5 193.8 Q32.9 197.3 34.1 200.9 Q33.1 204.2 34.5 207.5 Q35.1 211.2 34.1 215.0 Q33.1 217.9 34.6 220.9 Q35.0 223.9 34.0 226.9 Q33.2 230.3 33.7 233.6 Q32.5 236.5 34.0 239.4 Q35.2 242.1 33.7 244.9 Q34.8 248.6 33.5 252.4 Q33.2 256.0 34.4 259.7 Q35.4 262.4 33.8 265.1 Q32.4 267.7 34.6 270.4 Q30.9 274.2 34.3 278.0 Q35.4 281.2 34.4 284.4 Q32.8 287.8 33.5 291.2 Q33.3 295.0 34.1 298.7 Q32.5 302.0 34.2 305.3 Q35.6 308.9 34.6 312.5 Q34.7 316.4 34.4 320.4 Q35.0 323.0 34.0 325.6 Q31.4 328.4 34.4 331.3 Q33.0 334.6 34.2 338.0 Q34.7 341.2 34.6 344.4 Q35.2 347.7 34.5 351.0 Q32.7 354.9 34.4 358.8 Q31.8 361.9 34.6 365.0 Q32.6 368.6 33.6 372.2 Q33.4 375.6 34.1 379.0 Q33.4 381.7 34.2 384.4 Q35.2 387.4 34.0 390.4 Q33.1 393.2 33.7 396.0 Q32.8 399.3 34.6 402.5 Q35.4 405.1 33.6 407.7 Q32.4 411.2 34.5 414.7 Q33.4 418.6 33.5 422.5 Q35.4 426.2 34.0 429.8 Q35.2 432.8 34.5 435.7 Q32.6 438.5 34.4 441.4 Q30.9 444.2 34.6 447.0 Q35.5 449.5 34.1 452.1 Q35.3 455.7 33.8 459.4 Q32.9 462.8 34.4 466.1 Q34.9 468.8 34.4 471.4 Q32.5 474.3 33.6 477.1 Q32.3 480.5 34.0 483.9 Q35.1 483.9 34.5 484.0" fill="none" stroke="#FFFCF0" stroke-width="0.5" transform="translate(1.1 0)"/>
+      <rect x="34" y="254" width="812" height="10" fill="url(#doblez-h)"/>
+      <path d="M34 259 C280 257.8 560 261.2 846 258.8" fill="none" stroke="#9B8C6D" stroke-width="0.5" opacity="0.45"/>
+      <path d="M36 94 L407 154" stroke="url(#doblez-d)" stroke-width="9" fill="none" opacity="0.9"/>
+
+      <!-- Esta hoja llega ya impresa: es la siguiente del mismo talonario. -->
+      <path class="ya-impreso" style="stroke-width:2" fill="none"
+            d="M60 46 C280 42 560 48 820 44 C824 160 818 320 821 456 C560 460 300 454 62 458 C58 320 64 160 60 46Z"/>
+      <path class="ya-impreso" style="stroke-width:1.5" fill="none" d="M60 108 C300 105 560 111 820 107"/>
+      <path class="ya-impreso" style="stroke-width:1.5" fill="none" d="M60 244 C300 241 560 247 820 243"/>
+      <g class="ya-impreso-g">
+        <rect x="596" y="56" width="228" height="38" fill="none" stroke="#4A4436" stroke-width="1.4"/>
+        <text x="608" y="81" font-size="15" fill="#4A4436">ALBARÁN N.º</text>
+        <path class="puntos" d="M716 84 H816"/>
+        <path class="puntos" d="M150 186 H540"/>
+        <path class="puntos" d="M86 216 H540"/>
+        <path class="puntos" d="M86 308 H640"/>
+        <path class="puntos" d="M86 344 H640"/>
+        <text class="rotulo" x="86" y="88" font-size="30">ALBARÁN</text>
+        <text class="tenue" x="86" y="150" font-size="12" letter-spacing="2">EMISOR</text>
+        <text class="tenue" x="86" y="268" font-size="12" letter-spacing="2">MERCANCÍA</text>
+        <text class="tenue c-der" x="820" y="268" font-size="12" letter-spacing="2">CANTIDAD</text>
+        <text class="impreso-fijo" x="560" y="380" font-size="12" fill="#4A4436">El emisor,</text>
+      </g>
+
+      <text class="escrito mano" style="--dur:0.8s;--esp:1.1s" x="722" y="86" font-size="24">4419</text>
+      <text class="escrito mano" style="--dur:1.2s;--esp:1.6s" x="600" y="132" font-size="26">15 de junio</text>
+      <text class="escrito mano" style="--dur:1.5s;--esp:2.2s" x="86" y="182" font-size="26">Suministros Express</text>
+      <text class="escrito mano" style="--dur:1.5s;--esp:3.1s" x="86" y="304" font-size="25">Monitor ultrawide 34"</text>
+      <text class="escrito mano c-der" style="--dur:0.7s;--esp:3.9s" x="760" y="304" font-size="25">3</text>
+      <text class="escrito mano" style="--dur:1.3s;--esp:4.4s" x="86" y="340" font-size="25">Cable HDMI 2.1</text>
+      <text class="escrito mano c-der" style="--dur:0.7s;--esp:5.1s" x="760" y="340" font-size="25">12</text>
+
+      <g transform="translate(560 412) scale(0.72)">
+        <path id="p2-firma" class="traza" style="--dur:1.5s;--esp:5.6s;stroke-width:2.5"
+              d="M0 10 C7 -16 21 -30 30 -21 C39 -12 27 12 18 7 C7 1 16 -23 39 -32 C60 -40 74 -21 65 -2 C58 12 46 9 51 -7 C58 -28 81 -37 97 -25 C111 -15 101 7 92 2 C81 -4 92 -25 115 -32 C136 -38 150 -23 145 -7 C141 6 131 9 134 -3 C138 -19 155 -28 174 -21 C188 -15 195 -2 192 8"/>
+        <path class="traza" style="--dur:1s;--esp:7.1s;stroke-width:2.08" d="M-18 18 C26 32 110 29 160 10 C192 -2 183 -23 157 -16 C129 -9 113 19 148 26 C181 32 204 12 209 -8"/>
+      </g>
+
+      <!-- El boli vuelve arriba: el documento no es lo que dice ser. -->
+      <path id="p2-cerco" class="traza traza-roja" style="--dur:1.2s;--esp:8.4s;stroke-width:2.6"
+            d="M238 64 C196 54 122 54 92 64 C68 72 68 90 92 97 C124 106 202 106 236 96 C256 90 254 70 228 63 C204 57 152 57 122 63"/>
+      <g class="punta">
+        <circle r="4" fill="#C0271C"/>
+        <animateMotion begin="8.4s" dur="1.2s" fill="remove" calcMode="linear">
+          <mpath href="#p2-cerco"/></animateMotion>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.04;0.96;1"
+                 begin="8.4s" dur="1.2s" fill="remove"/>
+      </g>
+
+      <path class="traza traza-roja" style="--dur:0.7s;--esp:9.7s;stroke-width:2"
+            d="M300 404 C250 350 200 220 174 118"/>
+      <path class="traza traza-roja" style="--dur:0.25s;--esp:10.3s;stroke-width:2"
+            d="M174 118 L166 140 M174 118 L188 136"/>
+      <text class="escrito mano roja" style="--dur:1.6s;--esp:10.6s" x="308" y="416" font-size="27">esto no es una factura</text>
+
+      <g class="sello sello-mal" style="--esp:12.4s">
+        <rect x="452" y="150" width="330" height="88" rx="4" stroke-width="4" opacity="0.9"/>
+        <rect x="460" y="158" width="314" height="72" rx="2" stroke-width="1.2" opacity="0.9"/>
+        <text x="617" y="208" font-size="38" text-anchor="middle" letter-spacing="2" font-weight="700">NO CONFORME</text>
+      </g>
+    </svg>
+  </section>
+
+  <!-- ================================================================ -->
+  <!-- LA PUERTA                                                        -->
+  <!-- ================================================================ -->
+  <section class="acto acto-final" id="acto-final" aria-hidden="true">
+    <div class="membrete">
+      <svg class="anagrama" viewBox="0 0 32 32" aria-hidden="true">
+        <g fill="currentColor">
+          <path d="M8.1 5.2h2.5v16.2H8.1z"/>
+          <path d="M13.6 8.1h12.6v1.1H13.6zM13.6 12.7h10.4v1.1H13.6zM13.6 17.3h7.6v1.1h-7.6z"/>
+          <path d="M5 23.2h22v1.9H5zM5 26.8h22v0.9H5z"/>
+        </g>
+      </svg>
+      <h1 class="marca">Cazafacturas</h1>
+      <p class="lema">
+        Extrae los datos de una factura y comprueba que es correcta.<br>
+        En tu máquina. <b>Sin IA, sin red y sin claves.</b>
+      </p>
+
+      <div class="puerta">
+        <a class="boton boton-entrar" id="entrar" href="/app">Entrar</a>
+        <button class="boton boton-tenue" type="button" id="repetir">Volver a ver</button>
+      </div>
+
+      <p class="cifras">
+        24 de 24 facturas extraídas &nbsp;·&nbsp; 100 % de precisión campo a campo
+        &nbsp;·&nbsp; 50 de 50 trampas cazadas
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<button class="saltar" type="button" id="saltar">
+  Saltar <span aria-hidden="true">→</span>
+</button>
+
+<footer class="firma-portada">
+  Hecho por <a href="https://latidosia.com" target="_blank" rel="noreferrer noopener">LatidosIA.com</a>
+</footer>
+
+<script type="module" src="/static/portada.js"></script>
+</body>
+</html>

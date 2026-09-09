@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Cazafacturas">
+  <g fill="currentColor">
+    <!-- Carril de folio: el trazo grueso, como el asta de una romana. -->
+    <path d="M8.1 5.2h2.5v16.2H8.1z"/>
+    <!-- Tres renglones escritos, en fino. -->
+    <path d="M13.6 8.1h12.6v1.1H13.6zM13.6 12.7h10.4v1.1H13.6zM13.6 17.3h7.6v1.1h-7.6z"/>
+    <!-- Doble raya de cierre: gruesa y fina, como una raya grabada. -->
+    <path d="M5 23.2h22v1.9H5zM5 26.8h22v0.9H5z"/>
+  </g>
+</svg>

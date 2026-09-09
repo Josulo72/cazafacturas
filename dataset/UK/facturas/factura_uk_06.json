@@ -1,49 +1,61 @@
 {
   "tipo": "completa",
   "pais": "UK",
-  "numero": "UK/2026/5821",
-  "fecha_emision": "2025-05-29",
-  "fecha_vencimiento": "2025-06-28",
+  "numero": "UK/2026/5314",
+  "fecha_emision": "2025-04-18",
+  "fecha_vencimiento": "2025-05-18",
   "emisor": {
-    "nombre": "Consultoría Integrada S.L.",
-    "nif": "GB586845604",
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "GB636620541",
     "direccion": {
-      "calle": "Paseo de Recoletos 8, Madrid",
-      "ciudad": "Sevilla",
-      "provincia": "Sevilla",
-      "codigo_postal": "41001",
+      "calle": "Avda. de la Industria 15, Bilbao",
+      "ciudad": "Murcia",
+      "provincia": "Murcia",
+      "codigo_postal": "30001",
       "pais": "UK"
     }
   },
   "receptor": {
     "nombre": "Suministros Express",
-    "nif": "GB497478786",
+    "nif": "GB368453129",
     "direccion": {
       "calle": "Polígono Las Merindades, Valladolid",
-      "ciudad": "Valencia",
-      "provincia": "Valencia",
-      "codigo_postal": "46001",
+      "ciudad": "Las Palmas",
+      "provincia": "Las Palmas",
+      "codigo_postal": "35001",
       "pais": "UK"
     }
   },
   "lineas": [
     {
+      "descripcion": "Portátil ThinkPad X1 Carbon",
+      "cantidad": 2.0,
+      "precio_unitario": 1899.0,
+      "importe": 3798.0
+    },
+    {
+      "descripcion": "Silla ergonómica de oficina",
+      "cantidad": 10.0,
+      "precio_unitario": 349.0,
+      "importe": 3490.0
+    },
+    {
       "descripcion": "NAS con 4 bahías",
-      "cantidad": 4.0,
+      "cantidad": 3.0,
       "precio_unitario": 499.0,
-      "importe": 1996.0
+      "importe": 1497.0
     }
   ],
-  "base_imponible": 1996.0,
+  "base_imponible": 8785.0,
   "iva": [
     {
       "porcentaje": 5.0,
-      "base_imponible": 1996.0,
-      "cuota": 99.8
+      "base_imponible": 8785.0,
+      "cuota": 439.25
     }
   ],
   "retencion": null,
-  "total": 2095.8,
+  "total": 9224.25,
   "observaciones": null,
   "clave_operacion": null
 }

@@ -3,7 +3,7 @@
   "fecha": "15/06/2025",
   "emisor": {
     "nombre": "Suministros Express",
-    "nif": "DE162275869",
+    "nif": "DE077844839",
     "direccion": {
       "calle": "Polígono Las Merindades, Valladolid",
       "ciudad": "Palma",
@@ -14,7 +14,7 @@
   },
   "receptor": {
     "nombre": "Materiales de Construcción Hermanos",
-    "nif": "DE140260662",
+    "nif": "DE050325826",
     "direccion": {
       "calle": "Ctra. de Barcelona km 12, Valencia",
       "ciudad": "Bilbao",

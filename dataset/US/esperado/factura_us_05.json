@@ -1,22 +1,11 @@
 {
   "pais": "US",
-  "numero": "US/2026/0917",
-  "fecha_emision": "2025-07-09",
-  "fecha_vencimiento": "2025-08-08",
+  "numero": "US/2026/5314",
+  "fecha_emision": "2025-07-01",
+  "fecha_vencimiento": "2025-07-31",
   "emisor": {
-    "nombre": "Alimentos del Norte S.A.",
-    "nif": "58-5528972",
-    "direccion": {
-      "calle": "Avda. de la Industria 15, Bilbao",
-      "ciudad": "Murcia",
-      "provincia": "Murcia",
-      "codigo_postal": "30001",
-      "pais": "US"
-    }
-  },
-  "receptor": {
     "nombre": "Materiales de Construcción Hermanos",
-    "nif": "97-6440561",
+    "nif": "35-8755439",
     "direccion": {
       "calle": "Ctra. de Barcelona km 12, Valencia",
       "ciudad": "Bilbao",
@@ -25,36 +14,41 @@
       "pais": "US"
     }
   },
+  "receptor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "92-4684531",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
+      "pais": "US"
+    }
+  },
   "lineas": [
     {
-      "descripcion": "Monitor ultrawide 34 pulgadas",
-      "cantidad": 2.0,
-      "precio_unitario": 599.0,
-      "importe": 1198.0
-    },
-    {
       "descripcion": "Silla ergonómica de oficina",
-      "cantidad": 10.0,
+      "cantidad": 2.0,
       "precio_unitario": 349.0,
-      "importe": 3490.0
+      "importe": 698.0
     },
     {
       "descripcion": "Teclado mecánico inalámbrico",
-      "cantidad": 3.0,
+      "cantidad": 10.0,
       "precio_unitario": 129.99,
-      "importe": 389.97
+      "importe": 1299.9
     }
   ],
-  "base_imponible": 5077.97,
+  "base_imponible": 1997.9,
   "iva": [
     {
       "porcentaje": 7.0,
-      "base_imponible": 5077.97,
-      "cuota": 355.46
+      "base_imponible": 1997.9,
+      "cuota": 139.85
     }
   ],
   "retencion": null,
-  "total": 5433.43,
+  "total": 2137.75,
   "observaciones": null,
   "clave_operacion": null,
   "tipo_documento": "factura",

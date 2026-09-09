@@ -1,194 +1,247 @@
+"""Cazafacturas por línea de comandos.
+
+    python cli.py factura.pdf otra.pdf     analiza ficheros
+    python cli.py --banco                  pasa el banco de pruebas
+    python cli.py --json factura.pdf       vuelca el resultado en JSON
+    python cli.py --csv salida.csv *.pdf   exporta a CSV
+
+Mismo motor que la webapp: sin red, sin claves, sin modelos.
+"""
+
 from __future__ import annotations
 
 import argparse
+import glob
 import json
-import time
+import sys
 from pathlib import Path
 
-from backend.api.ejecutar import ejecutar_dataset
-from backend.api.motores import CatalogoMotores, crear_catalogo
-from backend.nucleo.cache import CacheResultados
-from backend.nucleo.dataset import Caso, cargar_dataset
-from backend.nucleo.evaluador import ResultadoEvaluacion, evaluar_respuesta_json
-from backend.nucleo.motores.base import EstadoMotor
+from backend.nucleo import historial as hist
+from backend.nucleo.analizador import (
+    Resultado,
+    analizar_fichero,
+    analizar_json,
+    capacidades,
+    resumir,
+)
+from backend.nucleo.lectura import EXTENSIONES_SOPORTADAS
+from backend.nucleo.paises import PAISES
 
-I18N = {
-    "es": {
-        "cabecera_motores": "=== Motor o no con qué trabajar ===",
-        "evaluando": "Evaluando {n} casos con motor '{motor}'...",
-        "estado": "(estado: {estado})",
-        "no_disponible": "\nMotor '{motor}' no disponible. Ejecuta '--listar' para ver estados.",
-        "distribucion": "=== Distribución por estado ===",
-        "aciertos": "  Aciertos:",
-        "fallos": "  Fallos:",
-        "invenciones": "  Invenciones:",
-        "precision": "Precisión:",
-        "tasa": "Tasa de invención:",
-        "inven_por_campo": "=== Invenciones por campo ===",
-        "tiempo_motor": "\nTiempo de motor: {s:.2f} s  (cacheados: {n})",
-        "tiempo_total": "\nTiempo total: {s:.2f} s",
-        "mensaje_error": "  ERROR: {msg}",
-    },
-    "en": {
-        "cabecera_motores": "=== Motor availiability ===",
-        "evaluando": "Evaluating {n} cases with motor '{motor}'...",
-        "estado": "(state: {estado})",
-        "no_disponible": "\nMotor '{motor}' not available. Run '--listar' to see states.",
-        "distribucion": "=== Breakdown by state ===",
-        "aciertos": "  Correct:",
-        "fallos": "  Wrong:",
-        "invenciones": "  Invented:",
-        "precision": "Precision:",
-        "tasa": "Invention rate:",
-        "inven_por_campo": "=== Inventions by field ===",
-        "tiempo_motor": "\nMotor time: {s:.2f} s  (cached: {n})",
-        "tiempo_total": "\nTotal time: {s:.2f} s",
-        "mensaje_error": "  ERROR: {msg}",
-    },
-}
+RAIZ = Path(__file__).resolve().parent
+DATASET = RAIZ / "dataset"
+MUESTRAS = DATASET / "pdf"
+
+# La consola de Windows arranca en cp1252 y no admite ✓ ni ─. Se intenta
+# subir a UTF-8; si no se puede, se cae a símbolos ASCII.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except (AttributeError, OSError):  # pragma: no cover
+    pass
 
 
-def _motor_oraculo(caso: Caso, *_) -> str:
-    return json.dumps(caso.esperado, ensure_ascii=False)
+def _admite_unicode() -> bool:
+    try:
+        "✓─·".encode(sys.stdout.encoding or "ascii")
+        return True
+    except (UnicodeEncodeError, LookupError):
+        return False
 
 
-def _resumen(resultados: list[ResultadoEvaluacion], t) -> None:
-    total_aciertos = sum(len(r.aciertos) for r in resultados)
-    total_fallos = sum(len(r.fallos) for r in resultados)
-    total_invenciones = sum(len(r.invenciones) for r in resultados)
-    relevantes = total_aciertos + total_fallos
-    precision = round(total_aciertos / relevantes, 4) if relevantes else 0.0
-    tasa_invencion = (
-        round(total_invenciones / (relevantes + total_invenciones), 4)
-        if (relevantes + total_invenciones)
-        else 0.0
-    )
+_UNICODE = _admite_unicode()
+BIEN = "✓" if _UNICODE else "OK"
+MAL = "✗" if _UNICODE else "X"
+OJO = "!"
+PUNTO = "·" if _UNICODE else "-"
+RAYA = "─" if _UNICODE else "-"
 
-    print()
-    print(t["distribucion"])
-    print(f"{t['aciertos']}    {total_aciertos}")
-    print(f"{t['fallos']}      {total_fallos}")
-    print(f"{t['invenciones']} {total_invenciones}")
-    print()
-    print(f"{t['precision']}        {precision:.2%}")
-    print(f"{t['tasa']} {tasa_invencion:.2%}")
-
-    inven_por_campo: dict[str, int] = {}
-    for r in resultados:
-        for c in r.invenciones:
-            inven_por_campo[c.campo] = inven_por_campo.get(c.campo, 0) + 1
-    if inven_por_campo:
-        print()
-        print(t["inven_por_campo"])
-        for campo, n in sorted(inven_por_campo.items(), key=lambda x: -x[1]):
-            print(f"  {campo}: {n}")
+# Colores ANSI. Se apagan solos si la salida no es un terminal.
+_TTY = sys.stdout.isatty()
+ROJO = "\033[31m" if _TTY else ""
+AMBAR = "\033[33m" if _TTY else ""
+VERDE = "\033[32m" if _TTY else ""
+GRIS = "\033[90m" if _TTY else ""
+FUERTE = "\033[1m" if _TTY else ""
+FIN = "\033[0m" if _TTY else ""
 
 
-def _listar_motores(catalogo: CatalogoMotores, t) -> None:
-    print(t["cabecera_motores"])
-    for id_motor, info in catalogo.todos_dispuestos():
-        marca = {"disponible": "[X]", "no_instalado": "[ ]", "sin_configurar": "[ ]"}
-        detalle = f" — {info.detalle}" if info.detalle else ""
-        print(f"  {marca[info.estado.value]:10s} {id_motor:14s} {info.estado.value:<15s}{detalle}")
+def _cabecera(texto: str) -> None:
+    print(f"\n{FUERTE}{texto}{FIN}")
+    print(GRIS + RAYA * min(len(texto), 72) + FIN)
 
 
-def main() -> None:
+def _imprimir_resultado(r: Resultado, detallado: bool) -> None:
+    if not r.ok:
+        print(f"{ROJO}{MAL}{FIN} {r.nombre}: {r.error}")
+        return
+
+    informe = r.informe or {}
+    factura = r.factura or {}
+    errores = informe.get("n_errores", 0)
+    avisos = informe.get("n_avisos", 0)
+
+    if errores:
+        marca, color = MAL, ROJO
+    elif avisos:
+        marca, color = OJO, AMBAR
+    else:
+        marca, color = BIEN, VERDE
+
+    resumen_estado = "válida" if not errores else f"{errores} error(es)"
+    if avisos:
+        resumen_estado += f", {avisos} aviso(s)"
+
+    print(f"{color}{marca}{FIN} {FUERTE}{r.nombre}{FIN}  {GRIS}{resumen_estado}{FIN}")
+
+    numero = factura.get("numero") or "—"
+    total = factura.get("total")
+    moneda = PAISES[informe.get("pais", "ES")].moneda if informe.get("pais") in PAISES else ""
+    linea = f"   {numero}   {factura.get('fecha_emision') or '—'}"
+    if total is not None:
+        linea += f"   {total:,.2f} {moneda}".replace(",", " ")
+    emisor = (factura.get("emisor") or {}).get("nombre")
+    if emisor:
+        linea += f"   {emisor}"
+    print(GRIS + linea + FIN)
+
+    for h in informe.get("hallazgos", []):
+        if h["gravedad"] == "error":
+            c = ROJO
+        elif h["gravedad"] == "aviso":
+            c = AMBAR
+        else:
+            c = GRIS
+        print(f"   {c}{PUNTO} {h['mensaje']}{FIN}")
+        if detallado and h.get("esperado") is not None:
+            print(f"     {GRIS}esperado {h['esperado']} · encontrado {h['encontrado']}{FIN}")
+
+    if r.puntuacion:
+        p = r.puntuacion
+        print(f"   {GRIS}extracción: {p['aciertos']}/{p['evaluados']} campos "
+              f"({p['precision'] * 100:.1f} %){FIN}")
+        if detallado:
+            for d in p["detalle"]:
+                if not d["acierto"]:
+                    print(f"     {AMBAR}{d['campo']}: esperaba {d['esperado']!r}, "
+                          f"obtuvo {d['obtenido']!r}{FIN}")
+
+
+def _casos_del_banco(pais: str | None, trampas: bool) -> list[tuple]:
+    casos: list[tuple] = []
+    for codigo in ([pais] if pais else list(PAISES)):
+        carpeta = DATASET / codigo / "esperado"
+        if not carpeta.is_dir():
+            continue
+        for fichero in sorted(carpeta.glob("*.json")):
+            esperado = json.loads(fichero.read_text(encoding="utf-8"))
+            pdf = MUESTRAS / codigo / f"{fichero.stem}.pdf"
+            casos.append((pdf if pdf.is_file() else esperado,
+                          pdf.name if pdf.is_file() else fichero.name,
+                          esperado, codigo))
+    if trampas:
+        for fichero in sorted((DATASET / "trampas").glob("*_documento.json")):
+            documento = json.loads(fichero.read_text(encoding="utf-8"))
+            codigo = str(documento.get("pais") or "ES").upper()
+            if pais and codigo != pais:
+                continue
+            pdf = MUESTRAS / "trampas" / f"{fichero.stem}.pdf"
+            casos.append((pdf if pdf.is_file() else documento,
+                          pdf.name if pdf.is_file() else fichero.name,
+                          None, codigo))
+    return casos
+
+
+def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Cazafacturas — banco de evaluación de facturas (consola)"
+        prog="cazafacturas-cli",
+        description="Extrae y valida facturas en local. Sin IA, sin red, sin claves.",
     )
-    parser.add_argument(
-        "--motor",
-        default="oraculo",
-        help="Motor a usar: oraculo, cli, ollama, api:anthropic, api:openai, api:google. "
-        "Por defecto 'oraculo' (validación del pipeline).",
-    )
-    parser.add_argument("--listar", action="store_true", help="Mostrar motores disponibles")
-    parser.add_argument("--trampas", action="store_true", help="Incluir casos trampa")
-    parser.add_argument("--no-cache", action="store_true", help="Ignorar la caché")
-    parser.add_argument(
-        "--idioma",
-        default="es",
-        choices=("es", "en"),
-        help="Idioma del prompt y de los mensajes. Por defecto 'es'",
-    )
-    parser.add_argument(
-        "--prompt-extra",
-        default="",
-        help="Notas adicionales que se añaden al prompt del motor",
-    )
-    parser.add_argument(
-        "--modelo",
-        default=None,
-        help="Modelo para el motor CLI (ej: sonnet, opus). Requiere --motor cli",
-    )
+    parser.add_argument("ficheros", nargs="*",
+                        help=f"PDF o imágenes ({', '.join(sorted(EXTENSIONES_SOPORTADAS))})")
+    parser.add_argument("--banco", action="store_true",
+                        help="Pasar el banco de pruebas del proyecto")
+    parser.add_argument("--sin-trampas", action="store_true",
+                        help="En el banco, omitir los casos trampa")
+    parser.add_argument("--pais", choices=sorted(PAISES),
+                        help="Forzar país en vez de detectarlo")
+    parser.add_argument("--json", action="store_true", help="Volcar JSON en bruto")
+    parser.add_argument("--csv", metavar="FICHERO", help="Exportar el lote a CSV")
+    parser.add_argument("-v", "--detallado", action="store_true",
+                        help="Mostrar esperado/encontrado de cada hallazgo")
+    parser.add_argument("--capacidades", action="store_true",
+                        help="Qué sabe hacer esta instalación")
     args = parser.parse_args()
 
-    t = I18N.get(args.idioma, I18N["es"])
-    catalogo = crear_catalogo(modelo_cli=args.modelo)
-    if args.listar:
-        _listar_motores(catalogo, t)
-        return
+    if args.capacidades:
+        caps = capacidades()
+        print(f"PDF con capa de texto : {'sí' if caps['pdf_texto'] else 'no'}")
+        print(f"Escaneados e imágenes : {'sí' if caps['escaneados'] else 'no (falta OCR)'}")
+        print(f"Formatos              : {', '.join(caps['formatos'])}")
+        return 0
 
-    dataset = cargar_dataset()
-    casos = dataset.todos() if args.trampas else dataset.casos_normales()
+    if not args.banco and not args.ficheros:
+        parser.print_help()
+        return 2
 
-    if args.motor == "oraculo":
-        print(t["evaluando"].format(n=len(casos), motor="oraculo"))
-        resultados: list[ResultadoEvaluacion] = []
-        inicio = time.perf_counter()
-        for caso in casos:
-            respuesta = _motor_oraculo(caso)
-            etiqueta = f"[trampa] {caso.id}" if caso.es_trampa else caso.id
-            resultado = evaluar_respuesta_json(respuesta, caso.esperado, etiqueta)
-            resultados.append(resultado)
-            print(
-                f"  {etiqueta:30s} precisión {resultado.precision:.2%}  "
-                f"invención {resultado.tasa_invencion:.2%}"
-            )
-        segundos = time.perf_counter() - inicio
-        _resumen(resultados, t)
-        print(t["tiempo_total"].format(s=segundos))
-        return
+    resultados: list[Resultado] = []
 
-    info_cli = catalogo.cli.detectar()
-    print(
-        t["evaluando"].format(n=len(casos), motor=args.motor)
-        + " "
-        + t["estado"].format(estado=info_cli.estado.value)
-    )
+    if args.banco:
+        casos = _casos_del_banco(args.pais, not args.sin_trampas)
+        if not casos:
+            print(f"{ROJO}No se ha encontrado el dataset.{FIN}", file=sys.stderr)
+            return 1
+        _cabecera(f"Banco de pruebas {PUNTO} {len(casos)} casos")
+        for entrada, nombre, esperado, codigo in casos:
+            if isinstance(entrada, Path):
+                resultados.append(analizar_fichero(entrada, codigo, esperado))
+            else:
+                resultados.append(analizar_json(entrada, nombre, esperado))
+    else:
+        rutas: list[Path] = []
+        for patron in args.ficheros:
+            encontrados = [Path(p) for p in glob.glob(patron)] or [Path(patron)]
+            rutas.extend(encontrados)
+        faltan = [r for r in rutas if not r.is_file()]
+        if faltan:
+            for r in faltan:
+                print(f"{ROJO}No existe: {r}{FIN}", file=sys.stderr)
+            return 1
+        _cabecera(f"Análisis {PUNTO} {len(rutas)} documento(s)")
+        for ruta in rutas:
+            resultados.append(analizar_fichero(ruta, args.pais))
 
-    if args.motor not in catalogo.disponible():
-        print(t["no_disponible"].format(motor=args.motor))
-        return
+    resumen = resumir(resultados)
 
-    cache = CacheResultados(Path(__file__).resolve().parent / "resultados" / "cache")
-    resultados = ejecutar_dataset(
-        casos,
-        args.motor,
-        catalogo,
-        cache,
-        progress=None,
-        prompt_extra=args.prompt_extra,
-        idioma=args.idioma,
-        usar_cache=not args.no_cache,
-    )
+    if args.json:
+        print(json.dumps(resumen.a_dict(), ensure_ascii=False, indent=2))
+        return 0 if resumen.fallidas == 0 else 1
 
-    cacheados = sum(1 for r in resultados if r.metadatos and r.metadatos.cacheado)
-    total_seg = sum((r.metadatos.segundos for r in resultados if r.metadatos), 0.0)
-    print()
-    for resultado in resultados:
-        extra = ""
-        if resultado.fallos_validacion:
-            extra = t["mensaje_error"].format(msg=resultado.fallos_validacion[0][:80])
-        print(
-            f"  {resultado.factura:30s} precisión {resultado.precision:.2%}  "
-            f"invención {resultado.tasa_invencion:.2%}  "
-            f"aciertos {len(resultado.aciertos)}  fallos {len(resultado.fallos)}  "
-            f"inventa {len(resultado.invenciones)}{extra}"
-        )
-    _resumen(resultados, t)
-    print(t["tiempo_motor"].format(s=total_seg, n=cacheados))
+    for r in resultados:
+        _imprimir_resultado(r, args.detallado)
+
+    _cabecera("Resumen")
+    print(f"  Documentos       {resumen.total}")
+    print(f"  {VERDE}Válidas{FIN}          {resumen.validas}")
+    print(f"  {ROJO}Con errores{FIN}      {resumen.con_errores}")
+    if resumen.fallidas:
+        print(f"  {ROJO}Ilegibles{FIN}        {resumen.fallidas}")
+    if resumen.precision_media is not None:
+        print(f"  Precisión        {resumen.precision_media * 100:.1f} %")
+    print(f"  Confianza        {resumen.confianza_media * 100:.1f} %")
+    print(f"  Tiempo           {resumen.segundos:.2f} s")
+
+    if resumen.hallazgos_frecuentes:
+        _cabecera("Hallazgos más repetidos")
+        for h in resumen.hallazgos_frecuentes:
+            color = ROJO if h["gravedad"] == "error" else AMBAR
+            print(f"  {color}{h['veces']:>3}×{FIN}  {h['mensaje']}")
+
+    if args.csv:
+        destino = Path(args.csv)
+        destino.write_text(hist.a_csv(resumen.a_dict()), encoding="utf-8")
+        print(f"\n{GRIS}CSV escrito en {destino}{FIN}")
+
+    return 0 if resumen.fallidas == 0 else 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

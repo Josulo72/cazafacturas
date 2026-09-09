@@ -1,12 +1,12 @@
 {
   "tipo": "completa",
   "pais": "US",
-  "numero": "US/2026/2665",
+  "numero": "US/2026/6066",
   "fecha_emision": "2025-02-10",
   "fecha_vencimiento": "2025-03-12",
   "emisor": {
     "nombre": "Tecnología del Sur S.L.",
-    "nif": "22-7377459",
+    "nif": "25-7377459",
     "direccion": {
       "calle": "Calle Gran Vía 42, Madrid",
       "ciudad": "Bilbao",
@@ -17,7 +17,7 @@
   },
   "receptor": {
     "nombre": "Suministros Express",
-    "nif": "91-7120868",
+    "nif": "62-3728882",
     "direccion": {
       "calle": "Polígono Las Merindades, Valladolid",
       "ciudad": "Murcia",

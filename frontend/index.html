@@ -1,223 +1,254 @@
-<!DOCTYPE html>
-<html lang="es" data-theme="light">
+<!doctype html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cazafacturas — Banco de evaluación</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/estilo.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cazafacturas</title>
+<meta name="description" content="Extrae y comprueba facturas en local. Sin IA, sin red y sin claves.">
+<link rel="stylesheet" href="/static/fuentes.css">
+<link rel="stylesheet" href="/static/estilo.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23EDE7D7'/><g stroke='%231B45C8' stroke-width='1.6' stroke-linecap='square' fill='none'><path d='M9 5.5V21'/><path d='M13 8.5h13M13 13h11M13 17.5h8'/><path d='M5 23.5h22M5 27h22'/></g></svg>">
 </head>
 <body>
 
-  <nav class="nav" id="nav">
-    <div class="nav-inner">
-      <div class="nav-brand">
-        <span class="nav-logo">cf</span>
-        <span class="nav-title">Cazafacturas</span>
-      </div>
-      <div class="nav-links">
-        <button class="nav-link activa" data-pantalla="panel" data-i18n="panel"></button>
-        <button class="nav-link" data-pantalla="ejecucion" data-i18n="ejecucion"></button>
-        <button class="nav-link" data-pantalla="dataset" data-i18n="dataset"></button>
-      </div>
-      <div class="nav-selectores">
-        <div class="selector-idioma">
-          <label for="select-idioma" data-i18n="idioma"></label>
-          <select id="select-idioma">
-            <option value="es">Español</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-        <div class="selector-pais">
-          <label for="select-pais" data-i18n="pais"></label>
-          <select id="select-pais"></select>
-        </div>
-      </div>
-      <button class="nav-tema" id="btn-tema" title="Cambiar tema">
-        <svg class="icono-tema" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="12" cy="12" r="5"/>
-          <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+<!-- Marcas de contable. Dibujadas, no glifos: mismo trazo en todas. -->
+<svg class="sprite" aria-hidden="true">
+  <!-- El filo del caucho nunca es limpio: el desplazamiento lo rompe. -->
+  <filter id="tinta-corrida" x="-8%" y="-15%" width="116%" height="130%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" seed="5" result="ruido"/>
+    <feDisplacementMap in="SourceGraphic" in2="ruido" scale="2.1"
+                       xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+
+  <!-- ============================================================== -->
+  <!-- La tinta del sello.                                            -->
+  <!-- Tres pasadas, en el mismo orden que ocurren en el papel:       -->
+  <!--   1. el filo del caucho, que nunca imprime recto;              -->
+  <!--   2. el reparto de la tinta, con zonas cargadas y zonas pobres;-->
+  <!--   3. las calvas, donde el caucho estaba seco y no dejó nada.   -->
+  <!-- Cada variante lleva otra semilla y otra carga: dos sellos       -->
+  <!-- seguidos no pueden salir iguales, y el segundo sale más pobre  -->
+  <!-- porque nadie ha vuelto al tampón.                              -->
+  <!-- ============================================================== -->
+  <filter id="sello-cargado" x="-14%" y="-22%" width="128%" height="144%"
+          color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" seed="5" result="filo"/>
+    <feDisplacementMap in="SourceGraphic" in2="filo" scale="2.2"
+                       xChannelSelector="R" yChannelSelector="G" result="marca"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.017" numOctaves="3" seed="21" result="reparto"/>
+    <feComponentTransfer in="reparto" result="reparto_a">
+      <feFuncA type="linear" slope="4.2" intercept="-0.18"/>
+    </feComponentTransfer>
+    <feComposite in="marca" in2="reparto_a" operator="in" result="paso1"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.11 0.26" numOctaves="2" seed="47" result="seco"/>
+    <feComponentTransfer in="seco" result="seco_a">
+      <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 0.2 1 1 1 0.65 1 1 1 1"/>
+    </feComponentTransfer>
+    <feComposite in="paso1" in2="seco_a" operator="in"/>
+  </filter>
+
+  <!-- Segunda pasada sin volver a entintar: menos carga, más calvas. -->
+  <filter id="sello-seco" x="-14%" y="-22%" width="128%" height="144%"
+          color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" seed="13" result="filo"/>
+    <feDisplacementMap in="SourceGraphic" in2="filo" scale="2.6"
+                       xChannelSelector="R" yChannelSelector="G" result="marca"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.021" numOctaves="3" seed="34" result="reparto"/>
+    <feComponentTransfer in="reparto" result="reparto_a">
+      <feFuncA type="linear" slope="3.5" intercept="-0.28"/>
+    </feComponentTransfer>
+    <feComposite in="marca" in2="reparto_a" operator="in" result="paso1"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.14 0.3" numOctaves="2" seed="61" result="seco"/>
+    <feComponentTransfer in="seco" result="seco_a">
+      <feFuncA type="discrete" tableValues="1 1 1 1 1 0.15 1 1 0.55 1 1 1 1 0.3 1 1"/>
+    </feComponentTransfer>
+    <feComposite in="paso1" in2="seco_a" operator="in"/>
+  </filter>
+
+  <symbol id="i-aspa" viewBox="0 0 16 16"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-llamada" viewBox="0 0 16 16"><path d="M2.5 8.5l3.2 3.5L13.5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-admiracion" viewBox="0 0 16 16"><path d="M8 2.5v7M8 13.2v.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-subir" viewBox="0 0 16 16"><path d="M8 12.5V3.5M4.5 7L8 3.5 11.5 7M2.5 13.5h11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bajar" viewBox="0 0 16 16"><path d="M8 2.5v9M4.5 8L8 11.5 11.5 8M2.5 13.5h11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-volver" viewBox="0 0 16 16"><path d="M13 8H3.5M7 3.5L2.5 8 7 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-papelera" viewBox="0 0 16 16"><path d="M3 4.5h10M6.5 4.5v-2h3v2M4.2 4.5l.7 9h6.2l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="pliego">
+
+  <header class="cabecera">
+    <div class="membrete">
+      <a class="lockup" href="/" aria-label="Cazafacturas">
+        <svg class="anagrama" viewBox="0 0 32 32" aria-hidden="true">
+          <g fill="currentColor">
+            <path d="M8.1 5.2h2.5v16.2H8.1z"/>
+            <path d="M13.6 8.1h12.6v1.1H13.6zM13.6 12.7h10.4v1.1H13.6zM13.6 17.3h7.6v1.1h-7.6z"/>
+            <path d="M5 23.2h22v1.9H5zM5 26.8h22v0.9H5z"/>
+          </g>
         </svg>
+        <h1 class="marca">Cazafacturas</h1>
+      </a>
+      <p class="lema" data-t="lema"></p>
+    </div>
+
+    <div class="ajustes">
+      <label class="ajuste">
+        <span class="ajuste-et" data-t="idioma"></span>
+        <select id="sel-idioma" class="selector"></select>
+      </label>
+      <label class="ajuste">
+        <span class="ajuste-et" data-t="pais"></span>
+        <select id="sel-pais" class="selector"></select>
+      </label>
+      <button id="btn-tema" class="boton-tema" type="button" aria-pressed="false">
+        <span class="tema-marca" aria-hidden="true"></span>
+        <span id="btn-tema-texto" data-t="tema_oscuro"></span>
       </button>
     </div>
+  </header>
+
+  <nav class="unheros" aria-label="Secciones">
+    <button class="unhero activo" type="button" data-vista="revisar" data-t="revisar" aria-current="page"></button>
+    <button class="unhero" type="button" data-vista="banco" data-t="banco"></button>
+    <button class="unhero" type="button" data-vista="historial" data-t="historial"></button>
   </nav>
 
-  <!-- PANEL -->
-  <section class="pantalla pantalla-panel activa" id="pantalla-panel">
-    <header class="encabezado-panel">
-      <div class="encabezado-texto">
-        <h1 data-i18n="panel"></h1>
-        <p class="encabezado-sub" data-i18n="subtitulo"></p>
-      </div>
-      <div class="controles-ejecucion">
-        <div class="selector-motor">
-          <label for="select-motor" data-i18n="motor"></label>
-          <select id="select-motor"></select>
+  <main class="hoja">
+
+    <!-- ============================ REVISAR ============================ -->
+    <section class="vista activa" id="v-revisar">
+      <div class="encabezado">
+        <div>
+          <h2 class="titulo" data-t="revisar_titulo"></h2>
+          <p class="subtitulo" data-t="revisar_sub"></p>
         </div>
-        <label class="check-trampas">
-          <input type="checkbox" id="check-trampas">
-          <span class="check-marca"></span>
-          <span data-i18n="incluir_trampas"></span>
-        </label>
-        <button class="btn-ejecutar" id="btn-ejecutar">
-          <span class="btn-texto" data-i18n="ejecutar_lote"></span>
-          <svg class="btn-icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        </button>
-      </div>
-    </header>
-
-    <div class="barra-progreso" id="seccion-progreso" hidden>
-      <div class="barra-track">
-        <div id="barra-relleno" class="barra-fill"></div>
-      </div>
-      <p id="texto-progreso" class="barra-texto"></p>
-    </div>
-
-    <div class="chips-motores" id="seccion-motores" hidden></div>
-
-    <section class="seccion-metricas">
-      <div class="vacio-grande" id="contenedor-comparativa">
-        <div class="vacio-icono">
-          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2">
-            <rect x="6" y="10" width="36" height="28" rx="2"/>
-            <line x1="6" y1="18" x2="42" y2="18"/>
-            <line x1="18" y1="10" x2="18" y2="38"/>
-          </svg>
+        <div class="acciones">
+          <button id="btn-exportar" class="boton" type="button" hidden>
+            <svg class="icono" aria-hidden="true"><use href="#i-bajar"/></svg>
+            <span data-t="exportar"></span>
+          </button>
+          <button id="btn-vaciar" class="boton boton-tenue" type="button" hidden>
+            <svg class="icono" aria-hidden="true"><use href="#i-papelera"/></svg>
+            <span data-t="vaciar"></span>
+          </button>
         </div>
-        <p data-i18n="sin_ejecuciones"></p>
-        <p class="vacio-sub" data-i18n="lanza_primero"></p>
       </div>
 
-      <div class="tabla-envolvente" id="contenedor-tabla" hidden>
-        <table class="tabla-metricas">
+      <p class="aviso-sistema" id="aviso-ocr" hidden>
+        <svg class="icono" aria-hidden="true"><use href="#i-admiracion"/></svg>
+        <span><span data-t="sin_ocr"></span> <code>pip install "cazafacturas[ocr]"</code></span>
+      </p>
+
+      <p class="aviso-sistema aviso-error" id="aviso-error" hidden role="alert"></p>
+
+      <!-- El pliego en blanco: cabeceras ya dibujadas, esperando el asiento -->
+      <div class="zona" id="zona" tabindex="0" role="button" aria-describedby="zona-detalle">
+        <span class="recuadro" aria-hidden="true"></span>
+        <div class="zona-interior">
+          <svg class="icono icono-grande" aria-hidden="true"><use href="#i-subir"/></svg>
+          <p class="zona-titulo" data-t="soltar_aqui"></p>
+          <p class="zona-detalle" id="zona-detalle" data-t="soltar_detalle"></p>
+          <p class="anotacion" data-t="anotacion_local"></p>
+          <div class="zona-botones">
+            <button id="btn-elegir" class="boton" type="button" data-t="elegir_ficheros"></button>
+            <button id="btn-muestras" class="boton boton-tenue" type="button" data-t="probar_muestras"></button>
+          </div>
+        </div>
+        <input type="file" id="entrada-fichero" multiple accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.bmp,.webp" hidden>
+      </div>
+
+      <div class="progreso" id="progreso" hidden>
+        <div class="progreso-riel"><div class="progreso-pluma" id="progreso-pluma"></div></div>
+        <p class="progreso-texto" id="progreso-texto"></p>
+      </div>
+
+      <div class="libro-envoltura" id="libro-envoltura" hidden>
+        <table class="libro">
+          <caption class="oculto-visual" data-t="revisar_titulo"></caption>
           <thead>
             <tr>
-              <th data-i18n="motor"></th>
-              <th>Modelo</th>
-              <th class="th-numero" data-i18n="precision"></th>
-              <th class="th-numero th-invencion" data-i18n="invencion"></th>
-              <th class="th-numero" data-i18n="aciertos"></th>
-              <th class="th-numero" data-i18n="fallos"></th>
-              <th class="th-numero" data-i18n="inventados"></th>
-              <th class="th-numero" data-i18n="tiempo"></th>
-              <th class="th-numero" data-i18n="casos"></th>
+              <th class="c-folio" scope="col" data-t="col_folio"></th>
+              <th scope="col" data-t="col_documento"></th>
+              <th scope="col" data-t="col_numero"></th>
+              <th scope="col" data-t="col_fecha"></th>
+              <th scope="col" data-t="col_emisor"></th>
+              <th class="c-cifra" scope="col" data-t="col_base"></th>
+              <th class="c-cifra" scope="col" data-t="col_impuesto"></th>
+              <th class="c-cifra" scope="col" data-t="col_total"></th>
+              <th class="c-estado" scope="col" data-t="col_estado"></th>
             </tr>
           </thead>
-          <tbody id="cuerpo-comparativa"></tbody>
+          <tbody id="libro-cuerpo"></tbody>
+          <tfoot id="libro-pie"></tfoot>
         </table>
       </div>
-    </section>
 
-    <section class="seccion-invenciones">
-      <h2 data-i18n="campos_mas_inventados"></h2>
-      <div id="contenedor-invenciones" class="invenciones-vacio">
-        <p data-i18n="sin_invenciones"></p>
+      <div class="vacio" id="vacio-libro" hidden>
+        <p class="vacio-titulo" data-t="vacio_libro"></p>
+        <p class="vacio-sub" data-t="vacio_libro_sub"></p>
       </div>
     </section>
-  </section>
 
-  <!-- EJECUCIÓN EN VIVO -->
-  <section class="pantalla pantalla-ejecucion" id="pantalla-ejecucion">
-    <header class="encabezado-ejecucion">
-      <div>
-        <h1 data-i18n="ejecucion_en_vivo"></h1>
-        <p class="encabezado-sub" id="ejecucion-subtitle"></p>
-      </div>
-      <div class="ejecucion-meta" id="ejecucion-meta" hidden>
-        <div class="meta-item">
-          <span class="meta-label" data-i18n="progreso"></span>
-          <span class="meta-valor" id="meta-progreso">0/0</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label" data-i18n="aciertos"></span>
-          <span class="meta-valor meta-acierto" id="meta-aciertos">0</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label" data-i18n="fallos"></span>
-          <span class="meta-valor meta-fallo" id="meta-fallos">0</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label" data-i18n="inventados"></span>
-          <span class="meta-valor meta-invencion" id="meta-invenciones">0</span>
-        </div>
-      </div>
-    </header>
-
-    <div class="nodos-vacia" id="nodos-vacia">
-      <div class="vacio-icono">
-        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2">
-          <circle cx="24" cy="24" r="18"/>
-          <polyline points="24 14 24 24 32 28"/>
-        </svg>
-      </div>
-      <p data-i18n="sin_ejecucion"></p>
-      <p class="vacio-sub" data-i18n="nodos_esperan"></p>
-    </div>
-
-    <div class="nodos-grid" id="nodos-grid" hidden></div>
-  </section>
-
-  <!-- DETALLE DE CASO -->
-  <section class="pantalla pantalla-detalle" id="pantalla-detalle">
-    <header class="encabezado-detalle">
-      <button class="btn-volver" id="btn-volver-ejecucion">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-        <span data-i18n="volver"></span>
+    <!-- ============================ DETALLE ============================ -->
+    <section class="vista" id="v-detalle">
+      <button id="btn-volver" class="boton boton-tenue boton-volver" type="button">
+        <svg class="icono" aria-hidden="true"><use href="#i-volver"/></svg>
+        <span data-t="volver"></span>
       </button>
-      <div>
-        <h1 id="detalle-titulo">Detalle de caso</h1>
-        <p class="encabezado-sub" id="detalle-sub"></p>
-      </div>
-    </header>
+      <div id="detalle-cuerpo"></div>
+    </section>
 
-    <div class="detalle-layout">
-      <div class="detalle-documento">
-        <h3 data-i18n="documento_original"></h3>
-        <pre class="bloque-json" id="detalle-documento"></pre>
-      </div>
-
-      <div class="detalle-comparacion">
-        <div class="detalle-columna detalle-esperado">
-          <h3 data-i18n="respuesta_esperada"></h3>
-          <pre class="bloque-json" id="detalle-esperado"></pre>
+    <!-- ============================= BANCO ============================= -->
+    <section class="vista" id="v-banco">
+      <div class="encabezado">
+        <div>
+          <h2 class="titulo" data-t="banco_titulo"></h2>
+          <p class="subtitulo" data-t="banco_sub"></p>
         </div>
-        <div class="detalle-columna detalle-obtenido">
-          <h3 data-i18n="respuesta_obtenida"></h3>
-          <pre class="bloque-json" id="detalle-obtenido"></pre>
+        <div class="acciones">
+          <label class="casilla">
+            <input type="checkbox" id="chk-trampas" checked>
+            <span class="casilla-marca" aria-hidden="true"></span>
+            <span data-t="banco_incluir"></span>
+          </label>
+          <button id="btn-banco" class="boton" type="button" data-t="banco_lanzar"></button>
         </div>
       </div>
 
-      <div class="detalle-campos">
-        <h3 data-i18n="resultado_por_campo"></h3>
-        <div class="campos-lista" id="detalle-campos"></div>
+      <div class="progreso" id="progreso-banco" hidden>
+        <div class="progreso-riel"><div class="progreso-pluma" id="progreso-banco-pluma"></div></div>
+        <p class="progreso-texto" id="progreso-banco-texto"></p>
       </div>
-    </div>
-  </section>
 
-  <!-- DATASET -->
-  <section class="pantalla pantalla-dataset" id="pantalla-dataset">
-    <header class="encabezado-dataset">
-      <div>
-        <h1 data-i18n="dataset_titulo"></h1>
-        <p class="encabezado-sub" data-i18n="dataset_sub"></p>
+      <p class="glosa" data-t="banco_explica"></p>
+      <div id="banco-cuerpo"></div>
+    </section>
+
+    <!-- =========================== HISTORIAL =========================== -->
+    <section class="vista" id="v-historial">
+      <div class="encabezado">
+        <div>
+          <h2 class="titulo" data-t="historial_titulo"></h2>
+          <p class="subtitulo" data-t="historial_sub"></p>
+        </div>
       </div>
-    </header>
+      <div id="historial-cuerpo"></div>
+    </section>
 
-    <div class="dataset-filtros">
-      <button class="dataset-filtro activo" data-filtro="todos" data-i18n="filtro_todos"></button>
-      <button class="dataset-filtro" data-filtro="normales" data-i18n="filtro_normales"></button>
-      <button class="dataset-filtro" data-filtro="trampas" data-i18n="filtro_trampas"></button>
-    </div>
+  </main>
 
-    <div class="dataset-grid" id="dataset-grid"></div>
-  </section>
+  <footer class="colofon">
+    <span>Cazafacturas <span id="pie-version"></span></span>
+    <span class="colofon-sep" aria-hidden="true"></span>
+    <span id="pie-capacidades"></span>
+    <span class="colofon-firma">
+      <span data-t="hecho_por"></span>
+      <a href="https://latidosia.com" rel="noreferrer noopener" target="_blank">LatidosIA.com</a>
+    </span>
+  </footer>
 
-  <script src="/static/i18n.js"></script>
-  <script src="/static/app.js"></script>
+</div>
+
+<script type="module" src="/static/app.js"></script>
 </body>
 </html>

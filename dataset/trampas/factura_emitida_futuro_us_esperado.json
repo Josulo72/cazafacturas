@@ -5,7 +5,7 @@
   "fecha_vencimiento": "2026-12-08",
   "emisor": {
     "nombre": "Tecnología del Sur S.L.",
-    "nif": "B12345678",
+    "nif": "B12345674",
     "direccion": {
       "calle": "Calle Gran Vía 42, Madrid",
       "ciudad": "Palma",
@@ -16,7 +16,7 @@
   },
   "receptor": {
     "nombre": "Alimentos del Norte S.A.",
-    "nif": "A87654321",
+    "nif": "A87654323",
     "direccion": {
       "calle": "Avda. de la Industria 15, Bilbao",
       "ciudad": "Murcia",

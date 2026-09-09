@@ -5,7 +5,7 @@
   "fecha_vencimiento": "2025-12-24",
   "emisor": {
     "nombre": "Alimentos del Norte S.A.",
-    "nif": "DE890779946",
+    "nif": "DE988474934",
     "direccion": {
       "calle": "Avda. de la Industria 15, Bilbao",
       "ciudad": "Valencia",
@@ -16,7 +16,7 @@
   },
   "receptor": {
     "nombre": "Tecnología del Sur S.L.",
-    "nif": "DE193349856",
+    "nif": "DE116687320",
     "direccion": {
       "calle": "Calle Gran Vía 42, Madrid",
       "ciudad": "Las Palmas",

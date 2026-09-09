@@ -6,7 +6,7 @@
   "fecha_vencimiento": "2025-07-15",
   "emisor": {
     "nombre": "Alimentos del Norte S.A.",
-    "nif": "A87654321",
+    "nif": "A87654323",
     "direccion": {
       "calle": "Avda. de la Industria 15, Bilbao",
       "ciudad": "Barcelona",
@@ -17,7 +17,7 @@
   },
   "receptor": {
     "nombre": "Materiales de Construcción Hermanos",
-    "nif": "A99887766",
+    "nif": "A99887762",
     "direccion": {
       "calle": "Ctra. de Barcelona km 12, Valencia",
       "ciudad": "Sevilla",

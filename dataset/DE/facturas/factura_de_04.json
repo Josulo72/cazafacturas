@@ -1,12 +1,23 @@
 {
   "tipo": "completa",
   "pais": "DE",
-  "numero": "DE/2026/2046",
-  "fecha_emision": "2025-02-22",
-  "fecha_vencimiento": "2025-03-24",
+  "numero": "DE/2026/9460",
+  "fecha_emision": "2025-02-17",
+  "fecha_vencimiento": "2025-03-19",
   "emisor": {
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "DE740936397",
+    "direccion": {
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Barcelona",
+      "provincia": "Barcelona",
+      "codigo_postal": "08001",
+      "pais": "DE"
+    }
+  },
+  "receptor": {
     "nombre": "Suministros Express",
-    "nif": "DE384027113",
+    "nif": "DE485378310",
     "direccion": {
       "calle": "Polígono Las Merindades, Valladolid",
       "ciudad": "Palma",
@@ -15,35 +26,42 @@
       "pais": "DE"
     }
   },
-  "receptor": {
-    "nombre": "Tecnología del Sur S.L.",
-    "nif": "DE675770529",
-    "direccion": {
-      "calle": "Calle Gran Vía 42, Madrid",
-      "ciudad": "Murcia",
-      "provincia": "Murcia",
-      "codigo_postal": "30001",
-      "pais": "DE"
-    }
-  },
   "lineas": [
     {
-      "descripcion": "Ratón ergonómico vertical",
-      "cantidad": 2.0,
-      "precio_unitario": 69.95,
-      "importe": 139.9
+      "descripcion": "Servicio de hosting mensual",
+      "cantidad": 5.0,
+      "precio_unitario": 29.99,
+      "importe": 149.95
+    },
+    {
+      "descripcion": "Disco SSD 2TB",
+      "cantidad": 1.0,
+      "precio_unitario": 179.0,
+      "importe": 179.0
+    },
+    {
+      "descripcion": "NAS con 4 bahías",
+      "cantidad": 8.0,
+      "precio_unitario": 499.0,
+      "importe": 3992.0
+    },
+    {
+      "descripcion": "Altavoces de escritorio stereo",
+      "cantidad": 9.0,
+      "precio_unitario": 79.99,
+      "importe": 719.91
     }
   ],
-  "base_imponible": 139.9,
+  "base_imponible": 5040.86,
   "iva": [
     {
-      "porcentaje": 19.0,
-      "base_imponible": 139.9,
-      "cuota": 26.58
+      "porcentaje": 7.0,
+      "base_imponible": 5040.86,
+      "cuota": 352.86
     }
   ],
   "retencion": null,
-  "total": 166.48,
+  "total": 5393.72,
   "observaciones": null,
   "clave_operacion": null
 }

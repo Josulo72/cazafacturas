@@ -6,7 +6,7 @@
   "fecha_vencimiento": "2026-01-04",
   "emisor": {
     "nombre": "Consultoría Integrada S.L.",
-    "nif": "B55667788",
+    "nif": "B55667786",
     "direccion": {
       "calle": "Paseo de Recoletos 8, Madrid",
       "ciudad": "Sevilla",
@@ -17,7 +17,7 @@
   },
   "receptor": {
     "nombre": "Alimentos del Norte S.A.",
-    "nif": "A87654321",
+    "nif": "A87654323",
     "direccion": {
       "calle": "Avda. de la Industria 15, Bilbao",
       "ciudad": "Zaragoza",

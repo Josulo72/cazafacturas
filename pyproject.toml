@@ -4,47 +4,72 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cazafacturas"
-version = "0.4.0"
-description = "Banco de evaluación de facturas: mide precisión e invención de modelos de IA"
+version = "1.0.0"
+description = "Extrae y valida facturas en local: PDF y escaneados, sin IA, sin red y sin claves"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
-  {name = "Jorge", email = "jorge@example.com"}
+  {name = "Jorge Rollón", email = "jrollon@gmail.com"}
 ]
+keywords = ["facturas", "invoice", "ocr", "pdf", "validacion", "iva", "vat"]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
+  "Intended Audience :: Financial and Insurance Industry",
   "License :: OSI Approved :: MIT License",
+  "Natural Language :: Spanish",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "Topic :: Software Development :: Testing",
-  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Office/Business :: Financial :: Accounting",
+  "Topic :: Text Processing :: Markup",
 ]
 dependencies = [
   "fastapi>=0.110",
   "uvicorn>=0.29",
   "pydantic>=2.5",
+  "python-multipart>=0.0.9",
+  "pdfplumber>=0.11",
 ]
+
 [project.optional-dependencies]
+# OCR para facturas escaneadas y fotos. Modelos incluidos en el paquete:
+# no hace falta Tesseract ni ningún binario del sistema.
+ocr = [
+  "rapidocr-onnxruntime>=1.3",
+  "pypdfium2>=4.30",
+]
+# Genera los PDF de muestra del dataset.
+muestras = [
+  "reportlab>=4.0",
+]
 dev = [
   "pytest>=8.0",
   "httpx>=0.27",
+  "rapidocr-onnxruntime>=1.3",
+  "pypdfium2>=4.30",
+  "reportlab>=4.0",
 ]
+
+[project.urls]
+Repositorio = "https://github.com/Josulo72/cazafacturas"
 
 [project.scripts]
 cazafacturas = "backend.main:main"
+cazafacturas-cli = "cli:main"
+
+[tool.setuptools]
+py-modules = ["cli"]
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["backend*", "dataset*"]
 
 [tool.setuptools.package-data]
-"dataset" = ["**/*.json", "**/*.md"]
+"dataset" = ["**/*.json", "**/*.md", "pdf/**/*.pdf"]
 "frontend" = ["*.html", "*.css", "*.js"]
-"resultados" = ["**/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]

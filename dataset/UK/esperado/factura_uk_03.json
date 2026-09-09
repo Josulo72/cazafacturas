@@ -1,13 +1,13 @@
 {
   "pais": "UK",
-  "numero": "UK/2026/5515",
-  "fecha_emision": "2025-08-03",
-  "fecha_vencimiento": "2025-09-02",
+  "numero": "UK/2026/5882",
+  "fecha_emision": "2025-04-23",
+  "fecha_vencimiento": "2025-05-23",
   "emisor": {
-    "nombre": "Consultoría Integrada S.L.",
-    "nif": "GB398362082",
+    "nombre": "Alimentos del Norte S.A.",
+    "nif": "GB171480373",
     "direccion": {
-      "calle": "Paseo de Recoletos 8, Madrid",
+      "calle": "Avda. de la Industria 15, Bilbao",
       "ciudad": "Zaragoza",
       "provincia": "Zaragoza",
       "codigo_postal": "50001",
@@ -15,40 +15,52 @@
     }
   },
   "receptor": {
-    "nombre": "Alimentos del Norte S.A.",
-    "nif": "GB919795579",
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "GB162263187",
     "direccion": {
-      "calle": "Avda. de la Industria 15, Bilbao",
-      "ciudad": "Bilbao",
-      "provincia": "Vizcaya",
-      "codigo_postal": "48001",
+      "calle": "Calle Gran Vía 42, Madrid",
+      "ciudad": "Málaga",
+      "provincia": "Málaga",
+      "codigo_postal": "29001",
       "pais": "UK"
     }
   },
   "lineas": [
     {
-      "descripcion": "Cable HDMI 2.1 3m",
-      "cantidad": 5.0,
-      "precio_unitario": 18.5,
-      "importe": 92.5
+      "descripcion": "Altavoces de escritorio stereo",
+      "cantidad": 3.0,
+      "precio_unitario": 79.99,
+      "importe": 239.97
     },
     {
-      "descripcion": "Altavoces de escritorio stereo",
-      "cantidad": 1.0,
-      "precio_unitario": 79.99,
-      "importe": 79.99
+      "descripcion": "Teclado mecánico inalámbrico",
+      "cantidad": 7.0,
+      "precio_unitario": 129.99,
+      "importe": 909.93
+    },
+    {
+      "descripcion": "Impresora láser monocromática",
+      "cantidad": 6.0,
+      "precio_unitario": 249.0,
+      "importe": 1494.0
+    },
+    {
+      "descripcion": "Licencia software anual",
+      "cantidad": 5.0,
+      "precio_unitario": 450.0,
+      "importe": 2250.0
     }
   ],
-  "base_imponible": 172.49,
+  "base_imponible": 4893.9,
   "iva": [
     {
       "porcentaje": 5.0,
-      "base_imponible": 172.49,
-      "cuota": 8.62
+      "base_imponible": 4893.9,
+      "cuota": 244.69
     }
   ],
   "retencion": null,
-  "total": 181.11,
+  "total": 5138.59,
   "observaciones": null,
   "clave_operacion": null,
   "tipo_documento": "factura",

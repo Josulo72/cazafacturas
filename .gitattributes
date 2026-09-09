@@ -1,0 +1,13 @@
+# Sin esto git convierte los saltos de línea también dentro de los binarios,
+# y un PDF o una fuente con los bytes cambiados deja de abrir.
+* text=auto eol=lf
+
+*.pdf   binary
+*.woff2 binary
+*.woff  binary
+*.ttf   binary
+*.otf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.webp  binary

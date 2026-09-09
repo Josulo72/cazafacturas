@@ -18,11 +18,11 @@ from backend.nucleo.esquema import (
 from backend.nucleo.paises import PAISES
 
 EMPRESAS = [
-    ("Tecnología del Sur S.L.", "B12345678", "Calle Gran Vía 42, Madrid"),
-    ("Alimentos del Norte S.A.", "A87654321", "Avda. de la Industria 15, Bilbao"),
+    ("Tecnología del Sur S.L.", "B12345674", "Calle Gran Vía 42, Madrid"),
+    ("Alimentos del Norte S.A.", "A87654323", "Avda. de la Industria 15, Bilbao"),
     ("Suministros Express", "B11223344", "Polígono Las Merindades, Valladolid"),
-    ("Consultoría Integrada S.L.", "B55667788", "Paseo de Recoletos 8, Madrid"),
-    ("Materiales de Construcción Hermanos", "A99887766", "Ctra. de Barcelona km 12, Valencia"),
+    ("Consultoría Integrada S.L.", "B55667786", "Paseo de Recoletos 8, Madrid"),
+    ("Materiales de Construcción Hermanos", "A99887762", "Ctra. de Barcelona km 12, Valencia"),
 ]
 
 PRODUCTOS = [
@@ -57,18 +57,63 @@ CIUDADES = [
 ]
 
 
+def _cif_es(digitos: str, tipo: str) -> str:
+    """Añade el dígito de control a un CIF español."""
+    suma = 0
+    for i, ch in enumerate(digitos):
+        n = int(ch)
+        if i % 2 == 0:
+            doble = n * 2
+            suma += doble // 10 + doble % 10
+        else:
+            suma += n
+    control = (10 - suma % 10) % 10
+    # Las sociedades P, Q, R, S, N y W llevan letra; A, B, E y H llevan cifra.
+    if tipo in "PQRSNW":
+        return f"{tipo}{digitos}{'JABCDEFGHI'[control]}"
+    return f"{tipo}{digitos}{control}"
+
+
+def _vat_uk(digitos: str) -> str:
+    """Completa un VAT británico de 9 cifras con control módulo 97."""
+    pesos = (8, 7, 6, 5, 4, 3, 2)
+    total = sum(int(d) * p for d, p in zip(digitos, pesos))
+    control = (97 - total % 97) % 97
+    return f"GB{digitos}{control:02d}"
+
+
+def _ustid_de(digitos: str) -> str:
+    """Completa una USt-IdNr. alemana con su control módulo 11."""
+    producto = 10
+    for ch in digitos:
+        suma = (int(ch) + producto) % 10 or 10
+        producto = (2 * suma) % 11
+    return f"DE{digitos}{(11 - producto) % 10}"
+
+
+# Prefijos de EIN que el IRS no asigna.
+_EIN_NO_ASIGNADOS = {"00", "07", "08", "09", "17", "18", "19",
+                     "28", "29", "49", "69", "70", "78", "79", "89"}
+
+
 def _nif_aleatorio(pais: str = "ES") -> str:
+    """Identificador fiscal inventado pero **válido**: el dígito de control
+    se calcula, no se sortea. Si no, el propio validador del proyecto
+    rechazaría su dataset."""
     cfg = PAISES[pais.upper()]
     if cfg.codigo == "ES":
-        letra = random.choice("ABCDEFGHJKLMNPQRSTUVWXYZ")
-        numero = random.randint(10000000, 99999999)
-        return f"{letra}{numero}"
+        tipo = random.choice("ABEHPQRSNW")
+        return _cif_es(f"{random.randint(0, 9999999):07d}", tipo)
     if cfg.codigo == "UK":
-        return f"GB{random.randint(100000000, 999999999)}"
+        return _vat_uk(f"{random.randint(0, 9999999):07d}")
     if cfg.codigo == "US":
-        return f"{random.randint(10, 99)}-{random.randint(1000000, 9999999)}"
+        prefijo = random.choice(
+            [f"{n:02d}" for n in range(10, 100)
+             if f"{n:02d}" not in _EIN_NO_ASIGNADOS]
+        )
+        return f"{prefijo}-{random.randint(1000000, 9999999)}"
     if cfg.codigo == "DE":
-        return f"DE{random.randint(100000000, 999999999)}"
+        return _ustid_de(f"{random.randint(0, 99999999):08d}")
     return f"{random.randint(10000000, 99999999)}"
 
 

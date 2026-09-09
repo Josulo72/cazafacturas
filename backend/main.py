@@ -1,259 +1,396 @@
+"""API de Cazafacturas.
+
+Todo ocurre en la máquina de quien la ejecuta: los documentos no salen de
+aquí, no hay claves que configurar y no se llama a ningún servicio externo.
+"""
+
 from __future__ import annotations
 
 import json
-import os
 import threading
 import time
+import uuid
 from pathlib import Path
+from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
 
-from backend.api.ejecutar import ejecutar_dataset
-from backend.api.motores import crear_catalogo
-from backend.api.resultados import crear_gestion
-from backend.nucleo.cache import CacheResultados
-from backend.nucleo.dataset import cargar_dataset
+from backend.nucleo import historial as hist
+from backend.nucleo.analizador import (
+    analizar_bytes,
+    analizar_json,
+    capacidades,
+    resumir,
+)
+from backend.nucleo.lectura import EXTENSIONES_SOPORTADAS
+from backend.nucleo.paises import PAISES
 
 RAIZ = Path(__file__).resolve().parent.parent
+DATASET = RAIZ / "dataset"
+MUESTRAS = DATASET / "pdf"
+
+# Un PDF de factura no llega a 5 MB ni escaneado a 300 ppp. El tope evita
+# que una subida enorme se coma la memoria del proceso.
+MAX_BYTES_FICHERO = 25 * 1024 * 1024
+MAX_FICHEROS = 50
+
+VERSION = "1.0.0"
+
+app = FastAPI(
+    title="Cazafacturas",
+    version=VERSION,
+    description="Extracción y validación de facturas en local, sin IA.",
+)
+
+_DATOS = hist.dir_datos(RAIZ)
+_historial = hist.Historial(_DATOS / "lotes")
+
+_trabajos: dict[str, dict] = {}
+_lock = threading.Lock()
 
 
-def dir_datos(raiz: Path = RAIZ) -> Path:
-    """Dónde se guardan los datos locales. Respetar CAZAFACTURAS_HOME;
-    fuera de un checkout (pip instalado) cae en el home del usuario."""
-    env = os.environ.get("CAZAFACTURAS_HOME")
-    if env:
-        ruta = Path(env)
-    elif (raiz / ".git").exists():
-        ruta = raiz / "resultados"
-    else:
-        ruta = Path.home() / ".cazafacturas"
-    ruta.mkdir(parents=True, exist_ok=True)
-    return ruta
+def _estado(id_trabajo: str, **campos) -> None:
+    with _lock:
+        _trabajos.setdefault(id_trabajo, {}).update(campos)
 
 
-app = FastAPI(title="Cazafacturas", version="0.4.0")
+# --------------------------------------------------------------------------
+# Estado de la instalación
+# --------------------------------------------------------------------------
 
-_DATOS = dir_datos()
-_catalogo = crear_catalogo()
-_gestion = crear_gestion(_DATOS / "ejecuciones")
-_dataset = cargar_dataset(RAIZ / "dataset")
-_cache = CacheResultados(_DATOS / "cache")
-
-_estados: dict[str, dict] = {}
-_estados_lock = threading.Lock()
-
-
-class EjecutarRequest(BaseModel):
-    id_motor: str
-    modelo: str | None = None
-    trampas: bool = False
-    prompt_extra: str = ""
-    idioma: str = "es"
-
-    class Config:
-        json_schema_extra = {"example": {"id_motor": "cli", "idioma": "es"}}
-
-
-class _Progreso:
-    def __init__(self, id_ejecucion: str):
-        self.id_ejecucion = id_ejecucion
-
-    def __call__(self, pos, total, caso_id, estado):
-        with _estados_lock:
-            _estados[self.id_ejecucion] = {
-                "pos": pos,
-                "total": total,
-                "caso": caso_id,
-                "estado": estado,
-            }
-
-
-@app.get("/api/estado")
-def api_estado():
+@app.get("/api/capacidades")
+def api_capacidades():
+    caps = capacidades()
     return {
-        "motores": [
-            {"id": i, **info.__dict__} for i, info in _catalogo.todos_dispuestos()
-        ]
+        "version": VERSION,
+        "pdf_texto": caps["pdf_texto"],
+        "ocr": caps["ocr"],
+        "escaneados": caps["escaneados"],
+        "formatos": caps["formatos"],
+        "max_ficheros": MAX_FICHEROS,
+        "max_mb": MAX_BYTES_FICHERO // (1024 * 1024),
+        "muestras": MUESTRAS.is_dir(),
     }
-
-
-@app.get("/api/dataset")
-def api_dataset(trampas: bool = Query(False), pais: str | None = Query(None)):
-    casos = _dataset.todos() if trampas else _dataset.casos_normales()
-    if pais:
-        casos = [c for c in casos if str(c.esperado.get("pais", "ES")).upper() == pais.upper()]
-    return [
-        {
-            "id": c.id,
-            "es_trampa": c.es_trampa,
-            "documento": c.documento,
-            "esperado": c.esperado,
-        }
-        for c in casos
-    ]
 
 
 @app.get("/api/paises")
 def api_paises():
-    from backend.nucleo.paises import PAISES
-
     return [
-        {"codigo": p.codigo, "es": p.nombre["es"], "en": p.nombre["en"], "moneda": p.moneda}
+        {
+            "codigo": p.codigo,
+            "es": p.nombre["es"],
+            "en": p.nombre["en"],
+            "moneda": p.moneda,
+            "id_fiscal": p.id_fiscal["es"],
+            "impuesto": p.impuesto["es"],
+        }
         for p in PAISES.values()
     ]
 
 
-@app.post("/api/ejecutar")
-def api_ejecutar(req: EjecutarRequest):
-    if req.id_motor not in _catalogo.disponible():
-        raise HTTPException(400, f"Motor '{req.id_motor}' no disponible")
+# --------------------------------------------------------------------------
+# Análisis de ficheros subidos
+# --------------------------------------------------------------------------
 
-    id_ejecucion = _gestion.nueva_ejecucion(req.id_motor, req.modelo or "")
-    with _estados_lock:
-        _estados[id_ejecucion] = {"pos": 0, "total": 0, "caso": "", "estado": "en_cola"}
+@app.post("/api/analizar")
+async def api_analizar(
+    ficheros: list[UploadFile] = File(...),
+    pais: Optional[str] = Form(None),
+):
+    if not ficheros:
+        raise HTTPException(400, "No se ha enviado ningún fichero.")
+    if len(ficheros) > MAX_FICHEROS:
+        raise HTTPException(
+            400, f"Máximo {MAX_FICHEROS} ficheros por lote; has enviado {len(ficheros)}."
+        )
 
-    caso_modelo = (
-        _catalogo.get(req.id_motor).modelo
-        if (req.id_motor == "cli" and req.modelo)
-        else req.modelo or ""
-    )
-
-    def trabajo():
-        from backend.api.motores import crear_catalogo as _cc
-
-        catalogo = _cc(modelo_cli=req.modelo)
-        info = catalogo.get(req.id_motor).detectar()
-        casos = _dataset.todos() if req.trampas else _dataset.casos_normales()
-        try:
-            ejecutar_dataset(
-                casos,
-                req.id_motor,
-                catalogo,
-                _cache,
-                progress=_Progreso(id_ejecucion),
-                prompt_extra=req.prompt_extra,
-                registrar=lambda r: _gestion.registrar(id_ejecucion, r),
-                idioma=req.idioma,
+    # Se leen aquí, dentro del contexto de la petición; el hilo de trabajo
+    # ya solo ve bytes.
+    entradas: list[tuple[bytes, str]] = []
+    for fichero in ficheros:
+        extension = Path(fichero.filename or "").suffix.lower()
+        if extension not in EXTENSIONES_SOPORTADAS:
+            raise HTTPException(
+                400,
+                f"«{fichero.filename}» no es un formato admitido. "
+                f"Admitidos: {', '.join(sorted(EXTENSIONES_SOPORTADAS))}",
             )
-        except Exception as e:
-            with _estados_lock:
-                _estados[id_ejecucion] = {
-                    "pos": 0,
-                    "total": 0,
-                    "caso": "",
-                    "estado": f"error: {e}",
-                }
-            return
-        with _estados_lock:
-            _estados[id_ejecucion] = {
-                "pos": 0,
-                "total": 0,
-                "caso": "",
-                "estado": "terminada",
-            }
+        contenido = await fichero.read()
+        if len(contenido) > MAX_BYTES_FICHERO:
+            raise HTTPException(
+                400,
+                f"«{fichero.filename}» pesa más de "
+                f"{MAX_BYTES_FICHERO // (1024 * 1024)} MB.",
+            )
+        entradas.append((contenido, fichero.filename or "documento"))
 
-    hilo = threading.Thread(target=trabajo, daemon=True)
-    hilo.start()
-    return {"id_ejecucion": id_ejecucion}
+    codigo = (pais or "").upper() or None
+    if codigo and codigo not in PAISES:
+        raise HTTPException(400, f"País no soportado: {codigo}")
+
+    id_trabajo = uuid.uuid4().hex[:12]
+    _estado(id_trabajo, pos=0, total=len(entradas), actual="", estado="en_cola",
+            id_lote=None)
+
+    def trabajo() -> None:
+        resultados = []
+        try:
+            for i, (contenido, nombre) in enumerate(entradas, start=1):
+                _estado(id_trabajo, pos=i, total=len(entradas),
+                        actual=nombre, estado="analizando")
+                resultados.append(analizar_bytes(contenido, nombre, codigo))
+            resumen = resumir(resultados, id_trabajo)
+            _historial.guardar(resumen, origen="subida")
+            _estado(id_trabajo, estado="terminado", id_lote=resumen.id,
+                    actual="", pos=len(entradas))
+        except Exception as e:  # pragma: no cover
+            _estado(id_trabajo, estado=f"error: {e}")
+
+    threading.Thread(target=trabajo, daemon=True).start()
+    return {"id_trabajo": id_trabajo, "total": len(entradas)}
 
 
-@app.get("/api/ejecutar/{id_ejecucion}/estado")
-def api_ejecutar_estado(id_ejecucion: str):
-    with _estados_lock:
-        estado = _estados.get(id_ejecucion)
+# --------------------------------------------------------------------------
+# Banco de pruebas contra el dataset propio
+# --------------------------------------------------------------------------
+
+@app.post("/api/banco")
+def api_banco(trampas: bool = True, pais: Optional[str] = None):
+    """Pasa el extractor por el dataset del proyecto y lo puntúa.
+
+    Es la métrica honesta: no mide un modelo ajeno, mide este código contra
+    facturas cuyo resultado correcto se conoce de antemano.
+    """
+    codigo = (pais or "").upper() or None
+    if codigo and codigo not in PAISES:
+        raise HTTPException(400, f"País no soportado: {codigo}")
+
+    id_trabajo = uuid.uuid4().hex[:12]
+    casos = _casos_del_banco(codigo, trampas)
+    if not casos:
+        raise HTTPException(404, "No se ha encontrado el dataset.")
+
+    _estado(id_trabajo, pos=0, total=len(casos), actual="", estado="en_cola",
+            id_lote=None)
+
+    def trabajo() -> None:
+        resultados = []
+        try:
+            for i, (nombre, contenido, esperado, pais_caso) in enumerate(casos, 1):
+                _estado(id_trabajo, pos=i, total=len(casos),
+                        actual=nombre, estado="analizando")
+                if isinstance(contenido, dict):
+                    resultados.append(analizar_json(contenido, nombre, esperado))
+                else:
+                    resultados.append(
+                        analizar_bytes(contenido, nombre, pais_caso, esperado)
+                    )
+            resumen = resumir(resultados, id_trabajo)
+            _historial.guardar(resumen, origen="banco")
+            _estado(id_trabajo, estado="terminado", id_lote=resumen.id,
+                    actual="", pos=len(casos))
+        except Exception as e:  # pragma: no cover
+            _estado(id_trabajo, estado=f"error: {e}")
+
+    threading.Thread(target=trabajo, daemon=True).start()
+    return {"id_trabajo": id_trabajo, "total": len(casos)}
+
+
+def _casos_del_banco(pais: Optional[str], trampas: bool) -> list[tuple]:
+    """Los casos del dataset. Se prefieren los PDF: ejercitan la cadena
+    completa. Si no se han generado, se cae al JSON y se validan las reglas."""
+    casos: list[tuple] = []
+    codigos = [pais] if pais else list(PAISES)
+
+    for codigo in codigos:
+        carpeta_esperado = DATASET / codigo / "esperado"
+        if not carpeta_esperado.is_dir():
+            continue
+        for fichero in sorted(carpeta_esperado.glob("*.json")):
+            esperado = json.loads(fichero.read_text(encoding="utf-8"))
+            pdf = MUESTRAS / codigo / f"{fichero.stem}.pdf"
+            if pdf.is_file():
+                casos.append((pdf.name, pdf.read_bytes(), esperado, codigo))
+            else:
+                casos.append((fichero.name, esperado, esperado, codigo))
+
+    if trampas:
+        carpeta = DATASET / "trampas"
+        for fichero in sorted(carpeta.glob("*_documento.json")):
+            documento = json.loads(fichero.read_text(encoding="utf-8"))
+            if pais and str(documento.get("pais", "ES")).upper() != pais:
+                continue
+            pdf = MUESTRAS / "trampas" / f"{fichero.stem}.pdf"
+            if pdf.is_file():
+                casos.append((pdf.name, pdf.read_bytes(), None,
+                              str(documento.get("pais") or "ES").upper()))
+            else:
+                casos.append((fichero.name, documento, None, None))
+
+    return casos
+
+
+# --------------------------------------------------------------------------
+# Progreso
+# --------------------------------------------------------------------------
+
+@app.get("/api/trabajos/{id_trabajo}")
+def api_trabajo(id_trabajo: str):
+    with _lock:
+        estado = _trabajos.get(id_trabajo)
     if estado is None:
-        raise HTTPException(404, "Ejecución no encontrada")
+        raise HTTPException(404, "Trabajo no encontrado")
     return estado
 
 
-@app.get("/api/ejecutar/{id_ejecucion}/stream")
-def api_ejecutar_stream(id_ejecucion: str):
+@app.get("/api/trabajos/{id_trabajo}/stream")
+def api_trabajo_stream(id_trabajo: str):
     def generador():
         anterior = None
-        while True:
-            with _estados_lock:
-                estado = _estados.get(id_ejecucion)
+        limite = time.monotonic() + 900          # corta a los 15 minutos
+        while time.monotonic() < limite:
+            with _lock:
+                estado = _trabajos.get(id_trabajo)
             if estado is None:
-                yield "event: error\ndata: {\"detalle\":\"no existe\"}\n\n"
+                yield 'event: error\ndata: {"detalle":"no existe"}\n\n'
                 return
             if estado != anterior:
                 yield f"data: {json.dumps(estado, ensure_ascii=False)}\n\n"
-                anterior = estado
-            if estado.get("estado") == "terminada":
-                yield f"event: fin\ndata: {json.dumps({'id_ejecucion': id_ejecucion})}\n\n"
+                anterior = dict(estado)
+            situacion = str(estado.get("estado", ""))
+            if situacion == "terminado":
+                yield f"event: fin\ndata: {json.dumps(estado, ensure_ascii=False)}\n\n"
                 return
-            if estado.get("estado", "").startswith("error"):
+            if situacion.startswith("error"):
                 yield f"event: error\ndata: {json.dumps(estado, ensure_ascii=False)}\n\n"
                 return
-            time.sleep(0.3)
+            time.sleep(0.25)
 
     return StreamingResponse(
-        generador(), media_type="text/event-stream"
+        generador(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
-@app.get("/api/resultados")
-def api_resultados():
-    return [
-        {
-            "id_ejecucion": r.id_ejecucion,
-            "id_motor": r.id_motor,
-            "modelo": r.modelo,
-            "fecha": r.fecha,
-            "n_casos": r.n_casos,
-            "precision": r.precision,
-            "tasa_invencion": r.tasa_invencion,
-            "segundos": r.segundos,
-            "cacheados": r.cacheados,
-        }
-        for r in _gestion.historial()
-    ]
+# --------------------------------------------------------------------------
+# Historial
+# --------------------------------------------------------------------------
+
+@app.get("/api/historial")
+def api_historial():
+    return [e.a_dict() for e in _historial.listar()]
 
 
-@app.get("/api/resultados/{id_ejecucion}")
-def api_resultados_detalle(id_ejecucion: str):
-    datos = _gestion.detalle(id_ejecucion)
-    if datos is None:
-        raise HTTPException(404, "Ejecución no encontrada")
-    return datos
+@app.get("/api/historial/{id_lote}")
+def api_historial_detalle(id_lote: str):
+    lote = _historial.leer(id_lote)
+    if lote is None:
+        raise HTTPException(404, "Lote no encontrado")
+    return lote
 
 
-@app.get("/api/comparativa")
-def api_comparativa():
-    return _gestion.comparativa()
+@app.get("/api/historial/{id_lote}/csv")
+def api_historial_csv(id_lote: str):
+    lote = _historial.leer(id_lote)
+    if lote is None:
+        raise HTTPException(404, "Lote no encontrado")
+    return PlainTextResponse(
+        hist.a_csv(lote),
+        media_type="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": f'attachment; filename="cazafacturas-{id_lote}.csv"'
+        },
+    )
 
+
+@app.delete("/api/historial/{id_lote}")
+def api_historial_borrar(id_lote: str):
+    if not _historial.borrar(id_lote):
+        raise HTTPException(404, "Lote no encontrado")
+    return {"borrado": id_lote}
+
+
+# --------------------------------------------------------------------------
+# Muestras
+# --------------------------------------------------------------------------
+
+@app.get("/api/muestras")
+def api_muestras():
+    if not MUESTRAS.is_dir():
+        return []
+    salida = []
+    for carpeta in sorted(MUESTRAS.iterdir()):
+        if not carpeta.is_dir():
+            continue
+        for pdf in sorted(carpeta.glob("*.pdf")):
+            salida.append({
+                "grupo": carpeta.name,
+                "nombre": pdf.name,
+                "es_trampa": carpeta.name == "trampas",
+                "url": f"/api/muestras/{carpeta.name}/{pdf.name}",
+                "kb": round(pdf.stat().st_size / 1024, 1),
+            })
+    return salida
+
+
+@app.get("/api/muestras/{grupo}/{nombre}")
+def api_muestra(grupo: str, nombre: str):
+    ruta = (MUESTRAS / grupo / nombre).resolve()
+    # Nunca servir fuera de la carpeta de muestras, venga lo que venga en la URL.
+    if not str(ruta).startswith(str(MUESTRAS.resolve())) or not ruta.is_file():
+        raise HTTPException(404, "Muestra no encontrada")
+    return FileResponse(ruta, media_type="application/pdf", filename=nombre)
+
+
+# --------------------------------------------------------------------------
+# Frontend
+# --------------------------------------------------------------------------
 
 @app.get("/")
-def pagina():
+def portada():
+    """La presentación cuando exista; mientras tanto, la aplicación."""
+    presentacion = RAIZ / "frontend" / "presentacion.html"
+    if presentacion.is_file():
+        return FileResponse(presentacion)
     return FileResponse(RAIZ / "frontend" / "index.html")
 
 
-app.mount(
-    "/static",
-    StaticFiles(directory=RAIZ / "frontend"),
-    name="static",
-)
+@app.get("/app")
+def aplicacion():
+    return FileResponse(RAIZ / "frontend" / "index.html")
+
+
+@app.get("/bocetos")
+def bocetos():
+    """Los bocetos de la animación, para decidir cuál se desarrolla."""
+    return FileResponse(RAIZ / "frontend" / "bocetos.html")
+
+
+app.mount("/static", StaticFiles(directory=RAIZ / "frontend"), name="static")
 
 
 def main() -> None:
     """Arranca la webapp y abre el navegador. Uso: `cazafacturas`."""
     import argparse
+    import os
 
     import uvicorn
 
-    parser = argparse.ArgumentParser(description="Cazafacturas — banco de evaluación de facturas")
+    parser = argparse.ArgumentParser(
+        description="Cazafacturas — extracción y validación de facturas en local"
+    )
     parser.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8765")))
-    parser.add_argument("--no-browser", action="store_true", help="No abrir el navegador")
+    parser.add_argument("--no-browser", action="store_true",
+                        help="No abrir el navegador al arrancar")
     args = parser.parse_args()
 
     if not args.no_browser:
         def _abrir() -> None:
             import webbrowser
-
             webbrowser.open(f"http://{args.host}:{args.port}")
 
         threading.Timer(1.0, _abrir).start()

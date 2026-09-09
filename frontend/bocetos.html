@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cazafacturas · bocetos de la presentación</title>
+<link rel="stylesheet" href="/static/fuentes.css">
+<style>
+/* Dos bocetos de la animación de portada, dibujada a bolígrafo.
+   Todo es SVG: los trazos se revelan con stroke-dashoffset, que es
+   literalmente la punta del boli avanzando por el papel. */
+
+:root {
+  --papel:   #EDE7D7;
+  --tinta:   #23211C;
+  --bic:     #23368E;
+  --rojo:    #C0271C;
+  --filete:  #C6BEA6;
+  --rejilla: rgba(108, 132, 168, 0.13);
+  --maquina: 'Courier Prime', 'Courier New', monospace;
+  --mano:    'Caveat', 'Segoe Script', cursive;
+  --rotulo:  'Prata', Georgia, serif;
+  --imprenta:'Archivo', 'Helvetica Neue', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--maquina);
+  color: var(--tinta);
+  background-color: var(--papel);
+  background-image:
+    linear-gradient(to right, var(--rejilla) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rejilla) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px;
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--filete);
+}
+.barra h1 { font-family: var(--rotulo); font-weight: 400; font-size: 1.25rem; margin: 0 auto 0 0; }
+.barra button {
+  font: inherit;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.9rem;
+  color: var(--bic);
+  background: transparent;
+  border: 1px solid var(--bic);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.barra button[aria-pressed='true'] { background: var(--bic); color: var(--papel); }
+.barra .duracion { font-size: 0.6875rem; color: #7E7660; letter-spacing: 0.06em; }
+
+.tinta-sellos { position: absolute; width: 0; height: 0; }
+.lienzo { display: grid; place-items: center; padding: 2rem 1rem 4rem; }
+.escena { display: none; width: min(56rem, 96vw); }
+.escena.activa { display: block; }
+
+svg { width: 100%; height: auto; display: block; }
+
+/* --- El trazo del boli ------------------------------------------- */
+.traza {
+  fill: none;
+  stroke: var(--bic);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: var(--largo);
+  stroke-dashoffset: var(--largo);
+  animation: dibujar var(--dur, 0.7s) linear var(--esp, 0s) forwards;
+}
+.traza-roja { stroke: var(--rojo); }
+@keyframes dibujar { to { stroke-dashoffset: 0; } }
+
+/* Lo que el talonario ya trae impreso: rótulos, puntos suspensivos y el
+   recuadro del número. No lo dibuja el boli, ya estaba ahí. */
+.impreso { opacity: 0; animation: aparecer 0.4s ease-out var(--esp, 0s) forwards; }
+/* La imprenta y la mano no comparten voz: en el talonario de verdad los
+   rótulos van en grotesca y encima se escribe a bolígrafo. */
+.impreso text, text.tenue { font-family: var(--imprenta); }
+@keyframes aparecer { to { opacity: 1; } }
+.puntos { stroke: #6E6552; stroke-width: 1.1; stroke-linecap: round;
+          stroke-dasharray: 0.8 4.4; opacity: 0.75; }
+
+/* --- El texto, revelado como si se escribiera -------------------- */
+.escrito {
+  clip-path: inset(0 100% 0 0);
+  animation: escribir var(--dur, 0.8s) steps(24, end) var(--esp, 0s) forwards;
+}
+@keyframes escribir { to { clip-path: inset(0 -2% 0 0); } }
+
+text { font-family: var(--maquina); fill: var(--tinta); }
+.mano { font-family: var(--mano); fill: var(--bic); }
+.rotulo { font-family: var(--rotulo); fill: var(--tinta); }
+.roja { fill: var(--rojo); }
+.tenue { fill: #7E7660; }
+
+/* --- El sello ----------------------------------------------------- */
+/* Un sello baja, golpea y para. No rebota: el caucho no tiene muelle.
+   El desenfoque de la bajada es el que vende la velocidad, y desaparece
+   en el impacto. El asentamiento posterior es de 3 grados, lo que cede
+   la mano cuando levanta. */
+.sello {
+  filter: url(#sello-cargado);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: estampar 0.34s cubic-bezier(0.4, 0, 0.2, 1) var(--esp) forwards;
+}
+@keyframes estampar {
+  0%   { opacity: 0;    transform: scale(1.9) rotate(-11deg); }
+  70%  { opacity: 1; transform: scale(1)   rotate(-4.5deg); }
+  100% { opacity: 0.97; transform: scale(1)   rotate(-4.5deg); }
+}
+.sello-mal { animation-name: estampar-mal; }
+@keyframes estampar-mal {
+  0%   { opacity: 0;    transform: scale(1.9) rotate(9deg);  }
+  70%  { opacity: 1; transform: scale(1)   rotate(2.6deg); }
+  100% { opacity: 0.97; transform: scale(1)   rotate(2.6deg); }
+}
+
+/* Un sello es una sola tinta: el caucho no distingue borde de letra.
+   Todo el grupo hereda un único `color` y tanto el trazo como el relleno
+   salen de ahí, para que no puedan desincronizarse nunca. */
+.sello { color: var(--bic); }
+.sello-mal { color: var(--rojo); filter: url(#sello-cargado); }
+.sello rect { stroke: currentColor; fill: none; }
+.sello text { fill: currentColor; }
+
+/* --- La punta del boli -------------------------------------------- */
+/* Va delante del trazo, no encima: es lo que hace que el ojo lea una
+   mano escribiendo y no una línea creciendo sola. */
+.punta { opacity: 0; }
+.punta circle { fill: var(--bic); }
+
+/* La mano escribe seguido; la máquina, a golpes. Cada una con su reloj. */
+.escrito-mano { animation-timing-function: linear; }
+
+.pie { text-align: center; margin: 1.5rem 0 0; font-size: 0.75rem; color: #7E7660; }
+.pie b { color: var(--tinta); }
+
+@media (prefers-reduced-motion: reduce) {
+  .traza, .escrito, .sello { animation-duration: 0.01s !important; animation-delay: 0s !important; }
+}
+</style>
+</head>
+<body>
+
+<svg class="tinta-sellos" aria-hidden="true" width="0" height="0">
+  <!-- ============================================================== -->
+  <!-- La tinta del sello.                                            -->
+  <!-- Tres pasadas, en el mismo orden que ocurren en el papel:       -->
+  <!--   1. el filo del caucho, que nunca imprime recto;              -->
+  <!--   2. el reparto de la tinta, con zonas cargadas y zonas pobres;-->
+  <!--   3. las calvas, donde el caucho estaba seco y no dejó nada.   -->
+  <!-- Cada variante lleva otra semilla y otra carga: dos sellos       -->
+  <!-- seguidos no pueden salir iguales, y el segundo sale más pobre  -->
+  <!-- porque nadie ha vuelto al tampón.                              -->
+  <!-- ============================================================== -->
+
+  <!-- La luz de una doblez: el papel se levanta por un lado y se hunde por
+       el otro. Sin ese par claro/oscuro una arruga no se lee como arruga. -->
+  <linearGradient id="doblez-h" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFFDF4" stop-opacity="0"/>
+    <stop offset="0.42" stop-color="#FFFDF4" stop-opacity="0.85"/>
+    <stop offset="0.52" stop-color="#A9997A" stop-opacity="0.42"/>
+    <stop offset="1" stop-color="#A9997A" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="doblez-d" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFFDF4" stop-opacity="0"/>
+    <stop offset="0.45" stop-color="#FFFDF4" stop-opacity="0.7"/>
+    <stop offset="0.55" stop-color="#A9997A" stop-opacity="0.34"/>
+    <stop offset="1" stop-color="#A9997A" stop-opacity="0"/>
+  </linearGradient>
+
+  <!-- La hoja no está pegada a la mesa: proyecta su sombra. -->
+  <filter id="sombra-hoja" x="-6%" y="-6%" width="114%" height="114%">
+    <feDropShadow dx="2" dy="4" stdDeviation="5" flood-color="#000" flood-opacity="0.20"/>
+  </filter>
+
+  <filter id="sello-cargado" x="-14%" y="-22%" width="128%" height="144%"
+          color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" seed="5" result="filo"/>
+    <feDisplacementMap in="SourceGraphic" in2="filo" scale="2.2"
+                       xChannelSelector="R" yChannelSelector="G" result="marca"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.017" numOctaves="3" seed="21" result="reparto"/>
+    <feComponentTransfer in="reparto" result="reparto_a">
+      <feFuncA type="linear" slope="4.2" intercept="-0.18"/>
+    </feComponentTransfer>
+    <feComposite in="marca" in2="reparto_a" operator="in" result="paso1"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.11 0.26" numOctaves="2" seed="47" result="seco"/>
+    <feComponentTransfer in="seco" result="seco_a">
+      <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 0.2 1 1 1 0.65 1 1 1 1"/>
+    </feComponentTransfer>
+    <feComposite in="paso1" in2="seco_a" operator="in"/>
+  </filter>
+
+  <!-- Segunda pasada sin volver a entintar: menos carga, más calvas. -->
+  <filter id="sello-seco" x="-14%" y="-22%" width="128%" height="144%"
+          color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" seed="13" result="filo"/>
+    <feDisplacementMap in="SourceGraphic" in2="filo" scale="2.6"
+                       xChannelSelector="R" yChannelSelector="G" result="marca"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.021" numOctaves="3" seed="34" result="reparto"/>
+    <feComponentTransfer in="reparto" result="reparto_a">
+      <feFuncA type="linear" slope="3.5" intercept="-0.28"/>
+    </feComponentTransfer>
+    <feComposite in="marca" in2="reparto_a" operator="in" result="paso1"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.14 0.3" numOctaves="2" seed="61" result="seco"/>
+    <feComponentTransfer in="seco" result="seco_a">
+      <feFuncA type="discrete" tableValues="1 1 1 1 1 0.15 1 1 0.55 1 1 1 1 0.3 1 1"/>
+    </feComponentTransfer>
+    <feComposite in="paso1" in2="seco_a" operator="in"/>
+  </filter>
+</svg>
+
+<div class="barra">
+  <h1>Bocetos de la presentación</h1>
+  <span class="duracion" id="duracion"></span>
+  <button type="button" data-boceto="a" aria-pressed="true">A · El asiento</button>
+  <button type="button" data-boceto="b" aria-pressed="false">B · El albarán</button>
+  <button type="button" id="repetir">Repetir</button>
+</div>
+
+<div class="lienzo">
+
+<!-- ================================================================= -->
+<!-- BOCETO A — El asiento. La factura se escribe y se da por buena.    -->
+<!-- ================================================================= -->
+<section class="escena activa" id="escena-a">
+  <svg viewBox="0 0 880 500" role="img" aria-label="Boceto A: una factura se dibuja a bolígrafo y se sella como conforme">
+    <!-- Papel -->
+    <!-- La hoja, arrancada del talonario. Medidas tomadas de una de verdad. -->
+    <g filter="url(#sombra-hoja)">
+      <path d="M34.0 18.0 Q33.3 21.0 34.0 24.0 Q33.4 27.1 33.9 30.1 Q34.6 32.8 33.5 35.4 Q35.3 38.3 33.9 41.2 Q33.4 45.1 33.6 49.0 Q33.1 51.7 34.1 54.4 Q33.1 57.9 33.5 61.3 Q32.7 64.1 34.1 67.0 Q34.9 70.2 33.7 73.3 Q35.1 76.7 33.7 80.1 Q34.6 84.0 33.6 87.9 Q34.5 91.1 34.1 94.4 Q34.9 98.1 34.1 101.9 Q32.5 105.1 34.2 108.3 Q35.3 110.9 34.4 113.6 Q33.0 116.5 34.0 119.5 Q30.7 122.3 33.7 125.0 Q31.2 128.1 34.5 131.2 Q32.5 134.9 33.8 138.6 Q32.4 142.4 33.7 146.2 Q32.9 149.1 33.4 152.0 Q34.9 155.1 34.2 158.2 Q32.8 161.5 34.5 164.8 Q32.5 168.4 33.9 172.1 Q31.7 174.8 33.6 177.4 Q31.6 180.5 33.8 183.5 Q32.5 186.1 33.7 188.7 Q34.9 191.7 34.6 194.7 Q31.7 197.9 33.7 201.1 Q30.5 204.9 33.6 208.6 Q34.5 211.9 34.4 215.2 Q33.2 218.7 34.3 222.2 Q32.6 225.5 34.4 228.8 Q35.5 232.8 34.3 236.7 Q32.9 239.6 33.4 242.4 Q34.8 245.4 33.9 248.3 Q32.3 252.2 33.7 256.0 Q34.7 258.9 34.5 261.8 Q35.1 265.5 33.5 269.2 Q35.6 272.7 34.0 276.2 Q35.4 279.0 34.6 281.8 Q35.0 284.9 33.6 288.0 Q34.7 290.7 33.6 293.4 Q32.3 297.1 34.1 300.8 Q34.5 303.6 34.0 306.3 Q35.0 310.2 33.7 314.0 Q34.9 316.9 33.7 319.8 Q33.3 323.0 33.9 326.1 Q35.6 329.5 34.0 332.8 Q31.2 336.1 33.4 339.4 Q34.7 343.1 34.1 346.8 Q35.1 349.8 33.5 352.8 Q34.8 356.1 34.0 359.4 Q32.6 362.8 34.1 366.1 Q32.9 369.4 34.0 372.6 Q35.6 375.9 34.5 379.1 Q35.2 382.0 33.6 384.9 Q31.5 387.6 34.2 390.3 Q35.6 394.0 34.2 397.6 Q32.4 400.4 34.5 403.1 Q35.1 406.2 33.6 409.3 Q32.9 412.5 33.8 415.7 Q33.5 419.2 33.4 422.8 Q32.8 425.8 34.6 428.8 Q31.4 432.5 34.3 436.1 Q34.7 439.0 34.4 442.0 Q34.7 444.9 34.2 447.8 Q33.4 450.5 33.5 453.1 Q32.7 457.0 34.4 460.9 Q32.5 463.5 34.1 466.2 Q33.2 470.0 33.7 473.9 Q31.5 476.6 33.8 479.3 Q33.2 481.6 33.8 484.0 L846 484 C848 320 844 160 846 18 Z" fill="#F7F3E6"/>
+    </g>
+    <path d="M34.0 18.0 Q33.3 21.0 34.0 24.0 Q33.4 27.1 33.9 30.1 Q34.6 32.8 33.5 35.4 Q35.3 38.3 33.9 41.2 Q33.4 45.1 33.6 49.0 Q33.1 51.7 34.1 54.4 Q33.1 57.9 33.5 61.3 Q32.7 64.1 34.1 67.0 Q34.9 70.2 33.7 73.3 Q35.1 76.7 33.7 80.1 Q34.6 84.0 33.6 87.9 Q34.5 91.1 34.1 94.4 Q34.9 98.1 34.1 101.9 Q32.5 105.1 34.2 108.3 Q35.3 110.9 34.4 113.6 Q33.0 116.5 34.0 119.5 Q30.7 122.3 33.7 125.0 Q31.2 128.1 34.5 131.2 Q32.5 134.9 33.8 138.6 Q32.4 142.4 33.7 146.2 Q32.9 149.1 33.4 152.0 Q34.9 155.1 34.2 158.2 Q32.8 161.5 34.5 164.8 Q32.5 168.4 33.9 172.1 Q31.7 174.8 33.6 177.4 Q31.6 180.5 33.8 183.5 Q32.5 186.1 33.7 188.7 Q34.9 191.7 34.6 194.7 Q31.7 197.9 33.7 201.1 Q30.5 204.9 33.6 208.6 Q34.5 211.9 34.4 215.2 Q33.2 218.7 34.3 222.2 Q32.6 225.5 34.4 228.8 Q35.5 232.8 34.3 236.7 Q32.9 239.6 33.4 242.4 Q34.8 245.4 33.9 248.3 Q32.3 252.2 33.7 256.0 Q34.7 258.9 34.5 261.8 Q35.1 265.5 33.5 269.2 Q35.6 272.7 34.0 276.2 Q35.4 279.0 34.6 281.8 Q35.0 284.9 33.6 288.0 Q34.7 290.7 33.6 293.4 Q32.3 297.1 34.1 300.8 Q34.5 303.6 34.0 306.3 Q35.0 310.2 33.7 314.0 Q34.9 316.9 33.7 319.8 Q33.3 323.0 33.9 326.1 Q35.6 329.5 34.0 332.8 Q31.2 336.1 33.4 339.4 Q34.7 343.1 34.1 346.8 Q35.1 349.8 33.5 352.8 Q34.8 356.1 34.0 359.4 Q32.6 362.8 34.1 366.1 Q32.9 369.4 34.0 372.6 Q35.6 375.9 34.5 379.1 Q35.2 382.0 33.6 384.9 Q31.5 387.6 34.2 390.3 Q35.6 394.0 34.2 397.6 Q32.4 400.4 34.5 403.1 Q35.1 406.2 33.6 409.3 Q32.9 412.5 33.8 415.7 Q33.5 419.2 33.4 422.8 Q32.8 425.8 34.6 428.8 Q31.4 432.5 34.3 436.1 Q34.7 439.0 34.4 442.0 Q34.7 444.9 34.2 447.8 Q33.4 450.5 33.5 453.1 Q32.7 457.0 34.4 460.9 Q32.5 463.5 34.1 466.2 Q33.2 470.0 33.7 473.9 Q31.5 476.6 33.8 479.3 Q33.2 481.6 33.8 484.0" fill="none" stroke="#C4B692" stroke-width="0.9" stroke-linejoin="round"/>
+    <path d="M34.0 18.0 Q33.3 21.0 34.0 24.0 Q33.4 27.1 33.9 30.1 Q34.6 32.8 33.5 35.4 Q35.3 38.3 33.9 41.2 Q33.4 45.1 33.6 49.0 Q33.1 51.7 34.1 54.4 Q33.1 57.9 33.5 61.3 Q32.7 64.1 34.1 67.0 Q34.9 70.2 33.7 73.3 Q35.1 76.7 33.7 80.1 Q34.6 84.0 33.6 87.9 Q34.5 91.1 34.1 94.4 Q34.9 98.1 34.1 101.9 Q32.5 105.1 34.2 108.3 Q35.3 110.9 34.4 113.6 Q33.0 116.5 34.0 119.5 Q30.7 122.3 33.7 125.0 Q31.2 128.1 34.5 131.2 Q32.5 134.9 33.8 138.6 Q32.4 142.4 33.7 146.2 Q32.9 149.1 33.4 152.0 Q34.9 155.1 34.2 158.2 Q32.8 161.5 34.5 164.8 Q32.5 168.4 33.9 172.1 Q31.7 174.8 33.6 177.4 Q31.6 180.5 33.8 183.5 Q32.5 186.1 33.7 188.7 Q34.9 191.7 34.6 194.7 Q31.7 197.9 33.7 201.1 Q30.5 204.9 33.6 208.6 Q34.5 211.9 34.4 215.2 Q33.2 218.7 34.3 222.2 Q32.6 225.5 34.4 228.8 Q35.5 232.8 34.3 236.7 Q32.9 239.6 33.4 242.4 Q34.8 245.4 33.9 248.3 Q32.3 252.2 33.7 256.0 Q34.7 258.9 34.5 261.8 Q35.1 265.5 33.5 269.2 Q35.6 272.7 34.0 276.2 Q35.4 279.0 34.6 281.8 Q35.0 284.9 33.6 288.0 Q34.7 290.7 33.6 293.4 Q32.3 297.1 34.1 300.8 Q34.5 303.6 34.0 306.3 Q35.0 310.2 33.7 314.0 Q34.9 316.9 33.7 319.8 Q33.3 323.0 33.9 326.1 Q35.6 329.5 34.0 332.8 Q31.2 336.1 33.4 339.4 Q34.7 343.1 34.1 346.8 Q35.1 349.8 33.5 352.8 Q34.8 356.1 34.0 359.4 Q32.6 362.8 34.1 366.1 Q32.9 369.4 34.0 372.6 Q35.6 375.9 34.5 379.1 Q35.2 382.0 33.6 384.9 Q31.5 387.6 34.2 390.3 Q35.6 394.0 34.2 397.6 Q32.4 400.4 34.5 403.1 Q35.1 406.2 33.6 409.3 Q32.9 412.5 33.8 415.7 Q33.5 419.2 33.4 422.8 Q32.8 425.8 34.6 428.8 Q31.4 432.5 34.3 436.1 Q34.7 439.0 34.4 442.0 Q34.7 444.9 34.2 447.8 Q33.4 450.5 33.5 453.1 Q32.7 457.0 34.4 460.9 Q32.5 463.5 34.1 466.2 Q33.2 470.0 33.7 473.9 Q31.5 476.6 33.8 479.3 Q33.2 481.6 33.8 484.0" fill="none" stroke="#FFFCF0" stroke-width="0.5" transform="translate(1.1 0)"/>
+    <!-- La doblez del sobre: recta, a media hoja. -->
+    <rect x="34" y="234" width="812" height="10" fill="url(#doblez-h)"/>
+    <path d="M34 239 C280 237.4 560 240.8 846 238.4"
+          fill="none" stroke="#9B8C6D" stroke-width="0.5" opacity="0.45"/>
+    <!-- La del manoseo: sale del canto roto y muere en el papel. -->
+    <path d="M36 65 L378 154"
+          stroke="url(#doblez-d)" stroke-width="9" fill="none" opacity="0.9"/>
+
+    <path id="a-marco" class="traza" style="--largo:1560;--dur:2.6s;--esp:0.3s;stroke-width:2"
+          d="M60 46 C280 42 560 48 820 44 C824 160 818 320 821 456 C560 460 300 454 62 458 C58 320 64 160 60 46Z"/>
+    <g class="punta">
+      <circle r="3.4"/>
+      <animateMotion begin="0.3s" dur="2.6s" fill="remove" calcMode="linear">
+        <mpath href="#a-marco"/>
+      </animateMotion>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.03;0.97;1"
+               begin="0.3s" dur="2.6s" fill="remove"/>
+    </g>
+
+    <!-- Impreso de fábrica -->
+    <g class="impreso" style="--esp:2.75s">
+      <rect x="596" y="56" width="228" height="38" fill="none"
+            stroke="#4A4436" stroke-width="1.4"/>
+      <text x="608" y="81" font-size="15" fill="#4A4436" letter-spacing="0.5">FACTURA N.º</text>
+      <path class="puntos" d="M716 84 H816"/>
+    </g>
+    <g class="impreso" style="--esp:4.3s">
+      <path class="puntos" d="M150 186 H540"/>
+      <path class="puntos" d="M86 216 H540"/>
+    </g>
+    <g class="impreso" style="--esp:5.75s">
+      <path class="puntos" d="M86 308 H640"/>
+      <path class="puntos" d="M86 344 H640"/>
+    </g>
+
+    <!-- 2. Cabecera -->
+    <path class="traza" style="--largo:770;--dur:0.8s;--esp:2.9s;stroke-width:1.5" d="M60 108 C300 105 560 111 820 107"/>
+    <text class="escrito rotulo" style="--dur:1s;--esp:3.1s" x="86" y="88" font-size="30">FACTURA</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.30s;--esp:3.6s" x="722" y="86" font-size="24">1425</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.30s;--esp:4.1s" x="560" y="132" font-size="26">14 de marzo</text>
+
+    <!-- 3. Partes -->
+    <text class="escrito tenue" style="--dur:0.5s;--esp:4.6s" x="86" y="150" font-size="12" letter-spacing="2">EMISOR</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.45s;--esp:4.9s" x="86" y="182" font-size="26">Tecnología del Sur S.L.</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.16s;--esp:5.5s" x="86" y="212" font-size="22">NIF B12345674</text>
+
+    <!-- 4. La tabla -->
+    <path class="traza" style="--largo:770;--dur:0.7s;--esp:6.1s;stroke-width:1.5" d="M60 244 C300 241 560 247 820 243"/>
+    <text class="escrito tenue" style="--dur:0.5s;--esp:6.4s" x="86" y="268" font-size="12" letter-spacing="2">CONCEPTO</text>
+    <text class="escrito tenue" style="--dur:0.5s;--esp:6.4s" x="620" y="268" font-size="12" letter-spacing="2">IMPORTE</text>
+
+    <text class="escrito escrito-mano mano" style="--dur:1.45s;--esp:6.9s" x="86" y="304" font-size="25">Licencia software anual  ×5</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.01s;--esp:7.5s" x="620" y="304" font-size="25">2.250,00 €</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.45s;--esp:8s" x="86" y="340" font-size="25">Soporte trimestral</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.01s;--esp:8.6s" x="620" y="340" font-size="25">   180,00 €</text>
+
+    <!-- 5. Los totales -->
+    <path class="traza" style="--largo:300;--dur:0.5s;--esp:9.2s;stroke-width:1.5" d="M540 366 C640 364 740 368 820 365"/>
+    <text class="escrito tenue" style="--dur:0.5s;--esp:9.5s" x="400" y="396" font-size="13" letter-spacing="1.5">BASE IMPONIBLE</text>
+    <text class="escrito escrito-mano mano" style="--dur:0.87s;--esp:9.7s" x="620" y="398" font-size="25">2.430,00 €</text>
+    <text class="escrito tenue" style="--dur:0.5s;--esp:10.1s" x="400" y="424" font-size="13" letter-spacing="1.5">IVA 21 %</text>
+    <text class="escrito escrito-mano mano" style="--dur:0.87s;--esp:10.3s" x="620" y="426" font-size="25">   510,30 €</text>
+
+    <!-- 6. La doble raya de cierre -->
+    <path class="traza" style="--largo:300;--dur:0.4s;--esp:10.9s;stroke-width:1.6" d="M540 440 C640 438 740 442 820 439"/>
+    <path class="traza" style="--largo:300;--dur:0.4s;--esp:11.2s;stroke-width:1.2" d="M540 447 C640 445 740 449 820 446"/>
+    <text class="escrito escrito-mano mano" style="--dur:1.01s;--esp:11.6s" x="620" y="478" font-size="29" font-weight="600">2.940,30 €</text>
+
+    <!-- La firma. Primero el nombre, después la rúbrica de un tirón. -->
+    <text class="impreso" style="--esp:11.4s" x="100" y="380" font-size="12"
+          fill="#4A4436" letter-spacing="0.5">El emisor,</text>
+    <g transform="translate(100 432) scale(0.78)">
+      <path id="a-firma" class="traza" style="--largo:900;--dur:1.6s;--esp:11.7s;stroke-width:2.31"
+            d="M0 10 C7 -16 21 -30 30 -21 C39 -12 27 12 18 7 C7 1 16 -23 39 -32 C60 -40 74 -21 65 -2 C58 12 46 9 51 -7 C58 -28 81 -37 97 -25 C111 -15 101 7 92 2 C81 -4 92 -25 115 -32 C136 -38 150 -23 145 -7 C141 6 131 9 134 -3 C138 -19 155 -28 174 -21 C188 -15 195 -2 192 8"/>
+      <path class="traza" style="--largo:760;--dur:1.05s;--esp:13.4s;stroke-width:1.92"
+            d="M-18 18 C26 32 110 29 160 10 C192 -2 183 -23 157 -16 C129 -9 113 19 148 26 C181 32 204 12 209 -8"/>
+    </g>
+    <g class="punta">
+      <circle r="3"/>
+      <animateMotion begin="11.7s" dur="1.6s" fill="remove" calcMode="linear"
+                     transform="translate(100 432) scale(0.78)">
+        <mpath href="#a-firma"/>
+      </animateMotion>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.04;0.96;1"
+               begin="11.7s" dur="1.6s" fill="remove"/>
+    </g>
+
+    <!-- 7. El sello -->
+    <g class="sello" style="--esp:14.6s">
+      <rect x="266" y="136" width="290" height="86" rx="4" stroke-width="4" opacity="0.9"/>
+      <rect x="274" y="144" width="274" height="70" rx="2" stroke-width="1.2" opacity="0.9"/>
+      <text x="411" y="192" font-size="40" text-anchor="middle" letter-spacing="3" font-weight="700">CONFORME</text>
+    </g>
+
+    <!-- 8. La firma -->
+    <text class="escrito rotulo" style="--dur:1.4s;--esp:13.6s" x="440" y="500" font-size="0" text-anchor="middle">Cazafacturas</text>
+  </svg>
+  <p class="pie">
+    <b>A · El asiento.</b> El boli levanta la factura entera, renglón a renglón,
+    cierra la columna con la doble raya y la da por buena. Sereno, sin conflicto.
+    <b>14 s.</b>
+  </p>
+</section>
+
+<!-- ================================================================= -->
+<!-- BOCETO B — El descuadre. La misma factura, pero no cuadra.        -->
+<!-- ================================================================= -->
+<section class="escena" id="escena-b">
+  <svg viewBox="0 0 880 500" role="img" aria-label="Boceto B: la misma factura, el bolígrafo detecta que el total no cuadra y la sella como no conforme">
+    <!-- La hoja, arrancada del talonario. Medidas tomadas de una de verdad. -->
+    <g filter="url(#sombra-hoja)">
+      <path d="M34.0 18.0 Q32.4 21.8 34.1 25.7 Q32.9 28.8 33.9 32.0 Q36.3 34.8 33.9 37.7 Q32.6 41.0 34.3 44.2 Q35.3 47.6 33.8 51.0 Q34.9 54.6 33.8 58.2 Q35.1 60.9 33.9 63.5 Q33.3 67.0 34.4 70.4 Q31.7 73.3 34.1 76.1 Q33.1 79.8 33.8 83.5 Q32.8 87.1 34.3 90.8 Q32.5 94.3 34.5 97.8 Q35.6 101.2 33.5 104.6 Q34.5 107.7 34.6 110.9 Q35.6 114.6 34.3 118.2 Q32.3 121.3 33.5 124.3 Q34.7 127.5 33.7 130.7 Q32.9 133.4 34.4 136.1 Q33.0 139.0 33.8 141.9 Q35.5 145.7 33.9 149.5 Q32.5 153.0 33.8 156.5 Q32.6 159.7 34.4 162.8 Q35.3 165.5 34.4 168.2 Q31.0 171.1 33.7 174.0 Q35.1 177.3 33.4 180.7 Q35.4 183.7 33.6 186.8 Q33.3 190.3 33.5 193.8 Q32.9 197.3 34.1 200.9 Q33.1 204.2 34.5 207.5 Q35.1 211.2 34.1 215.0 Q33.1 217.9 34.6 220.9 Q35.0 223.9 34.0 226.9 Q33.2 230.3 33.7 233.6 Q32.5 236.5 34.0 239.4 Q35.2 242.1 33.7 244.9 Q34.8 248.6 33.5 252.4 Q33.2 256.0 34.4 259.7 Q35.4 262.4 33.8 265.1 Q32.4 267.7 34.6 270.4 Q30.9 274.2 34.3 278.0 Q35.4 281.2 34.4 284.4 Q32.8 287.8 33.5 291.2 Q33.3 295.0 34.1 298.7 Q32.5 302.0 34.2 305.3 Q35.6 308.9 34.6 312.5 Q34.7 316.4 34.4 320.4 Q35.0 323.0 34.0 325.6 Q31.4 328.4 34.4 331.3 Q33.0 334.6 34.2 338.0 Q34.7 341.2 34.6 344.4 Q35.2 347.7 34.5 351.0 Q32.7 354.9 34.4 358.8 Q31.8 361.9 34.6 365.0 Q32.6 368.6 33.6 372.2 Q33.4 375.6 34.1 379.0 Q33.4 381.7 34.2 384.4 Q35.2 387.4 34.0 390.4 Q33.1 393.2 33.7 396.0 Q32.8 399.3 34.6 402.5 Q35.4 405.1 33.6 407.7 Q32.4 411.2 34.5 414.7 Q33.4 418.6 33.5 422.5 Q35.4 426.2 34.0 429.8 Q35.2 432.8 34.5 435.7 Q32.6 438.5 34.4 441.4 Q30.9 444.2 34.6 447.0 Q35.5 449.5 34.1 452.1 Q35.3 455.7 33.8 459.4 Q32.9 462.8 34.4 466.1 Q34.9 468.8 34.4 471.4 Q32.5 474.3 33.6 477.1 Q32.3 480.5 34.0 483.9 Q35.1 483.9 34.5 484.0 L846 484 C848 320 844 160 846 18 Z" fill="#EDE3B8"/>
+    </g>
+    <path d="M34.0 18.0 Q32.4 21.8 34.1 25.7 Q32.9 28.8 33.9 32.0 Q36.3 34.8 33.9 37.7 Q32.6 41.0 34.3 44.2 Q35.3 47.6 33.8 51.0 Q34.9 54.6 33.8 58.2 Q35.1 60.9 33.9 63.5 Q33.3 67.0 34.4 70.4 Q31.7 73.3 34.1 76.1 Q33.1 79.8 33.8 83.5 Q32.8 87.1 34.3 90.8 Q32.5 94.3 34.5 97.8 Q35.6 101.2 33.5 104.6 Q34.5 107.7 34.6 110.9 Q35.6 114.6 34.3 118.2 Q32.3 121.3 33.5 124.3 Q34.7 127.5 33.7 130.7 Q32.9 133.4 34.4 136.1 Q33.0 139.0 33.8 141.9 Q35.5 145.7 33.9 149.5 Q32.5 153.0 33.8 156.5 Q32.6 159.7 34.4 162.8 Q35.3 165.5 34.4 168.2 Q31.0 171.1 33.7 174.0 Q35.1 177.3 33.4 180.7 Q35.4 183.7 33.6 186.8 Q33.3 190.3 33.5 193.8 Q32.9 197.3 34.1 200.9 Q33.1 204.2 34.5 207.5 Q35.1 211.2 34.1 215.0 Q33.1 217.9 34.6 220.9 Q35.0 223.9 34.0 226.9 Q33.2 230.3 33.7 233.6 Q32.5 236.5 34.0 239.4 Q35.2 242.1 33.7 244.9 Q34.8 248.6 33.5 252.4 Q33.2 256.0 34.4 259.7 Q35.4 262.4 33.8 265.1 Q32.4 267.7 34.6 270.4 Q30.9 274.2 34.3 278.0 Q35.4 281.2 34.4 284.4 Q32.8 287.8 33.5 291.2 Q33.3 295.0 34.1 298.7 Q32.5 302.0 34.2 305.3 Q35.6 308.9 34.6 312.5 Q34.7 316.4 34.4 320.4 Q35.0 323.0 34.0 325.6 Q31.4 328.4 34.4 331.3 Q33.0 334.6 34.2 338.0 Q34.7 341.2 34.6 344.4 Q35.2 347.7 34.5 351.0 Q32.7 354.9 34.4 358.8 Q31.8 361.9 34.6 365.0 Q32.6 368.6 33.6 372.2 Q33.4 375.6 34.1 379.0 Q33.4 381.7 34.2 384.4 Q35.2 387.4 34.0 390.4 Q33.1 393.2 33.7 396.0 Q32.8 399.3 34.6 402.5 Q35.4 405.1 33.6 407.7 Q32.4 411.2 34.5 414.7 Q33.4 418.6 33.5 422.5 Q35.4 426.2 34.0 429.8 Q35.2 432.8 34.5 435.7 Q32.6 438.5 34.4 441.4 Q30.9 444.2 34.6 447.0 Q35.5 449.5 34.1 452.1 Q35.3 455.7 33.8 459.4 Q32.9 462.8 34.4 466.1 Q34.9 468.8 34.4 471.4 Q32.5 474.3 33.6 477.1 Q32.3 480.5 34.0 483.9 Q35.1 483.9 34.5 484.0" fill="none" stroke="#C4B692" stroke-width="0.9" stroke-linejoin="round"/>
+    <path d="M34.0 18.0 Q32.4 21.8 34.1 25.7 Q32.9 28.8 33.9 32.0 Q36.3 34.8 33.9 37.7 Q32.6 41.0 34.3 44.2 Q35.3 47.6 33.8 51.0 Q34.9 54.6 33.8 58.2 Q35.1 60.9 33.9 63.5 Q33.3 67.0 34.4 70.4 Q31.7 73.3 34.1 76.1 Q33.1 79.8 33.8 83.5 Q32.8 87.1 34.3 90.8 Q32.5 94.3 34.5 97.8 Q35.6 101.2 33.5 104.6 Q34.5 107.7 34.6 110.9 Q35.6 114.6 34.3 118.2 Q32.3 121.3 33.5 124.3 Q34.7 127.5 33.7 130.7 Q32.9 133.4 34.4 136.1 Q33.0 139.0 33.8 141.9 Q35.5 145.7 33.9 149.5 Q32.5 153.0 33.8 156.5 Q32.6 159.7 34.4 162.8 Q35.3 165.5 34.4 168.2 Q31.0 171.1 33.7 174.0 Q35.1 177.3 33.4 180.7 Q35.4 183.7 33.6 186.8 Q33.3 190.3 33.5 193.8 Q32.9 197.3 34.1 200.9 Q33.1 204.2 34.5 207.5 Q35.1 211.2 34.1 215.0 Q33.1 217.9 34.6 220.9 Q35.0 223.9 34.0 226.9 Q33.2 230.3 33.7 233.6 Q32.5 236.5 34.0 239.4 Q35.2 242.1 33.7 244.9 Q34.8 248.6 33.5 252.4 Q33.2 256.0 34.4 259.7 Q35.4 262.4 33.8 265.1 Q32.4 267.7 34.6 270.4 Q30.9 274.2 34.3 278.0 Q35.4 281.2 34.4 284.4 Q32.8 287.8 33.5 291.2 Q33.3 295.0 34.1 298.7 Q32.5 302.0 34.2 305.3 Q35.6 308.9 34.6 312.5 Q34.7 316.4 34.4 320.4 Q35.0 323.0 34.0 325.6 Q31.4 328.4 34.4 331.3 Q33.0 334.6 34.2 338.0 Q34.7 341.2 34.6 344.4 Q35.2 347.7 34.5 351.0 Q32.7 354.9 34.4 358.8 Q31.8 361.9 34.6 365.0 Q32.6 368.6 33.6 372.2 Q33.4 375.6 34.1 379.0 Q33.4 381.7 34.2 384.4 Q35.2 387.4 34.0 390.4 Q33.1 393.2 33.7 396.0 Q32.8 399.3 34.6 402.5 Q35.4 405.1 33.6 407.7 Q32.4 411.2 34.5 414.7 Q33.4 418.6 33.5 422.5 Q35.4 426.2 34.0 429.8 Q35.2 432.8 34.5 435.7 Q32.6 438.5 34.4 441.4 Q30.9 444.2 34.6 447.0 Q35.5 449.5 34.1 452.1 Q35.3 455.7 33.8 459.4 Q32.9 462.8 34.4 466.1 Q34.9 468.8 34.4 471.4 Q32.5 474.3 33.6 477.1 Q32.3 480.5 34.0 483.9 Q35.1 483.9 34.5 484.0" fill="none" stroke="#FFFCF0" stroke-width="0.5" transform="translate(1.1 0)"/>
+    <!-- La doblez del sobre: recta, a media hoja. -->
+    <rect x="34" y="254" width="812" height="10" fill="url(#doblez-h)"/>
+    <path d="M34 259 C280 257.8 560 261.2 846 258.8"
+          fill="none" stroke="#9B8C6D" stroke-width="0.5" opacity="0.45"/>
+    <!-- La del manoseo: sale del canto roto y muere en el papel. -->
+    <path d="M36 94 L407 154"
+          stroke="url(#doblez-d)" stroke-width="9" fill="none" opacity="0.9"/>
+
+    <path id="b-marco" class="traza" style="--largo:1560;--dur:2.4s;--esp:0.3s;stroke-width:2"
+          d="M60 46 C280 42 560 48 820 44 C824 160 818 320 821 456 C560 460 300 454 62 458 C58 320 64 160 60 46Z"/>
+    <g class="punta">
+      <circle r="3.4"/>
+      <animateMotion begin="0.3s" dur="2.4s" fill="remove" calcMode="linear">
+        <mpath href="#b-marco"/>
+      </animateMotion>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.03;0.97;1"
+               begin="0.3s" dur="2.4s" fill="remove"/>
+    </g>
+
+    <!-- Impreso de fábrica -->
+    <g class="impreso" style="--esp:2.75s">
+      <rect x="596" y="56" width="228" height="38" fill="none"
+            stroke="#4A4436" stroke-width="1.4"/>
+      <text x="608" y="81" font-size="15" fill="#4A4436" letter-spacing="0.5">ALBARÁN N.º</text>
+      <path class="puntos" d="M716 84 H816"/>
+    </g>
+    <g class="impreso" style="--esp:4.3s">
+      <path class="puntos" d="M150 186 H540"/>
+      <path class="puntos" d="M86 216 H540"/>
+    </g>
+    <g class="impreso" style="--esp:5.75s">
+      <path class="puntos" d="M86 308 H640"/>
+      <path class="puntos" d="M86 344 H640"/>
+    </g>
+
+    <!-- Cabecera: es un albarán, y lo dice él mismo. -->
+    <path class="traza" style="--largo:770;--dur:0.7s;--esp:2.7s;stroke-width:1.5" d="M60 108 C300 105 560 111 820 107"/>
+    <text class="escrito rotulo" style="--dur:0.9s;--esp:2.9s" x="86" y="88" font-size="30">ALBARÁN</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.16s;--esp:3.3s" x="722" y="86" font-size="24">4419</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.16s;--esp:3.8s" x="600" y="132" font-size="26">15 de junio</text>
+
+    <text class="escrito tenue" style="--dur:0.5s;--esp:4.4s" x="86" y="150" font-size="12" letter-spacing="2">EMISOR</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.3s;--esp:4.7s" x="86" y="182" font-size="26">Suministros Express</text>
+
+    <path class="traza" style="--largo:770;--dur:0.6s;--esp:5.6s;stroke-width:1.5" d="M60 244 C300 241 560 247 820 243"/>
+    <text class="escrito tenue" style="--dur:0.5s;--esp:5.9s" x="86" y="268" font-size="12" letter-spacing="2">MERCANCÍA</text>
+    <text class="escrito tenue" style="--dur:0.5s;--esp:5.9s" x="660" y="268" font-size="12" letter-spacing="2">CANTIDAD</text>
+
+    <text class="escrito escrito-mano mano" style="--dur:1.3s;--esp:6.4s" x="86" y="304" font-size="25">Monitor ultrawide 34"</text>
+    <text class="escrito escrito-mano mano" style="--dur:0.7s;--esp:7.1s" x="700" y="304" font-size="25">3</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.3s;--esp:7.6s" x="86" y="340" font-size="25">Cable HDMI 2.1</text>
+    <text class="escrito escrito-mano mano" style="--dur:0.7s;--esp:8.3s" x="700" y="340" font-size="25">12</text>
+
+    <!-- Ni base, ni cuota, ni total: un albarán no los lleva. Y por eso
+         no puede servir de justificante. -->
+
+    <!-- El boli vuelve arriba y rodea la palabra. -->
+    <path id="b-cerco" class="traza traza-roja" style="--largo:640;--dur:1.2s;--esp:9.2s;stroke-width:2.6"
+          d="M238 64 C196 54 122 54 92 64 C68 72 68 90 92 97 C124 106 202 106 236 96 C256 90 254 70 228 63 C204 57 152 57 122 63"/>
+    <g class="punta">
+      <circle r="4" fill="#C0271C"/>
+      <animateMotion begin="9.2s" dur="1.2s" fill="remove" calcMode="linear">
+        <mpath href="#b-cerco"/>
+      </animateMotion>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.04;0.96;1"
+               begin="9.2s" dur="1.2s" fill="remove"/>
+    </g>
+
+    <!-- La llamada al margen. -->
+    <path class="traza traza-roja" style="--largo:330;--dur:0.7s;--esp:10.5s;stroke-width:2"
+          d="M300 404 C250 350 200 220 174 118"/>
+    <path class="traza traza-roja" style="--largo:44;--dur:0.25s;--esp:11.1s;stroke-width:2"
+          d="M174 118 L166 140 M174 118 L188 136"/>
+    <text class="escrito escrito-mano mano roja" style="--dur:1.6s;--esp:11.4s" x="308" y="416" font-size="27">esto no es una factura</text>
+
+    <!-- La firma. Primero el nombre, después la rúbrica de un tirón. -->
+    <text class="impreso" style="--esp:8.0s" x="560" y="360" font-size="12"
+          fill="#4A4436" letter-spacing="0.5">El emisor,</text>
+    <g transform="translate(560 412) scale(0.72)">
+      <path id="b-firma" class="traza" style="--largo:900;--dur:1.6s;--esp:8.3s;stroke-width:2.50"
+            d="M0 10 C7 -16 21 -30 30 -21 C39 -12 27 12 18 7 C7 1 16 -23 39 -32 C60 -40 74 -21 65 -2 C58 12 46 9 51 -7 C58 -28 81 -37 97 -25 C111 -15 101 7 92 2 C81 -4 92 -25 115 -32 C136 -38 150 -23 145 -7 C141 6 131 9 134 -3 C138 -19 155 -28 174 -21 C188 -15 195 -2 192 8"/>
+      <path class="traza" style="--largo:760;--dur:1.05s;--esp:10.0s;stroke-width:2.08"
+            d="M-18 18 C26 32 110 29 160 10 C192 -2 183 -23 157 -16 C129 -9 113 19 148 26 C181 32 204 12 209 -8"/>
+    </g>
+    <g class="punta">
+      <circle r="3"/>
+      <animateMotion begin="8.3s" dur="1.6s" fill="remove" calcMode="linear"
+                     transform="translate(560 412) scale(0.72)">
+        <mpath href="#b-firma"/>
+      </animateMotion>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.04;0.96;1"
+               begin="8.3s" dur="1.6s" fill="remove"/>
+    </g>
+
+    <g class="sello sello-mal" style="--esp:13.2s">
+      <rect x="452" y="150" width="330" height="88" rx="4" stroke-width="4" opacity="0.9"/>
+      <rect x="460" y="158" width="314" height="72" rx="2" stroke-width="1.2" opacity="0.9"/>
+      <text x="617" y="208" font-size="38" text-anchor="middle" letter-spacing="2" font-weight="700">NO CONFORME</text>
+    </g>
+  </svg>
+  <p class="pie">
+    <b>B · El albarán colado.</b> Se levanta el documento entero, pero
+    no es una factura: es un albarán, y no lleva ni base, ni cuota, ni
+    total. El boli vuelve arriba, rodea la palabra y lo anota al margen.
+    <b>15 s.</b>
+  </p>
+</section>
+
+</div>
+
+<script>
+const escenas = { a: document.getElementById('escena-a'), b: document.getElementById('escena-b') };
+const botones = [...document.querySelectorAll('[data-boceto]')];
+const duracion = document.getElementById('duracion');
+
+/* Cada trazo necesita saber lo que mide para revelarse: se lo preguntamos
+   al propio SVG en vez de calcularlo a ojo. */
+function medirTrazos(raiz) {
+  raiz.querySelectorAll('path.traza').forEach((p) => {
+    p.style.setProperty('--largo', Math.ceil(p.getTotalLength()) + 1);
+  });
+}
+
+function reproducir(cual) {
+  Object.entries(escenas).forEach(([k, el]) => el.classList.toggle('activa', k === cual));
+  botones.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.boceto === cual)));
+
+  const escena = escenas[cual];
+  // Clonar reinicia todas las animaciones de golpe, sin tocarlas una a una.
+  const copia = escena.querySelector('svg').cloneNode(true);
+  escena.querySelector('svg').replaceWith(copia);
+  medirTrazos(copia);
+  // El clonado reinicia las animaciones CSS, pero el reloj de SMIL va
+  // aparte: hay que devolverlo al principio a mano.
+  if (typeof copia.setCurrentTime === 'function') copia.setCurrentTime(0);
+
+  let fin = 0;
+  copia.querySelectorAll('[style*="--esp"]').forEach((el) => {
+    const esp = parseFloat(getComputedStyle(el).getPropertyValue('--esp')) || 0;
+    const dur = parseFloat(getComputedStyle(el).getPropertyValue('--dur')) || 0.5;
+    fin = Math.max(fin, esp + dur);
+  });
+  duracion.textContent = `duración ≈ ${fin.toFixed(1)} s`;
+}
+
+botones.forEach((b) => b.addEventListener('click', () => reproducir(b.dataset.boceto)));
+document.getElementById('repetir').addEventListener('click', () => {
+  reproducir(botones.find((b) => b.getAttribute('aria-pressed') === 'true').dataset.boceto);
+});
+
+reproducir('a');
+</script>
+</body>
+</html>

@@ -1,13 +1,13 @@
 {
   "pais": "DE",
-  "numero": "DE/2026/3734",
-  "fecha_emision": "2025-07-13",
-  "fecha_vencimiento": "2025-08-12",
+  "numero": "DE/2026/5978",
+  "fecha_emision": "2025-04-09",
+  "fecha_vencimiento": "2025-05-09",
   "emisor": {
-    "nombre": "Materiales de Construcción Hermanos",
-    "nif": "DE856528252",
+    "nombre": "Tecnología del Sur S.L.",
+    "nif": "DE135561820",
     "direccion": {
-      "calle": "Ctra. de Barcelona km 12, Valencia",
+      "calle": "Calle Gran Vía 42, Madrid",
       "ciudad": "Bilbao",
       "provincia": "Vizcaya",
       "codigo_postal": "48001",
@@ -15,34 +15,34 @@
     }
   },
   "receptor": {
-    "nombre": "Tecnología del Sur S.L.",
-    "nif": "DE810026086",
+    "nombre": "Consultoría Integrada S.L.",
+    "nif": "DE608557009",
     "direccion": {
-      "calle": "Calle Gran Vía 42, Madrid",
-      "ciudad": "Madrid",
-      "provincia": "Madrid",
-      "codigo_postal": "28001",
+      "calle": "Paseo de Recoletos 8, Madrid",
+      "ciudad": "Sevilla",
+      "provincia": "Sevilla",
+      "codigo_postal": "41001",
       "pais": "DE"
     }
   },
   "lineas": [
     {
-      "descripcion": "Webcam 4K con micrófono",
-      "cantidad": 5.0,
-      "precio_unitario": 149.0,
-      "importe": 745.0
+      "descripcion": "Licencia software anual",
+      "cantidad": 4.0,
+      "precio_unitario": 450.0,
+      "importe": 1800.0
     }
   ],
-  "base_imponible": 745.0,
+  "base_imponible": 1800.0,
   "iva": [
     {
       "porcentaje": 19.0,
-      "base_imponible": 745.0,
-      "cuota": 141.55
+      "base_imponible": 1800.0,
+      "cuota": 342.0
     }
   ],
   "retencion": null,
-  "total": 886.55,
+  "total": 2142.0,
   "observaciones": null,
   "clave_operacion": null,
   "tipo_documento": "factura",

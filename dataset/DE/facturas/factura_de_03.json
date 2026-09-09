@@ -1,12 +1,12 @@
 {
   "tipo": "completa",
   "pais": "DE",
-  "numero": "DE/2026/5515",
+  "numero": "DE/2026/1675",
   "fecha_emision": "2025-08-03",
   "fecha_vencimiento": "2025-09-02",
   "emisor": {
     "nombre": "Consultoría Integrada S.L.",
-    "nif": "DE398362082",
+    "nif": "DE372952607",
     "direccion": {
       "calle": "Paseo de Recoletos 8, Madrid",
       "ciudad": "Zaragoza",
@@ -17,7 +17,7 @@
   },
   "receptor": {
     "nombre": "Alimentos del Norte S.A.",
-    "nif": "DE919795579",
+    "nif": "DE451769554",
     "direccion": {
       "calle": "Avda. de la Industria 15, Bilbao",
       "ciudad": "Bilbao",
