@@ -1,0 +1,12 @@
+{
+  "fijada": "2026-09-09T21:44:40+00:00",
+  "nota": "fijada con --fijar-linea-base",
+  "precision": 1.0,
+  "conformes": 24,
+  "normales": 24,
+  "cazadas": 50,
+  "trampas": 50,
+  "segundos": 5.95,
+  "fallos_por_campo": {},
+  "trampas_escapadas": []
+}

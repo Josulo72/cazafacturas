@@ -17,7 +17,8 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from backend import seguridad
+from backend import diagnostico, seguridad
+from backend.nucleo import banco
 from backend.nucleo import historial as hist
 from backend.nucleo.analizador import (
     analizar_bytes,
@@ -81,6 +82,24 @@ def api_capacidades():
         "max_ficheros": MAX_FICHEROS,
         "max_mb": MAX_BYTES_FICHERO // (1024 * 1024),
         "muestras": MUESTRAS.is_dir(),
+    }
+
+
+@app.get("/api/salud")
+def api_salud():
+    """Qué le falta a esta instalación para funcionar bien.
+
+    No ejecuta el banco: la interfaz lo consulta al arrancar y tiene que
+    responder al instante. Para medir si la calidad ha caído está
+    `cazafacturas-cli --doctor`, que sí lo ejecuta.
+    """
+    informe = diagnostico.revisar_entorno(_DATOS)
+    base = banco.leer_linea_base()
+    return {
+        **informe.a_dict(),
+        "version": VERSION,
+        "linea_base": {"fijada": base.get("fijada"), "precision": base.get("precision")}
+        if base else None,
     }
 
 
@@ -177,7 +196,7 @@ def api_banco(trampas: bool = True, pais: Optional[str] = None):
         raise HTTPException(400, f"País no soportado: {codigo}")
 
     id_trabajo = uuid.uuid4().hex[:12]
-    casos = _casos_del_banco(codigo, trampas)
+    casos = banco.casos(codigo, trampas)
     if not casos:
         raise HTTPException(404, "No se ha encontrado el dataset.")
 
@@ -187,15 +206,10 @@ def api_banco(trampas: bool = True, pais: Optional[str] = None):
     def trabajo() -> None:
         resultados = []
         try:
-            for i, (nombre, contenido, esperado, pais_caso) in enumerate(casos, 1):
+            for i, caso in enumerate(casos, 1):
                 _estado(id_trabajo, pos=i, total=len(casos),
-                        actual=nombre, estado="analizando")
-                if isinstance(contenido, dict):
-                    resultados.append(analizar_json(contenido, nombre, esperado))
-                else:
-                    resultados.append(
-                        analizar_bytes(contenido, nombre, pais_caso, esperado)
-                    )
+                        actual=caso.nombre, estado="analizando")
+                resultados.append(banco.analizar(caso))
             resumen = resumir(resultados, id_trabajo)
             _historial.guardar(resumen, origen="banco")
             _estado(id_trabajo, estado="terminado", id_lote=resumen.id,
@@ -205,40 +219,6 @@ def api_banco(trampas: bool = True, pais: Optional[str] = None):
 
     threading.Thread(target=trabajo, daemon=True).start()
     return {"id_trabajo": id_trabajo, "total": len(casos)}
-
-
-def _casos_del_banco(pais: Optional[str], trampas: bool) -> list[tuple]:
-    """Los casos del dataset. Se prefieren los PDF: ejercitan la cadena
-    completa. Si no se han generado, se cae al JSON y se validan las reglas."""
-    casos: list[tuple] = []
-    codigos = [pais] if pais else list(PAISES)
-
-    for codigo in codigos:
-        carpeta_esperado = DATASET / codigo / "esperado"
-        if not carpeta_esperado.is_dir():
-            continue
-        for fichero in sorted(carpeta_esperado.glob("*.json")):
-            esperado = json.loads(fichero.read_text(encoding="utf-8"))
-            pdf = MUESTRAS / codigo / f"{fichero.stem}.pdf"
-            if pdf.is_file():
-                casos.append((pdf.name, pdf.read_bytes(), esperado, codigo))
-            else:
-                casos.append((fichero.name, esperado, esperado, codigo))
-
-    if trampas:
-        carpeta = DATASET / "trampas"
-        for fichero in sorted(carpeta.glob("*_documento.json")):
-            documento = json.loads(fichero.read_text(encoding="utf-8"))
-            if pais and str(documento.get("pais", "ES")).upper() != pais:
-                continue
-            pdf = MUESTRAS / "trampas" / f"{fichero.stem}.pdf"
-            if pdf.is_file():
-                casos.append((pdf.name, pdf.read_bytes(), None,
-                              str(documento.get("pais") or "ES").upper()))
-            else:
-                casos.append((fichero.name, documento, None, None))
-
-    return casos
 
 
 # --------------------------------------------------------------------------

@@ -12,6 +12,7 @@ const estado = {
   paises: [],
   pais: '',
   lote: null,
+  salud: null,
   vistaPrevia: 'revisar',
 };
 
@@ -87,6 +88,20 @@ function mostrarError(mensaje) {
   caja.textContent = mensaje;
   caja.hidden = false;
   setTimeout(() => { caja.hidden = true; }, 9000);
+}
+
+/** Lo que le falta a esta instalación. Cada aviso trae el comando que lo
+    arregla: un hueco silencioso es peor que un error visible. */
+function pintarSalud(salud) {
+  const caja = $('#avisos-salud');
+  if (!salud) { caja.innerHTML = ''; return; }
+  const flojas = salud.comprobaciones.filter((c) => c.estado !== 'bien');
+  caja.innerHTML = flojas.map((c) => `
+    <p class="aviso-sistema ${c.estado === 'mal' ? 'aviso-error' : ''}">
+      <svg class="icono" aria-hidden="true"><use href="#i-admiracion"/></svg>
+      <span><b>${esc(c.nombre)}:</b> ${esc(c.detalle)}${
+        c.remedio ? ` <code>${esc(c.remedio)}</code>` : ''}</span>
+    </p>`).join('');
 }
 
 /* ------------------------------------------------------------------ */
@@ -622,6 +637,7 @@ function retraducir() {
   aplicar();
   montarSelectores();
   aplicarTema(document.documentElement.dataset.tema);
+  pintarSalud(estado.salud);
   if (estado.lote) pintarLibro(estado.lote);
   if ($('#v-historial').classList.contains('activa')) cargarHistorial();
 }
@@ -632,12 +648,15 @@ async function arrancar() {
   aplicar();
 
   try {
-    const [caps, paises] = await Promise.all([pedir('/capacidades'), pedir('/paises')]);
+    const [caps, paises, salud] = await Promise.all([
+      pedir('/capacidades'), pedir('/paises'), pedir('/salud'),
+    ]);
     estado.capacidades = caps;
     estado.paises = paises;
-    estado.pais = leer('cazafacturas:pais', '');
+    estado.salud = salud;
 
-    $('#aviso-ocr').hidden = caps.escaneados;
+    estado.pais = leer('cazafacturas:pais', '');
+    pintarSalud(salud);
     $('#pie-version').textContent = `v${caps.version}`;
     $('#pie-capacidades').textContent = caps.escaneados
       ? `PDF · OCR · ${caps.formatos.length} formatos`

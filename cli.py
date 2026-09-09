@@ -16,11 +16,12 @@ import json
 import sys
 from pathlib import Path
 
+from backend import diagnostico
+from backend.nucleo import banco
 from backend.nucleo import historial as hist
 from backend.nucleo.analizador import (
     Resultado,
     analizar_fichero,
-    analizar_json,
     capacidades,
     resumir,
 )
@@ -125,29 +126,79 @@ def _imprimir_resultado(r: Resultado, detallado: bool) -> None:
                           f"obtuvo {d['obtenido']!r}{FIN}")
 
 
-def _casos_del_banco(pais: str | None, trampas: bool) -> list[tuple]:
-    casos: list[tuple] = []
-    for codigo in ([pais] if pais else list(PAISES)):
-        carpeta = DATASET / codigo / "esperado"
-        if not carpeta.is_dir():
-            continue
-        for fichero in sorted(carpeta.glob("*.json")):
-            esperado = json.loads(fichero.read_text(encoding="utf-8"))
-            pdf = MUESTRAS / codigo / f"{fichero.stem}.pdf"
-            casos.append((pdf if pdf.is_file() else esperado,
-                          pdf.name if pdf.is_file() else fichero.name,
-                          esperado, codigo))
-    if trampas:
-        for fichero in sorted((DATASET / "trampas").glob("*_documento.json")):
-            documento = json.loads(fichero.read_text(encoding="utf-8"))
-            codigo = str(documento.get("pais") or "ES").upper()
-            if pais and codigo != pais:
-                continue
-            pdf = MUESTRAS / "trampas" / f"{fichero.stem}.pdf"
-            casos.append((pdf if pdf.is_file() else documento,
-                          pdf.name if pdf.is_file() else fichero.name,
-                          None, codigo))
-    return casos
+def _pct(v) -> str:
+    """Porcentaje a la española: coma decimal y espacio antes del signo."""
+    if v is None:
+        return '—'
+    return f'{v * 100:.1f}'.replace('.', ',') + ' %'
+
+
+def _doctor(fijar: bool = False) -> int:
+    """Revisa la instalación y mide si la calidad ha caído.
+
+    Devuelve 0 si todo está en su sitio y el banco cumple la línea base.
+    Ese código de salida es lo que hace que esto sirva en integración
+    continua y no solo para mirarlo.
+    """
+    from backend.diagnostico import Estado
+
+    _cabecera("Instalación")
+    entorno = diagnostico.revisar_entorno(hist.dir_datos(RAIZ))
+    for c in entorno.comprobaciones:
+        marca, color = {
+            Estado.BIEN: (BIEN, VERDE),
+            Estado.AVISO: (OJO, AMBAR),
+            Estado.MAL: (MAL, ROJO),
+        }[c.estado]
+        print(f"  {color}{marca}{FIN} {c.nombre:<26} {GRIS}{c.detalle}{FIN}")
+        if c.remedio:
+            print(f"      {AMBAR}{c.remedio}{FIN}")
+
+    if not entorno.sano:
+        print(f"\n{ROJO}Falta algo imprescindible. Arréglalo antes de medir.{FIN}")
+        return 1
+
+    _cabecera("Banco de pruebas")
+    casos = banco.casos()
+    if not casos:
+        print(f"{ROJO}No se ha encontrado el dataset.{FIN}", file=sys.stderr)
+        return 1
+    print(f"  {GRIS}{len(casos)} documentos{FIN}")
+    metricas = banco.medir(banco.ejecutar())
+
+    print(f"  Precisión de extracción   {_pct(metricas.precision)}")
+    print(f"  Facturas conformes        {metricas.conformes}/{metricas.normales}")
+    print(f"  Trampas cazadas           {metricas.cazadas}/{metricas.trampas}")
+    print(f"  Tiempo                    {metricas.segundos:.2f} s")
+
+    if fijar:
+        if not metricas.perfecto:
+            print(f"\n{ROJO}No se fija una línea base con fallos dentro.{FIN}")
+            print(f"{GRIS}Arregla lo que falla y vuelve a intentarlo.{FIN}")
+            return 1
+        ruta = banco.escribir_linea_base(metricas, "fijada con --fijar-linea-base")
+        print(f"\n{VERDE}Línea base fijada{FIN} {GRIS}en {ruta}{FIN}")
+        return 0
+
+    base = banco.leer_linea_base()
+    if base is None:
+        print(f"\n{AMBAR}No hay línea base con la que comparar.{FIN}")
+        print(f"{GRIS}Fíjala con: python cli.py --fijar-linea-base{FIN}")
+        return 0
+
+    _cabecera(f"Comparación con la línea base {PUNTO} {base.get('fijada', '')[:10]}")
+    desvios = diagnostico.comparar(base, metricas)
+    if not desvios:
+        print(f"  {VERDE}{BIEN}{FIN} Nada ha empeorado.")
+        return 0
+
+    for d in desvios:
+        print(f"  {ROJO}{MAL}{FIN} {FUERTE}{d.medida}{FIN}")
+        print(f"      línea base {d.base}   {ROJO}ahora {d.ahora}{FIN}")
+        if d.detalle:
+            print(f"      {GRIS}{d.detalle}{FIN}")
+    print(f"\n{ROJO}{len(desvios)} regresión(es).{FIN}")
+    return 1
 
 
 def main() -> int:
@@ -169,7 +220,17 @@ def main() -> int:
                         help="Mostrar esperado/encontrado de cada hallazgo")
     parser.add_argument("--capacidades", action="store_true",
                         help="Qué sabe hacer esta instalación")
+    parser.add_argument("--doctor", action="store_true",
+                        help="Revisar la instalación y comprobar que no ha "
+                             "empeorado respecto de la línea base")
+    parser.add_argument("--fijar-linea-base", action="store_true",
+                        dest="fijar_linea_base",
+                        help="Guardar el resultado actual como línea base "
+                             "(solo si sale perfecto)")
     args = parser.parse_args()
+
+    if args.doctor or args.fijar_linea_base:
+        return _doctor(fijar=args.fijar_linea_base)
 
     if args.capacidades:
         caps = capacidades()
@@ -185,16 +246,12 @@ def main() -> int:
     resultados: list[Resultado] = []
 
     if args.banco:
-        casos = _casos_del_banco(args.pais, not args.sin_trampas)
+        casos = banco.casos(args.pais, not args.sin_trampas)
         if not casos:
             print(f"{ROJO}No se ha encontrado el dataset.{FIN}", file=sys.stderr)
             return 1
         _cabecera(f"Banco de pruebas {PUNTO} {len(casos)} casos")
-        for entrada, nombre, esperado, codigo in casos:
-            if isinstance(entrada, Path):
-                resultados.append(analizar_fichero(entrada, codigo, esperado))
-            else:
-                resultados.append(analizar_json(entrada, nombre, esperado))
+        resultados = [banco.analizar(c) for c in casos]
     else:
         rutas: list[Path] = []
         for patron in args.ficheros:
