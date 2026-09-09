@@ -45,12 +45,17 @@ ocr = [
 muestras = [
   "reportlab>=4.0",
 ]
+# Lo mínimo para pasar los tests. A propósito no arrastra el OCR: los tests
+# que lo necesitan se saltan solos, y así la matriz de integración continua
+# cubre versiones de Python donde rapidocr todavía no tiene rueda.
 dev = [
   "pytest>=8.0",
   "httpx>=0.27",
-  "rapidocr-onnxruntime>=1.3",
-  "pypdfium2>=4.30",
-  "reportlab>=4.0",
+  "hypothesis>=6.100",
+]
+# Todo instalado, que es como se mide de verdad.
+completo = [
+  "cazafacturas[ocr,muestras,dev]",
 ]
 
 [project.urls]

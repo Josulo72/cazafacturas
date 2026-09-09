@@ -254,7 +254,7 @@ text { font-family: var(--maquina); fill: var(--tinta); }
           stroke="url(#doblez-d)" stroke-width="9" fill="none" opacity="0.9"/>
 
     <path id="a-marco" class="traza" style="--largo:1560;--dur:2.6s;--esp:0.3s;stroke-width:2"
-          d="M60 46 C280 42 560 48 820 44 C824 160 818 320 821 456 C560 460 300 454 62 458 C58 320 64 160 60 46Z"/>
+          d="M60 46 C280 42 560 48 834 44 C838 160 832 320 835 456 C560 460 300 454 62 458 C58 320 64 160 60 46Z"/>
     <g class="punta">
       <circle r="3.4"/>
       <animateMotion begin="0.3s" dur="2.6s" fill="remove" calcMode="linear">
@@ -266,10 +266,10 @@ text { font-family: var(--maquina); fill: var(--tinta); }
 
     <!-- Impreso de fábrica -->
     <g class="impreso" style="--esp:2.75s">
-      <rect x="596" y="56" width="228" height="38" fill="none"
+      <rect x="584" y="56" width="228" height="38" fill="none"
             stroke="#4A4436" stroke-width="1.4"/>
-      <text x="608" y="81" font-size="15" fill="#4A4436" letter-spacing="0.5">FACTURA N.º</text>
-      <path class="puntos" d="M716 84 H816"/>
+      <text x="596" y="81" font-size="15" fill="#4A4436" letter-spacing="0.5">FACTURA N.º</text>
+      <path class="puntos" d="M704 84 H804"/>
     </g>
     <g class="impreso" style="--esp:4.3s">
       <path class="puntos" d="M150 186 H540"/>
@@ -281,9 +281,9 @@ text { font-family: var(--maquina); fill: var(--tinta); }
     </g>
 
     <!-- 2. Cabecera -->
-    <path class="traza" style="--largo:770;--dur:0.8s;--esp:2.9s;stroke-width:1.5" d="M60 108 C300 105 560 111 820 107"/>
+    <path class="traza" style="--largo:770;--dur:0.8s;--esp:2.9s;stroke-width:1.5" d="M60 108 C300 105 560 111 834 107"/>
     <text class="escrito rotulo" style="--dur:1s;--esp:3.1s" x="86" y="88" font-size="30">FACTURA</text>
-    <text class="escrito escrito-mano mano" style="--dur:1.30s;--esp:3.6s" x="722" y="86" font-size="24">1425</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.30s;--esp:3.6s" x="710" y="86" font-size="24">1425</text>
     <text class="escrito escrito-mano mano" style="--dur:1.30s;--esp:4.1s" x="560" y="132" font-size="26">14 de marzo</text>
 
     <!-- 3. Partes -->
@@ -292,7 +292,7 @@ text { font-family: var(--maquina); fill: var(--tinta); }
     <text class="escrito escrito-mano mano" style="--dur:1.16s;--esp:5.5s" x="86" y="212" font-size="22">NIF B12345674</text>
 
     <!-- 4. La tabla -->
-    <path class="traza" style="--largo:770;--dur:0.7s;--esp:6.1s;stroke-width:1.5" d="M60 244 C300 241 560 247 820 243"/>
+    <path class="traza" style="--largo:770;--dur:0.7s;--esp:6.1s;stroke-width:1.5" d="M60 244 C300 241 560 247 834 243"/>
     <text class="escrito tenue" style="--dur:0.5s;--esp:6.4s" x="86" y="268" font-size="12" letter-spacing="2">CONCEPTO</text>
     <text class="escrito tenue" style="--dur:0.5s;--esp:6.4s" x="620" y="268" font-size="12" letter-spacing="2">IMPORTE</text>
 
@@ -302,15 +302,15 @@ text { font-family: var(--maquina); fill: var(--tinta); }
     <text class="escrito escrito-mano mano" style="--dur:1.01s;--esp:8.6s" x="620" y="340" font-size="25">   180,00 €</text>
 
     <!-- 5. Los totales -->
-    <path class="traza" style="--largo:300;--dur:0.5s;--esp:9.2s;stroke-width:1.5" d="M540 366 C640 364 740 368 820 365"/>
+    <path class="traza" style="--largo:300;--dur:0.5s;--esp:9.2s;stroke-width:1.5" d="M540 366 C640 364 740 368 834 365"/>
     <text class="escrito tenue" style="--dur:0.5s;--esp:9.5s" x="400" y="396" font-size="13" letter-spacing="1.5">BASE IMPONIBLE</text>
     <text class="escrito escrito-mano mano" style="--dur:0.87s;--esp:9.7s" x="620" y="398" font-size="25">2.430,00 €</text>
     <text class="escrito tenue" style="--dur:0.5s;--esp:10.1s" x="400" y="424" font-size="13" letter-spacing="1.5">IVA 21 %</text>
     <text class="escrito escrito-mano mano" style="--dur:0.87s;--esp:10.3s" x="620" y="426" font-size="25">   510,30 €</text>
 
     <!-- 6. La doble raya de cierre -->
-    <path class="traza" style="--largo:300;--dur:0.4s;--esp:10.9s;stroke-width:1.6" d="M540 440 C640 438 740 442 820 439"/>
-    <path class="traza" style="--largo:300;--dur:0.4s;--esp:11.2s;stroke-width:1.2" d="M540 447 C640 445 740 449 820 446"/>
+    <path class="traza" style="--largo:300;--dur:0.4s;--esp:10.9s;stroke-width:1.6" d="M540 440 C640 438 740 442 834 439"/>
+    <path class="traza" style="--largo:300;--dur:0.4s;--esp:11.2s;stroke-width:1.2" d="M540 447 C640 445 740 449 834 446"/>
     <text class="escrito escrito-mano mano" style="--dur:1.01s;--esp:11.6s" x="620" y="478" font-size="29" font-weight="600">2.940,30 €</text>
 
     <!-- La firma. Primero el nombre, después la rúbrica de un tirón. -->
@@ -338,9 +338,6 @@ text { font-family: var(--maquina); fill: var(--tinta); }
       <rect x="274" y="144" width="274" height="70" rx="2" stroke-width="1.2" opacity="0.9"/>
       <text x="411" y="192" font-size="40" text-anchor="middle" letter-spacing="3" font-weight="700">CONFORME</text>
     </g>
-
-    <!-- 8. La firma -->
-    <text class="escrito rotulo" style="--dur:1.4s;--esp:13.6s" x="440" y="500" font-size="0" text-anchor="middle">Cazafacturas</text>
   </svg>
   <p class="pie">
     <b>A · El asiento.</b> El boli levanta la factura entera, renglón a renglón,
@@ -369,7 +366,7 @@ text { font-family: var(--maquina); fill: var(--tinta); }
           stroke="url(#doblez-d)" stroke-width="9" fill="none" opacity="0.9"/>
 
     <path id="b-marco" class="traza" style="--largo:1560;--dur:2.4s;--esp:0.3s;stroke-width:2"
-          d="M60 46 C280 42 560 48 820 44 C824 160 818 320 821 456 C560 460 300 454 62 458 C58 320 64 160 60 46Z"/>
+          d="M60 46 C280 42 560 48 834 44 C838 160 832 320 835 456 C560 460 300 454 62 458 C58 320 64 160 60 46Z"/>
     <g class="punta">
       <circle r="3.4"/>
       <animateMotion begin="0.3s" dur="2.4s" fill="remove" calcMode="linear">
@@ -381,10 +378,10 @@ text { font-family: var(--maquina); fill: var(--tinta); }
 
     <!-- Impreso de fábrica -->
     <g class="impreso" style="--esp:2.75s">
-      <rect x="596" y="56" width="228" height="38" fill="none"
+      <rect x="584" y="56" width="228" height="38" fill="none"
             stroke="#4A4436" stroke-width="1.4"/>
-      <text x="608" y="81" font-size="15" fill="#4A4436" letter-spacing="0.5">ALBARÁN N.º</text>
-      <path class="puntos" d="M716 84 H816"/>
+      <text x="596" y="81" font-size="15" fill="#4A4436" letter-spacing="0.5">ALBARÁN N.º</text>
+      <path class="puntos" d="M704 84 H804"/>
     </g>
     <g class="impreso" style="--esp:4.3s">
       <path class="puntos" d="M150 186 H540"/>
@@ -396,15 +393,15 @@ text { font-family: var(--maquina); fill: var(--tinta); }
     </g>
 
     <!-- Cabecera: es un albarán, y lo dice él mismo. -->
-    <path class="traza" style="--largo:770;--dur:0.7s;--esp:2.7s;stroke-width:1.5" d="M60 108 C300 105 560 111 820 107"/>
+    <path class="traza" style="--largo:770;--dur:0.7s;--esp:2.7s;stroke-width:1.5" d="M60 108 C300 105 560 111 834 107"/>
     <text class="escrito rotulo" style="--dur:0.9s;--esp:2.9s" x="86" y="88" font-size="30">ALBARÁN</text>
-    <text class="escrito escrito-mano mano" style="--dur:1.16s;--esp:3.3s" x="722" y="86" font-size="24">4419</text>
+    <text class="escrito escrito-mano mano" style="--dur:1.16s;--esp:3.3s" x="710" y="86" font-size="24">4419</text>
     <text class="escrito escrito-mano mano" style="--dur:1.16s;--esp:3.8s" x="600" y="132" font-size="26">15 de junio</text>
 
     <text class="escrito tenue" style="--dur:0.5s;--esp:4.4s" x="86" y="150" font-size="12" letter-spacing="2">EMISOR</text>
     <text class="escrito escrito-mano mano" style="--dur:1.3s;--esp:4.7s" x="86" y="182" font-size="26">Suministros Express</text>
 
-    <path class="traza" style="--largo:770;--dur:0.6s;--esp:5.6s;stroke-width:1.5" d="M60 244 C300 241 560 247 820 243"/>
+    <path class="traza" style="--largo:770;--dur:0.6s;--esp:5.6s;stroke-width:1.5" d="M60 244 C300 241 560 247 834 243"/>
     <text class="escrito tenue" style="--dur:0.5s;--esp:5.9s" x="86" y="268" font-size="12" letter-spacing="2">MERCANCÍA</text>
     <text class="escrito tenue" style="--dur:0.5s;--esp:5.9s" x="660" y="268" font-size="12" letter-spacing="2">CANTIDAD</text>
 

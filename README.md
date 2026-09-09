@@ -47,47 +47,112 @@ y no existe en España—.
 se identifican y se rechazan con una frase, en vez de listar los quince campos
 de factura que les faltan.
 
-## Cuánto acierta
+## Cuánto acierta, y qué significa esa cifra
 
-Medido el 9 de septiembre de 2026 sobre el banco de pruebas del propio
-proyecto: 24 facturas y 40 casos trampa en cuatro países, con la respuesta
-correcta conocida de antemano.
+Sobre el banco de pruebas del propio proyecto: 24 facturas y 40 casos trampa
+en cuatro países, con la respuesta correcta escrita de antemano.
 
 | | |
 |---|---|
 | Facturas PDF extraídas | 24 / 24 |
-| Precisión campo a campo | **100 %** |
+| Precisión campo a campo | 100 % |
 | Casos trampa detectados | 50 / 50 |
 | Tiempo de los 24 documentos | 1,8 s |
-
-Reprodúcelo tú mismo:
 
 ```bash
 python cli.py --banco
 ```
 
-No es una cifra de folleto: es el código midiéndose contra documentos cuyo
-resultado correcto está escrito en el repositorio, y el banco está en la
-interfaz para que cualquiera lo lance.
+### Ahora la letra pequeña, que importa más que la cifra
+
+**Ese 100 % no significa que sepa leer la factura de tu proveedor.** Los PDF
+del banco los genera este mismo repositorio: `dataset/render_pdf.py` escribe
+las etiquetas y `backend/nucleo/extractor.py` las busca. Es circular. Lo que
+esa cifra demuestra es que la cadena es **coherente consigo misma** y que no
+se rompe al cambiarla —para eso sirve, y para eso está la línea base—, no que
+acierte en el mundo real.
+
+Frente a facturas de proveedores de verdad, con sus maquetas raras, sus
+logotipos y sus tablas a tres columnas, el número será bastante más bajo.
+Todavía no lo he medido, y hasta que lo mida no voy a fingir que lo sé.
+
+**El OCR tampoco está medido.** Los 74 documentos del banco llevan capa de
+texto. La lectura de escaneados funciona y está instalada, pero ningún número
+de esta tabla la ejercita.
+
+**Las cuatro jurisdicciones no están al mismo nivel.** España está modelada en
+serio: DNI, NIE, CIF con su dígito de control según el tipo de sociedad,
+tipos de IVA vigentes, retención de IRPF. Reino Unido y Alemania llevan la
+comprobación del identificador —módulo 97 y módulo 11— y sus tipos de IVA.
+Estados Unidos solo valida el EIN: el *sales tax* varía por estado y aquí no
+se comprueba.
+
+Lo pongo por delante porque un revisor con oficio lo ve en treinta segundos,
+y prefiero decirlo yo.
 
 ## Instalación
 
-```bash
-pip install -e ".[ocr,muestras]"
+Clona y ejecuta el instalador. Monta un entorno propio en `.venv`, así que no
+toca el Python del sistema ni le cambia versiones a nada que ya tengas.
+
+**Windows**
+
+```powershell
+powershell -ExecutionPolicy Bypass -File instalar.ps1
 ```
 
+**macOS y Linux**
+
 ```bash
-cazafacturas
+sh instalar.sh
 ```
 
-Abre el navegador solo, en `127.0.0.1:8765`. La raíz es la presentación; la
-aplicación está en `/app`.
+El instalador comprueba la versión de Python, monta el entorno, instala,
+genera las 74 facturas de muestra, **pasa el diagnóstico** y deja un
+lanzador. Se puede volver a ejecutar las veces que haga falta.
 
-Requiere Python 3.10 o superior. `[ocr]` añade la lectura de escaneados y
-fotos; son modelos que vienen dentro del paquete, **no hace falta instalar
-Tesseract ni ningún binario del sistema**. `[muestras]` genera las facturas de
-ejemplo. Sin los extras, la aplicación funciona con PDF que llevan capa de
-texto y lo dice claramente en pantalla.
+Después:
+
+```bash
+./cazafacturas
+```
+
+En Windows, doble clic en `Cazafacturas.cmd`. Abre el navegador solo.
+
+<details>
+<summary>A mano, sin instalador</summary>
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -e ".[ocr,muestras]"
+.venv/bin/python -m dataset.render_pdf
+.venv/bin/cazafacturas
+```
+
+`[ocr]` añade la lectura de escaneados y fotos; son modelos que vienen dentro
+del paquete, **no hace falta Tesseract ni ningún binario del sistema**.
+`[muestras]` genera las facturas de ejemplo. Sin los extras, la aplicación
+funciona con PDF que llevan capa de texto y lo dice en pantalla.
+
+`requirements.lock` tiene las versiones exactas con las que se midió la línea
+base, por si hace falta reproducir una medida vieja.
+
+</details>
+
+Requiere Python 3.10 o superior. La raíz es la presentación; la aplicación
+está en `/app`.
+
+## Comprobar que sigue bien
+
+```bash
+python cli.py --doctor
+```
+
+Revisa la instalación y **vuelve a medir el banco contra la línea base
+commiteada**. Si un cambio baja la precisión, dice qué campos han empezado a
+fallar; si se escapa un caso trampa, lo nombra. Devuelve 1 cuando algo ha
+empeorado, así que sirve de puerta en integración continua y no solo para
+mirarlo.
 
 ## La interfaz
 
@@ -175,8 +240,14 @@ pip install -e ".[dev]"
 pytest
 ```
 
-66 tests. Los del extractor comparan campo a campo contra el esperado sobre
-PDF reales, no sobre diccionarios de laboratorio.
+120 tests, en cuatro familias:
+
+| | |
+|---|---|
+| Reglas fiscales | cada regla con su caso, y el dataset entero como red |
+| Extracción | campo a campo contra el esperado, sobre PDF y no sobre diccionarios |
+| Seguridad | cada test reproduce el ataque que la defensa evita |
+| Propiedades | Hypothesis busca el contraejemplo en el parser de importes, el de fechas y los dígitos de control |
 
 Regenerar el dataset y sus PDF:
 

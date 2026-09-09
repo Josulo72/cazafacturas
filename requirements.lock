@@ -1,0 +1,50 @@
+# Versiones exactas con las que se midió la línea base del banco.
+#
+# No es lo que se instala normalmente —para eso está pyproject.toml, con
+# rangos— sino la foto de un entorno que se sabe que funciona. Sirve para
+# reproducir una medida vieja o para descartar que una regresión venga de
+# una dependencia que se ha movido debajo.
+#
+#   pip install -r requirements.lock
+#
+PyYAML==6.0.3
+Pygments==2.21.0
+annotated-doc==0.0.5
+annotated-types==0.8.0
+anyio==4.15.1
+certifi==2026.7.22
+cffi==2.1.1
+charset-normalizer==3.5.1
+click==8.5.0
+colorama==0.4.6
+cryptography==50.0.1
+fastapi==0.141.1
+flatbuffers==25.12.19
+h11==0.16.0
+httpcore==1.0.9
+idna==3.19
+numpy==2.5.3
+onnxruntime==1.29.0
+opencv-python==5.0.0.93
+packaging==26.3
+pdfminer.six==20260107
+pdfplumber==0.11.10
+pillow==12.3.0
+protobuf==7.36.1
+pyclipper==1.4.0
+pycparser==3.0
+pydantic==2.13.5
+pydantic_core==2.46.5
+pypdfium2==5.13.0
+python-multipart==0.0.32
+rapidocr-onnxruntime==1.4.4
+reportlab==5.0.1
+setuptools==84.0.0
+shapely==2.1.2
+six==1.17.0
+starlette==1.6.0
+tqdm==4.70.0
+typing-inspection==0.4.4
+typing_extensions==4.16.0
+uvicorn==0.52.4
+wheel==0.48.0

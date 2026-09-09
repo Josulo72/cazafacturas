@@ -1,0 +1,125 @@
+# Integración continua.
+#
+# Tres trabajos, cada uno con una pregunta distinta:
+#
+#   pruebas     ¿pasa los tests en los sistemas y versiones que prometemos?
+#   calidad     ¿ha empeorado el extractor respecto de la línea base?
+#   suministro  ¿tenemos dependencias con vulnerabilidades conocidas?
+#
+# El de calidad es el que de verdad protege: los tests dicen si algo se ha
+# roto, y ese dice si algo ha empeorado sin romperse, que es la avería fea.
+
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pruebas:
+    name: Tests · ${{ matrix.so }} · Python ${{ matrix.python }}
+    runs-on: ${{ matrix.so }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Un instalador que solo funciona en la máquina del autor no es un
+        # instalador. Y el proyecto promete 3.10 en adelante.
+        so: [ubuntu-latest, windows-latest, macos-latest]
+        python: ['3.10', '3.11', '3.12', '3.13']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+
+      - name: Instalar
+        # Sin el OCR: rapidocr no tiene rueda para todas las versiones, y los
+        # tests que lo necesitan se saltan solos. La medida con OCR va en el
+        # trabajo de calidad.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,muestras]"
+
+      - name: Generar el dataset y sus PDF
+        run: |
+          python -m dataset.generador
+          python -m dataset.generar_trampas
+          python -m dataset.render_pdf
+
+      - name: Tests
+        run: pytest -q
+
+      - name: El dataset regenerado tiene que ser idéntico
+        # Los generadores son deterministas. Si esto ensucia el árbol, alguien
+        # ha metido azar sin semilla y el banco deja de ser comparable.
+        shell: bash
+        run: |
+          if [ -n "$(git status --porcelain dataset)" ]; then
+            echo "El dataset regenerado no coincide con el commiteado:"
+            git status --porcelain dataset
+            git diff --stat dataset
+            exit 1
+          fi
+
+  calidad:
+    name: El extractor no ha empeorado
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar todo, también el OCR
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[completo]"
+
+      - name: Generar los PDF de muestra
+        run: python -m dataset.render_pdf
+
+      - name: Diagnóstico contra la línea base
+        # Devuelve 1 si la precisión baja, si se escapa una trampa o si el
+        # tiempo se dispara. Ese código de salida es lo que hace que esto sea
+        # una puerta y no un adorno.
+        run: python cli.py --doctor
+
+  suministro:
+    name: Dependencias
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[ocr,muestras]"
+          pip install pip-audit cyclonedx-bom
+
+      - name: Vulnerabilidades conocidas
+        # No falla la construcción: un aviso de CVE se mira, no se ignora,
+        # pero tampoco bloquea un arreglo urgente en otra parte.
+        continue-on-error: true
+        run: pip-audit --strict --desc
+
+      - name: Inventario de lo que llevamos dentro
+        run: cyclonedx-py environment -o sbom.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json

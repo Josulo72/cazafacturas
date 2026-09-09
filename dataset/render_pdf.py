@@ -13,9 +13,23 @@ disposición.
 from __future__ import annotations
 
 import json
+import os
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Optional
+
+# --- Reproducibilidad ------------------------------------------------------
+# Un PDF lleva por dentro la fecha en que se creó y un identificador único,
+# así que el mismo dataset generaba 74 ficheros distintos cada vez: el
+# repositorio se ensuciaba solo y no había forma de comprobar que los
+# generadores siguen siendo deterministas. `invariant` congela ambas cosas,
+# y `SOURCE_DATE_EPOCH` es el convenio que usan las construcciones
+# reproducibles para decir «haz como si fuera esta fecha».
+os.environ.setdefault("SOURCE_DATE_EPOCH", "1735689600")   # 2025-01-01 UTC
+
+from reportlab import rl_config
+
+rl_config.invariant = 1
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm

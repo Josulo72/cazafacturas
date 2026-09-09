@@ -62,10 +62,11 @@ Tres cosas que un competidor no puede copiar diciendo lo mismo:
 - **Uso típico:** un lote de entre 1 y 50 documentos de una tacada.
 - **Salida:** informe en pantalla y exportación a CSV para llevárselo a Excel
   o al programa de contabilidad.
-- **Cuatro jurisdicciones:** España, Reino Unido, Estados Unidos y Alemania.
-  Cada una con su identificador fiscal, su impuesto, sus tipos vigentes y su
-  formato de fecha e importe. `05/03/2025` es 5 de marzo en España y 3 de mayo
-  en Estados Unidos, y el producto lo distingue.
+- **Cuatro jurisdicciones, a distinta profundidad:** España, Reino Unido,
+  Estados Unidos y Alemania. Todas con su formato de fecha e importe —
+  `05/03/2025` es 5 de marzo en España y 3 de mayo en Estados Unidos, y el
+  producto lo distingue—, pero las reglas fiscales no están al mismo nivel.
+  Ver «Evidence on Hand».
 
 ## Capabilities and Constraints
 
@@ -131,7 +132,23 @@ inventarse ni inflarse en ninguna superficie:
 - **Resultado medido el 9 de septiembre de 2026:** 24 de 24 PDF extraídos con
   precisión del 100 % campo a campo; 50 de 50 casos trampa detectados; 1,8
   segundos para los 24 documentos. Se reproduce con `python cli.py --banco`.
-- **66 tests automáticos** en verde. `backend/tests/`
+
+  **Qué mide y qué no, y esto no se puede omitir en ninguna superficie.**
+  Los PDF del banco los genera el propio repositorio: el renderizador escribe
+  las etiquetas donde el extractor las busca. Esa cifra demuestra coherencia
+  interna y sirve para detectar regresiones, **no** exactitud sobre facturas
+  reales. Frente a documentos de proveedores de verdad el número será más
+  bajo, y aún no está medido. El OCR tampoco: los 74 documentos del banco
+  llevan capa de texto.
+
+- **Profundidad desigual por jurisdicción.** España está modelada en serio
+  (DNI, NIE, CIF con dígito de control por tipo de sociedad, tipos de IVA
+  vigentes, retención). Reino Unido y Alemania llevan comprobación de
+  identificador y tipos de IVA. Estados Unidos solo valida el EIN: el sales
+  tax varía por estado y no se comprueba. Ninguna superficie debe presentar
+  los cuatro países como equivalentes.
+- **120 tests automáticos** en verde, incluidos los de seguridad y los de
+  propiedades con Hypothesis. `backend/tests/`
 - **74 PDF de muestra** generados, para que cualquiera pruebe la aplicación sin
   enseñar facturas propias. `dataset/pdf/`
 
