@@ -14,7 +14,12 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
+from fastapi.responses import (
+    FileResponse,
+    HTMLResponse,
+    PlainTextResponse,
+    StreamingResponse,
+)
 from fastapi.staticfiles import StaticFiles
 
 from backend import diagnostico, seguridad
@@ -338,6 +343,16 @@ def api_muestra(grupo: str, nombre: str):
 # Frontend
 # --------------------------------------------------------------------------
 
+def _versionar(html: str) -> str:
+    """Cuelga la versión de cada hoja de estilo y cada script.
+
+    Sin esto, quien actualice la aplicación se queda con los estilos de la
+    versión anterior hasta que vacíe la caché a mano, y no tiene forma de
+    saber que eso es lo que le pasa.
+    """
+    return html.replace('.css"', f'.css?v={VERSION}"').replace('.js"', f'.js?v={VERSION}"')
+
+
 def _pagina(nombre: str, respaldo: str | None = None) -> FileResponse:
     """Sirve una página y, de paso, entrega el testigo de sesión.
 
@@ -347,7 +362,9 @@ def _pagina(nombre: str, respaldo: str | None = None) -> FileResponse:
     ruta = RAIZ / "frontend" / nombre
     if not ruta.is_file() and respaldo:
         ruta = RAIZ / "frontend" / respaldo
-    return seguridad.sellar(FileResponse(ruta), TESTIGO)
+    return seguridad.sellar(
+        HTMLResponse(_versionar(ruta.read_text(encoding="utf-8"))), TESTIGO
+    )
 
 
 @app.get("/")

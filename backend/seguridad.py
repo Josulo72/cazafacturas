@@ -205,4 +205,18 @@ def cabeceras_duras(app) -> None:
         respuesta.headers["Permissions-Policy"] = (
             "camera=(), microphone=(), geolocation=(), interest-cohort=()"
         )
+
+        # Los ficheros salen del disco de al lado: no hay ancho de banda que
+        # ahorrar, y en cambio una hoja de estilos cacheada deja al usuario
+        # con la versión anterior después de actualizar. `no-cache` no
+        # significa «no guardes»: significa «pregunta antes de usar», así que
+        # se siguen aprovechando los 304.
+        ruta = peticion.url.path
+        if ruta.startswith("/static/"):
+            respuesta.headers["Cache-Control"] = "no-cache"
+        elif not ruta.startswith("/api/"):
+            # Las páginas pesan unos kilobytes y son el sitio desde el que se
+            # piden los estilos: si una se queda cacheada, se queda cacheada
+            # la versión entera de la interfaz.
+            respuesta.headers["Cache-Control"] = "no-store"
         return respuesta

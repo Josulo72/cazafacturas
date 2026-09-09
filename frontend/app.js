@@ -77,8 +77,19 @@ async function pedir(ruta, opciones) {
   if (!r.ok) {
     let detalle = `${r.status}`;
     try { detalle = (await r.json()).detail || detalle; } catch (_) { /* sin cuerpo */ }
+
+    // El testigo cambia en cada arranque del servidor. Una pestaña que
+    // estaba abierta se queda con el viejo y no hay nada que el usuario
+    // pueda hacer al respecto, así que se recoge el nuevo por la puerta y
+    // se sigue. Una sola vez, para no entrar en bucle si el fallo es otro.
+    if (r.status === 403 && /testigo/i.test(detalle) && !sessionStorage.getItem('cazafacturas:renovando')) {
+      sessionStorage.setItem('cazafacturas:renovando', '1');
+      location.reload();
+      return new Promise(() => {});     // no resolver: la página se va
+    }
     throw new Error(detalle);
   }
+  sessionStorage.removeItem('cazafacturas:renovando');
   return r.json();
 }
 

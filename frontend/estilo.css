@@ -63,47 +63,55 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-tema='claro']) {
-    --papel:         #14140F;
-    --papel-alt:     #1C1B15;
-    --papel-hueco:   #24231B;
-    --tinta:         #EEE8D7;
-    --tinta-media:   #B5AD96;
-    --tinta-tenue:   #8B8371;
-    --azul:          #8FA7FF;
-    --azul-tenue:    #46538C;
-    --filete:        #38352A;
-    --filete-fuerte: #5B5544;
-    --rojo:          #F0736A;
-    --ocre:          #DCAA3E;
-    --mesa:          #151109;
-    --mesa-luz:      #241D13;
-    --mesa-fondo:    #0B0906;
-    --rejilla:       rgba(120, 140, 180, 0.09);
-    --rejilla-fuerte:rgba(120, 140, 180, 0.16);
-    --grano:         0.055;
+    /* De noche no se invierte el papel: se cambia de artefacto.
+       El negativo del papel milimetrado no es papel negro —eso no existe—,
+       es una cianotipia: el plano copiado en azul de Prusia con las líneas
+       en blanco. Mismo mundo, contraste alto, y nada de barro. */
+    --papel:         #0E2440;
+    --papel-alt:     #143152;
+    --papel-hueco:   #1C3E64;
+    --tinta:         #E9F1FB;
+    --tinta-media:   #A8C1DE;
+    --tinta-tenue:   #7B97BA;
+    --azul:          #77D2FF;
+    --azul-tenue:    #3D6690;
+    --filete:        #24476F;
+    --filete-fuerte: #3E6795;
+    --rojo:          #FF8A7E;
+    --ocre:          #FFC46B;
+    --mesa:          #061421;
+    --mesa-luz:      #0D2438;
+    --mesa-fondo:    #03090F;
+    --rejilla:       rgba(150, 200, 255, 0.09);
+    --rejilla-fuerte:rgba(150, 200, 255, 0.17);
+    --grano:         0.05;
     color-scheme: dark;
   }
 }
 
 :root[data-tema='oscuro'] {
-  --papel:         #14140F;
-  --papel-alt:     #1C1B15;
-  --papel-hueco:   #24231B;
-  --tinta:         #EEE8D7;
-  --tinta-media:   #B5AD96;
-  --tinta-tenue:   #8B8371;
-  --azul:          #8FA7FF;
-  --azul-tenue:    #46538C;
-  --filete:        #38352A;
-  --filete-fuerte: #5B5544;
-  --rojo:          #F0736A;
-  --ocre:          #DCAA3E;
-  --mesa:          #151109;
-  --mesa-luz:      #241D13;
-  --mesa-fondo:    #0B0906;
-  --rejilla:       rgba(120, 140, 180, 0.09);
-  --rejilla-fuerte:rgba(120, 140, 180, 0.16);
-  --grano:         0.055;
+  /* De noche no se invierte el papel: se cambia de artefacto.
+     El negativo del papel milimetrado no es papel negro —eso no existe—,
+     es una cianotipia: el plano copiado en azul de Prusia con las líneas
+     en blanco. Mismo mundo, contraste alto, y nada de barro. */
+  --papel:       #0E2440;
+  --papel-alt:     #143152;
+  --papel-hueco:   #1C3E64;
+  --tinta:       #E9F1FB;
+  --tinta-media:   #A8C1DE;
+  --tinta-tenue:   #7B97BA;
+  --azul:        #77D2FF;
+  --azul-tenue:    #3D6690;
+  --filete:      #24476F;
+  --filete-fuerte: #3E6795;
+  --rojo:        #FF8A7E;
+  --ocre:        #FFC46B;
+  --mesa:        #061421;
+  --mesa-luz:      #0D2438;
+  --mesa-fondo:    #03090F;
+  --rejilla:     rgba(150, 200, 255, 0.09);
+  --rejilla-fuerte:rgba(150, 200, 255, 0.17);
+  --grano:       0.05;
   color-scheme: dark;
 }
 

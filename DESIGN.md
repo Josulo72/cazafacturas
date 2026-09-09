@@ -92,36 +92,76 @@ bajo `[data-tema]`, para que el interruptor gane en las dos direcciones.
 | `--rojo` | `#C0271C` | Números rojos. Solo lo que no cuadra. |
 | `--ocre` | `#7A5A08` | Aviso. |
 
-En papel oscuro el pliego baja a `#14140F`, la tinta sube a `#EEE8D7`, el azul
-a `#7E9BFF` y el rojo a `#F0736A`, para mantener 4,5:1 en texto corrido.
+### De noche no se invierte el papel: se cambia de artefacto
+
+El primer tema oscuro era una inversión del claro —el pliego a negro, la
+tinta a crema— y estaba mal. El papel no se vuelve negro nunca; invertirlo da
+ese barro verdoso que delata a la mitad de los temas oscuros que hay por ahí.
+
+El negativo del papel milimetrado no es papel negro: es una **cianotipia**,
+el plano copiado en azul de Prusia con las líneas en blanco. Es un objeto
+real, del mismo mundo que el resto, y da un oscuro de verdad con contraste
+alto en vez de un gris apagado.
+
+| Cianotipia | | |
+|---|---|---|
+| `--papel` | `#0E2440` | Azul de Prusia. El baño de la copia. |
+| `--tinta` | `#E9F1FB` | La línea blanca, donde el papel quedó sin velar. |
+| `--azul` | `#77D2FF` | Cian: rejilla, filetes, folio, botones. |
+| `--rojo` | `#FF8A7E` | Coral. El rojo puro se apaga sobre azul. |
+| `--ocre` | `#FFC46B` | Ámbar para el aviso. |
+| `--mesa` | `#061421` | La mesa, más oscura que la copia. |
+
+El rojo y el ocre suben de luminosidad porque sobre azul de Prusia un rojo de
+imprenta pierde contraste y deja de leerse como alarma.
 
 **Prohibido:** verde de éxito, violeta de acento, degradados, fondos de fila
 teñidos, pastillas de estado de colores.
 
 ## Materia
 
+- **La mesa.** El fondo no es la pantalla: es un escritorio a media luz, con
+  su veta. La hoja va **encima**, con sombra. Cansa mucho menos que un pliego
+  a sangre y da profundidad.
+- **La hoja, arrancada del libro mayor.** El canto izquierdo va rasgado; los
+  otros tres, cortados a máquina. Se hace con una máscara CSS de dos capas:
+  una tira de 48×800 que se repite en vertical —para que el desgarro conserve
+  su escala por larga que sea la página— y un rectángulo opaco para el resto.
+- **Dos roturas distintas, y no es un capricho.** La hoja de talonario de la
+  presentación va troquelada: rompe fina y a paso regular, tramos de 6,5
+  puntos con desviación de milímetro y medio. La del libro mayor se rasga por
+  el lomo, sin troquel que la guíe: tramos irregulares de 11 a 38 puntos,
+  amplitud hasta 9, y casi una de cada cinco veces una fibra que no cede a la
+  primera. Medido sobre un talonario real.
 - **Papel milimetrado:** retícula fina cada `--paso` (8px) y gruesa cada
-  cinco, en azul al 7 % y 13 %. Es el fondo del documento entero.
-- **Grano:** una capa fija de `feTurbulence` al 4,5 % (5,5 % en oscuro) sobre
-  todo el pliego. Sin coste de repintado y sin capturar el ratón.
-- **La lámina:** el contenido vive dentro de un rectángulo con filete azul,
-  con marcas de registro en las cuatro esquinas. En móvil la lámina se abre a
-  los bordes y las marcas desaparecen.
+  cinco. Va sobre la hoja, no sobre la mesa.
+- **Grano:** una capa fija de `feTurbulence` sobre todo. Sin coste de
+  repintado y sin capturar el ratón.
+- **La tinta del sello.** Tres pasadas en el orden en que ocurren en el papel:
+  el filo del caucho roto por desplazamiento, el reparto desigual de la tinta
+  con ruido de baja frecuencia, y las calvas de caucho seco con ruido de alta.
+  Dos variantes con semillas distintas: dos sellos seguidos no salen iguales,
+  y el segundo sale más pobre porque nadie ha vuelto al tampón.
 
 ## Tipografía
 
-Dos familias, auto-hospedadas en `frontend/fuentes/` bajo licencia SIL OFL. La
-aplicación no llama a ningún servidor de fuentes: promete funcionar sin red y
-lo cumple.
+Cuatro familias, auto-hospedadas en `frontend/fuentes/` bajo licencia SIL OFL.
+La aplicación no llama a ningún servidor de fuentes: promete funcionar sin red
+y lo cumple hasta ahí.
 
-- **Archivo** — todo el sistema. Display en 700 con `letter-spacing` de −0,03
-  a −0,05em; rótulos en 600 a 10px con +0,11em y versalita; tablas en 13px.
-- **Newsreader** cursiva — solo para la glosa: la nota a mano al margen del
-  plano, y el nombre del fichero en el detalle.
+- **Courier Prime** — todo el sistema. La máquina de escribir es el
+  instrumento de este mundo, no un disfraz de «técnico», y de paso el
+  monoespaciado alinea las cifras solo.
+- **Prata** — solo la marca y los títulos de capítulo. Romana grabada de
+  membrete antiguo: abierta, de mucho contraste y poca tinta. Lleva la sombra
+  desplazada del rotulista, dada con el segundo pincel.
+- **Archivo** — lo que el impreso trae de fábrica: rótulos, cabeceras de
+  columna, «FACTURA N.º». La imprenta y la mano no comparten voz.
+- **Caveat** — lo manuscrito de la presentación.
 
 Reglas: toda cifra lleva `tabular-nums lining-nums`; el texto corrido no pasa
-de 72 caracteres; nada de monoespaciada haciendo de "técnico" —solo aparece en
-`<code>`, que sí es código—.
+de 72 caracteres; a la máquina no se le aplica tracking negativo, que se le
+cierran los contornos.
 
 ## Composición
 
