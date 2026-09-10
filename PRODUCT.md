@@ -127,19 +127,23 @@ No se traducen a "documento" ni a "importe neto" para simplificar.
 Todo esto es real y verificable en el repositorio; nada de ello debe
 inventarse ni inflarse en ninguna superficie:
 
-- **Banco de pruebas propio:** 24 facturas y 40 casos trampa en cuatro países,
-  con el resultado correcto conocido. `dataset/`
-- **Resultado medido el 9 de septiembre de 2026:** 24 de 24 PDF extraídos con
-  precisión del 100 % campo a campo; 50 de 50 casos trampa detectados; 1,8
-  segundos para los 24 documentos. Se reproduce con `python cli.py --banco`.
+- **Banco externo:** 23 facturas en PDF de 15 maquetaciones de terceros,
+  con datos ficticios y la verdad escrita en `dataset/externo/manifest.json`.
+  Medido el 10 de septiembre de 2026: 153 de 153 campos bien leídos, 15 de 15
+  facturas correctas conformes, 8 de 8 defectuosas cazadas cada una por su
+  motivo, ninguna en «No legible». Se reproduce con `python cli.py --externo`.
 
   **Qué mide y qué no, y esto no se puede omitir en ninguna superficie.**
-  Los PDF del banco los genera el propio repositorio: el renderizador escribe
-  las etiquetas donde el extractor las busca. Esa cifra demuestra coherencia
-  interna y sirve para detectar regresiones, **no** exactitud sobre facturas
-  reales. Frente a documentos de proveedores de verdad el número será más
-  bajo, y aún no está medido. El OCR tampoco: los 74 documentos del banco
-  llevan capa de texto.
+  El extractor se corrigió con esas 23 facturas delante: es un conjunto de
+  desarrollo, no uno reservado. Demuestra que lee quince maquetaciones ajenas,
+  no que lea cualquiera. El OCR no está medido: las 23 llevan capa de texto.
+
+- **Banco interno:** 24 facturas y 50 casos trampa en cuatro países,
+  generados por el propio repositorio con una sola maquetación. Sirve para
+  detectar regresiones y nada más. El «100 % de precisión campo a campo» que
+  se sacaba de aquí está retirado: el banco externo lo desmintió en el primer
+  pase, con 15 de 15 facturas buenas marcadas como no conformes. Ninguna
+  superficie puede volver a usar esa cifra.
 
 - **Profundidad desigual por jurisdicción.** España está modelada en serio
   (DNI, NIE, CIF con dígito de control por tipo de sociedad, tipos de IVA
@@ -147,7 +151,7 @@ inventarse ni inflarse en ninguna superficie:
   identificador y tipos de IVA. Estados Unidos solo valida el EIN: el sales
   tax varía por estado y no se comprueba. Ninguna superficie debe presentar
   los cuatro países como equivalentes.
-- **120 tests automáticos** en verde, incluidos los de seguridad y los de
+- **125 tests automáticos** en verde, incluidos los de seguridad y los de
   propiedades con Hypothesis. `backend/tests/`
 - **74 PDF de muestra** generados, para que cualquiera pruebe la aplicación sin
   enseñar facturas propias. `dataset/pdf/`

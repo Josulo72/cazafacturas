@@ -158,6 +158,9 @@ function irA(vista) {
 function marcaEstado(r) {
   if (!r.ok) return { clase: 'm-mal', icono: 'i-aspa', texto: t('ilegible'), fila: 'f-error' };
   const inf = r.informe || {};
+  // No legible no es No conforme: no afirma que la factura esté mal, dice
+  // que no se ha podido leer lo que hace falta para saberlo.
+  if (inf.estado === 'no_legible') return { clase: 'm-aviso', icono: 'i-admiracion', texto: t('ilegible'), fila: 'f-aviso' };
   if (inf.n_errores) return { clase: 'm-mal', icono: 'i-aspa', texto: t('no_conforme'), fila: 'f-error' };
   if (inf.n_avisos) return { clase: 'm-aviso', icono: 'i-admiracion', texto: t('con_avisos'), fila: 'f-aviso' };
   return { clase: 'm-bien', icono: 'i-llamada', texto: t('conforme'), fila: '' };
@@ -254,17 +257,19 @@ function verDetalle(indice) {
   const errores = hallazgos.filter((h) => h.gravedad === 'error');
 
   const bien = r.ok && inf.valida;
+  const ilegible = !r.ok || inf.estado === 'no_legible';
   const total = 20; // comprobaciones que aplica el validador
 
   let html = `
   <div class="veredicto ${bien ? '' : 'veredicto-mal'}">
-    <div class="sello ${bien ? '' : 'sello-mal'}">
-      <p class="veredicto-palabra">${bien ? t('veredicto_bien') : t('veredicto_mal')}</p>
+    <div class="sello ${bien ? '' : ilegible ? 'sello-aviso' : 'sello-mal'}">
+      <p class="veredicto-palabra">${bien ? t('veredicto_bien') : ilegible ? t('veredicto_ilegible') : t('veredicto_mal')}</p>
     </div>
     <div>
       <p class="veredicto-fichero">${esc(r.nombre)}</p>
       <p class="veredicto-pie">${bien
         ? t('veredicto_bien_pie', { n: total })
+        : ilegible ? t('veredicto_ilegible_pie')
         : t(errores.length === 1 ? 'veredicto_mal_pie_uno' : 'veredicto_mal_pie',
              { n: errores.length })}</p>
     </div>
@@ -349,7 +354,7 @@ function verDetalle(indice) {
       </tr></thead><tbody>
       ${f.lineas.map((l) => `<tr>
         <td>${esc(l.descripcion)}</td>
-        <td class="c-cifra">${Number(l.cantidad ?? 0).toLocaleString(LOCALES[pais])}</td>
+        <td class="c-cifra">${l.cantidad == null ? '—' : Number(l.cantidad).toLocaleString(LOCALES[pais])}</td>
         <td class="c-cifra">${importe(l.precio_unitario, pais)}</td>
         <td class="c-cifra">${importe(l.importe, pais)}</td>
       </tr>`).join('')}

@@ -2,6 +2,7 @@
 
     python cli.py factura.pdf otra.pdf     analiza ficheros
     python cli.py --banco                  pasa el banco de pruebas
+    python cli.py --externo                pasa el banco externo (15 maquetaciones)
     python cli.py --json factura.pdf       vuelca el resultado en JSON
     python cli.py --csv salida.csv *.pdf   exporta a CSV
 
@@ -18,6 +19,7 @@ from pathlib import Path
 
 from backend import diagnostico
 from backend.nucleo import banco
+from backend.nucleo import banco_externo
 from backend.nucleo import historial as hist
 from backend.nucleo.analizador import (
     Resultado,
@@ -180,6 +182,25 @@ def _doctor(fijar: bool = False) -> int:
         print(f"\n{VERDE}Línea base fijada{FIN} {GRIS}en {ruta}{FIN}")
         return 0
 
+    # El banco externo no tiene línea base: tiene que salir perfecto. Son
+    # facturas que este código no ha generado, y cualquier fallo ahí es un
+    # fallo de verdad.
+    externo_ok = True
+    if banco_externo.disponible():
+        _cabecera("Banco externo")
+        externo = banco_externo.ejecutar()
+        ok_c, n_c = externo.conformes
+        ok_d, n_d = externo.cazadas
+        print(f"  Campos leídos bien        {externo.campos_ok}/{externo.campos_total}")
+        print(f"  Conformes                 {ok_c}/{n_c}")
+        print(f"  Defectuosas, por su motivo {ok_d}/{n_d}")
+        print(f"  No legibles               {externo.no_legibles}")
+        externo_ok = externo.perfecto
+        if not externo_ok:
+            for c in externo.casos:
+                if not c.correcto:
+                    print(f"  {ROJO}{MAL}{FIN} {c.fichero}  {GRIS}python cli.py --externo{FIN}")
+
     base = banco.leer_linea_base()
     if base is None:
         print(f"\n{AMBAR}No hay línea base con la que comparar.{FIN}")
@@ -190,7 +211,7 @@ def _doctor(fijar: bool = False) -> int:
     desvios = diagnostico.comparar(base, metricas)
     if not desvios:
         print(f"  {VERDE}{BIEN}{FIN} Nada ha empeorado.")
-        return 0
+        return 0 if externo_ok else 1
 
     for d in desvios:
         print(f"  {ROJO}{MAL}{FIN} {FUERTE}{d.medida}{FIN}")
@@ -199,6 +220,46 @@ def _doctor(fijar: bool = False) -> int:
             print(f"      {GRIS}{d.detalle}{FIN}")
     print(f"\n{ROJO}{len(desvios)} regresión(es).{FIN}")
     return 1
+
+
+def _euros(v) -> str:
+    if v is None:
+        return "—"
+    return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") + " €"
+
+
+def _externo() -> int:
+    """El banco externo, como tabla del libro: una fila por factura."""
+    if not banco_externo.disponible():
+        print(f"{ROJO}No está dataset/externo.{FIN}", file=sys.stderr)
+        return 1
+    informe = banco_externo.ejecutar()
+    _cabecera(f"Banco externo {PUNTO} {len(informe.casos)} facturas")
+    etiquetas = {"conforme": "Conforme", "con_avisos": "Con avisos",
+                 "no_conforme": "No conforme", "no_legible": "No legible"}
+    for c in informe.casos:
+        obtenido = {x.nombre: x.obtenido for x in c.campos}
+        color = VERDE if c.correcto else ROJO
+        marca = BIEN if c.correcto else MAL
+        print(f"  {color}{marca}{FIN} {c.fichero[:28]:<28} "
+              f"{str(obtenido.get('numero') or '—')[:15]:<15} "
+              f"{_euros(obtenido.get('base')):>13} {_euros(obtenido.get('total')):>13}  "
+              f"{etiquetas.get(c.estado, c.estado)}"
+              + (f" {GRIS}por {c.motivo}{FIN}" if c.motivo and c.por_su_motivo else ""))
+        for x in c.campos_mal:
+            print(f"      {ROJO}{x.nombre}{FIN}: esperado {x.esperado!r}, leído {x.obtenido!r}")
+        if c.ruido:
+            print(f"      {AMBAR}además salta: {', '.join(c.ruido)}{FIN}")
+
+    ok_c, n_c = informe.conformes
+    ok_d, n_d = informe.cazadas
+    _cabecera("Resumen")
+    print(f"  Campos leídos bien        {informe.campos_ok}/{informe.campos_total}")
+    print(f"  Conformes                 {ok_c}/{n_c}")
+    print(f"  Defectuosas, por su motivo {ok_d}/{n_d}")
+    print(f"  No legibles               {informe.no_legibles}")
+    print(f"  Tiempo                    {informe.segundos:.2f} s")
+    return 0 if informe.perfecto else 1
 
 
 def main() -> int:
@@ -210,6 +271,9 @@ def main() -> int:
                         help=f"PDF o imágenes ({', '.join(sorted(EXTENSIONES_SOPORTADAS))})")
     parser.add_argument("--banco", action="store_true",
                         help="Pasar el banco de pruebas del proyecto")
+    parser.add_argument("--externo", action="store_true",
+                        help="Pasar el banco externo: 23 facturas de 15 "
+                             "maquetaciones de terceros")
     parser.add_argument("--sin-trampas", action="store_true",
                         help="En el banco, omitir los casos trampa")
     parser.add_argument("--pais", choices=sorted(PAISES),
@@ -231,6 +295,9 @@ def main() -> int:
 
     if args.doctor or args.fijar_linea_base:
         return _doctor(fijar=args.fijar_linea_base)
+
+    if args.externo:
+        return _externo()
 
     if args.capacidades:
         caps = capacidades()

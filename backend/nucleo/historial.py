@@ -127,9 +127,10 @@ class Historial:
 # --------------------------------------------------------------------------
 
 CABECERA_CSV = (
-    "fichero", "pais", "valida", "errores", "avisos", "numero",
+    "fichero", "pais", "estado", "valida", "errores", "avisos", "numero",
     "fecha_emision", "fecha_vencimiento", "emisor", "emisor_nif",
-    "receptor", "receptor_nif", "base_imponible", "total", "confianza", "origen",
+    "receptor", "receptor_nif", "base_imponible", "cuota_impuesto", "irpf",
+    "recargo_equivalencia", "suplidos", "total", "confianza", "origen",
 )
 
 
@@ -151,9 +152,13 @@ def a_csv(lote: dict) -> str:
         documento = r.get("documento") or {}
         emisor = factura.get("emisor") or {}
         receptor = factura.get("receptor") or {}
+        cuota = sum(float(t.get("cuota") or 0) for t in factura.get("iva") or [])
+        recargo = sum(float(t.get("cuota") or 0) for t in factura.get("recargo") or [])
+        retencion = (factura.get("retencion") or {}).get("cuota")
         filas.append(",".join(_celda(v) for v in (
             r.get("nombre"),
             informe.get("pais"),
+            informe.get("estado") or ("no_legible" if not r.get("ok") else ""),
             "sí" if informe.get("valida") else "no",
             informe.get("n_errores"),
             informe.get("n_avisos"),
@@ -165,6 +170,10 @@ def a_csv(lote: dict) -> str:
             receptor.get("nombre"),
             receptor.get("nif"),
             factura.get("base_imponible"),
+            round(cuota, 2) if factura.get("iva") else None,
+            -abs(float(retencion)) if retencion else None,
+            round(recargo, 2) if factura.get("recargo") else None,
+            factura.get("suplidos"),
             factura.get("total"),
             (r.get("extraccion") or {}).get("confianza"),
             documento.get("origen"),

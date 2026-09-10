@@ -250,10 +250,25 @@ def _clase_documento(datos: dict) -> Optional[str]:
     return None
 
 
+def _prefijo_extranjero(nif: str, pais: str) -> Optional[str]:
+    """El país de un NIF-IVA de otro sitio («FR83999123456»), o None."""
+    limpio = re.sub(r"[\s.\-]", "", nif).upper()
+    m = re.fullmatch(r"([A-Z]{2})[0-9A-Z]{8,12}", limpio)
+    if not m:
+        return None
+    propio = {"ES": "ES", "UK": "GB", "DE": "DE"}.get(pais)
+    return None if m.group(1) == propio else m.group(1)
+
+
 def _validar_identificadores(datos: dict, pais: str, h: list[Hallazgo]) -> None:
     etiqueta = PAISES[pais].id_fiscal["es"]
     for papel, obligatorio in (("emisor", True), ("receptor", False)):
         parte = datos.get(papel)
+        # La simplificada no tiene por qué identificar al destinatario
+        # (RD 1619/2012, art. 7): si no lo trae, no falta nada.
+        if (papel == "receptor" and datos.get("simplificada")
+                and not (isinstance(parte, dict) and parte.get("nif"))):
+            continue
         if not isinstance(parte, dict):
             if obligatorio:
                 h.append(Hallazgo(
@@ -267,6 +282,14 @@ def _validar_identificadores(datos: dict, pais: str, h: list[Hallazgo]) -> None:
             h.append(Hallazgo(
                 f"{papel.upper()}_SIN_ID", Gravedad.ERROR, f"{papel}.nif",
                 f"El {papel} no declara {etiqueta}.",
+            ))
+        elif papel == "receptor" and _prefijo_extranjero(nif, pais):
+            h.append(Hallazgo(
+                "RECEPTOR_ID_EXTRANJERO", Gravedad.INFO, "receptor.nif",
+                f"Identificador fiscal extranjero ({_prefijo_extranjero(nif, pais)}): "
+                "se comprueba el formato, no el dígito de control, que depende "
+                "de cada país y del censo VIES, al que esto no se conecta.",
+                encontrado=nif,
             ))
         elif not validar_id_fiscal(nif, pais):
             h.append(Hallazgo(
@@ -333,6 +356,9 @@ def _validar_lineas(datos: dict, h: list[Hallazgo]) -> float:
         ))
         return 0.0
 
+    # En una rectificativa las unidades devueltas van en negativo: es como
+    # se anula lo facturado, no un error.
+    rectificativa = bool(datos.get("rectificativa"))
     suma = 0.0
     for i, linea in enumerate(lineas, start=1):
         if not isinstance(linea, dict):
@@ -360,7 +386,7 @@ def _validar_lineas(datos: dict, h: list[Hallazgo]) -> float:
                 f"La línea {i} no describe qué se factura.",
             ))
 
-        if cantidad is not None and cantidad <= 0:
+        if cantidad is not None and (cantidad == 0 or (cantidad < 0 and not rectificativa)):
             h.append(Hallazgo(
                 "LINEA_CANTIDAD_INVALIDA", Gravedad.ERROR, f"lineas[{i}].cantidad",
                 f"La línea {i} factura una cantidad de {cantidad:g}. "
@@ -368,7 +394,7 @@ def _validar_lineas(datos: dict, h: list[Hallazgo]) -> float:
                 esperado="> 0", encontrado=cantidad,
             ))
 
-        if precio is not None and precio < 0:
+        if precio is not None and precio < 0 and not rectificativa:
             h.append(Hallazgo(
                 "LINEA_PRECIO_NEGATIVO", Gravedad.ERROR, f"lineas[{i}].precio_unitario",
                 f"La línea {i} tiene precio unitario negativo. "
@@ -388,41 +414,93 @@ def _validar_lineas(datos: dict, h: list[Hallazgo]) -> float:
     return round(suma, 2)
 
 
+# Tipos del recargo de equivalencia (art. 161 LIVA), incluidos los reducidos
+# temporales de 2023-2024 que aún aparecen en rectificativas.
+_TIPOS_RECARGO = {0.0, 0.26, 0.5, 0.62, 1.4, 1.75, 5.2}
+
+
 def _validar_impuestos(datos: dict, pais: str, suma_lineas: float,
                        h: list[Hallazgo]) -> None:
     etiqueta = PAISES[pais].impuesto["es"]
     base = _num(datos.get("base_imponible"))
+    total = _num(datos.get("total"))
+    base_bruta = _num(datos.get("base_bruta"))
+    descuento = datos.get("descuento") if isinstance(datos.get("descuento"), dict) else None
+    importe_dto = abs(_num(descuento.get("importe")) or 0.0) if descuento else 0.0
 
+    # --- Las líneas contra la base --------------------------------------
+    # Es lo que distingue comprobar de extraer: una base falsa con el IVA y
+    # el total calculados sobre ella cuadra en todo lo demás.
     if base is None:
         h.append(Hallazgo(
             "SIN_BASE", Gravedad.ERROR, "base_imponible",
             "Falta la base imponible.",
         ))
-    elif suma_lineas and not _cuadra(base, suma_lineas):
-        h.append(Hallazgo(
-            "BASE_NO_CUADRA", Gravedad.ERROR, "base_imponible",
-            "La base imponible no coincide con la suma de las líneas.",
-            esperado=suma_lineas, encontrado=base,
-        ))
+    elif suma_lineas:
+        if datos.get("precios_con_iva") and total is not None:
+            if not _cuadra(total, suma_lineas):
+                h.append(Hallazgo(
+                    "BASE_NO_CUADRA", Gravedad.ERROR, "total",
+                    "Los precios llevan el impuesto incluido y las líneas no "
+                    "suman el total.",
+                    esperado=suma_lineas, encontrado=total,
+                ))
+        elif descuento:
+            bruta = base_bruta if base_bruta is not None else round(base + importe_dto, 2)
+            if not _cuadra(bruta, suma_lineas):
+                h.append(Hallazgo(
+                    "BASE_NO_CUADRA", Gravedad.ERROR, "base_bruta",
+                    "La base antes del descuento no coincide con la suma de "
+                    "las líneas.",
+                    esperado=suma_lineas, encontrado=bruta,
+                ))
+        elif not _cuadra(base, suma_lineas):
+            h.append(Hallazgo(
+                "BASE_NO_CUADRA", Gravedad.ERROR, "base_imponible",
+                "La base imponible no coincide con la suma de las líneas.",
+                esperado=suma_lineas, encontrado=base,
+            ))
 
+    # --- Descuento: sobre la base, antes del impuesto -------------------
+    if descuento and base_bruta is not None:
+        pct = _num(descuento.get("porcentaje"))
+        if pct is not None and not _cuadra(importe_dto, round(base_bruta * pct / 100, 2)):
+            h.append(Hallazgo(
+                "DESCUENTO_NO_CUADRA", Gravedad.ERROR, "descuento",
+                f"El descuento del {pct:g} % no sale de la base bruta.",
+                esperado=round(base_bruta * pct / 100, 2), encontrado=importe_dto,
+            ))
+        if base is not None and not _cuadra(base, round(base_bruta - importe_dto, 2)):
+            h.append(Hallazgo(
+                "BASE_NETA_NO_CUADRA", Gravedad.ERROR, "base_imponible",
+                "La base después del descuento no es la bruta menos el descuento.",
+                esperado=round(base_bruta - importe_dto, 2), encontrado=base,
+            ))
+
+    # --- Impuesto, tramo a tramo ----------------------------------------
     desglose = datos.get("iva")
-    if not isinstance(desglose, list) or not desglose:
+    tramos = [t for t in desglose if isinstance(t, dict)] if isinstance(desglose, list) else []
+    cuota_total = 0.0
+    if not tramos:
         h.append(Hallazgo(
             "SIN_DESGLOSE_IMPUESTO", Gravedad.ERROR, "iva",
             f"No hay desglose de {etiqueta}.",
         ))
-        cuota_total = 0.0
     else:
-        cuota_total = 0.0
         tipos_validos = _TIPOS_IMPUESTO.get(pais)
-        for i, tramo in enumerate(desglose, start=1):
-            if not isinstance(tramo, dict):
-                continue
+        suma_bases = 0.0
+        bases_completas = True
+        margen = TOLERANCIA
+        for i, tramo in enumerate(tramos, start=1):
             pct = _num(tramo.get("porcentaje"))
             base_t = _num(tramo.get("base_imponible"))
             cuota = _num(tramo.get("cuota"))
             if cuota is not None:
                 cuota_total += cuota
+            if base_t is None:
+                bases_completas = False
+            else:
+                suma_bases += base_t
 
             if pct is not None and tipos_validos and pct not in tipos_validos:
                 h.append(Hallazgo(
@@ -432,16 +510,57 @@ def _validar_impuestos(datos: dict, pais: str, suma_lineas: float,
                     esperado=sorted(tipos_validos), encontrado=pct,
                 ))
 
-            if None not in (pct, base_t, cuota):
+            if tramo.get("base_deducida"):
+                # La base de este tramo se ha deducido de su cuota: comprobar
+                # la cuota contra ella no demuestra nada. Lo que sí se puede
+                # es exigir que las bases de todos los tramos sumen la base,
+                # con el margen que deja redondear la cuota al céntimo.
+                if pct:
+                    margen += 0.005 * 100 / pct
+            elif None not in (pct, base_t, cuota):
                 esperado = round(base_t * pct / 100, 2)
                 if not _cuadra(cuota, esperado):
                     h.append(Hallazgo(
                         "CUOTA_NO_CUADRA", Gravedad.ERROR, f"iva[{i}].cuota",
-                        f"La cuota del tramo al {pct}% no sale de su base.",
+                        f"La cuota del tramo al {pct:g}% no sale de su base.",
                         esperado=esperado, encontrado=cuota,
                     ))
         cuota_total = round(cuota_total, 2)
 
+        if len(tramos) > 1 and bases_completas and base is not None \
+                and abs(suma_bases - base) > margen:
+            h.append(Hallazgo(
+                "TRAMOS_NO_SUMAN_BASE", Gravedad.ERROR, "iva",
+                "Las bases de los tramos de impuesto no suman la base imponible.",
+                esperado=base, encontrado=round(suma_bases, 2),
+            ))
+
+        # --- Exención: o se repercute, o se exime, no las dos --------------
+        mencion = str(datos.get("exencion") or "").strip()
+        repercutidos = [t for t in tramos
+                        if (_num(t.get("porcentaje")) or 0) > 0
+                        and abs(_num(t.get("cuota")) or 0) > TOLERANCIA]
+        if mencion and repercutidos:
+            tipos = ", ".join(f"{_num(t.get('porcentaje')):g} %" for t in repercutidos)
+            h.append(Hallazgo(
+                "IVA_EN_EXENTA", Gravedad.ERROR, "iva",
+                f"La factura declara una operación sin {etiqueta} repercutido "
+                f"(«{mencion[:90]}») y a la vez lo repercute al {tipos}. "
+                "Una de las dos cosas sobra.",
+                esperado=0.0,
+                encontrado=round(sum(_num(t.get("cuota")) or 0 for t in repercutidos), 2),
+            ))
+        elif (pais == "ES" and not repercutidos and base
+              and all((_num(t.get("porcentaje")) or 0) == 0 for t in tramos)
+              and not mencion):
+            h.append(Hallazgo(
+                "EXENCION_SIN_MENCION", Gravedad.AVISO, "iva",
+                f"No se repercute {etiqueta} y la factura no dice por qué. "
+                "El RD 1619/2012 exige citar la exención o la inversión del "
+                "sujeto pasivo.",
+            ))
+
+    # --- Retención ---------------------------------------------------------
     retencion = datos.get("retencion")
     cuota_ret = 0.0
     if isinstance(retencion, dict):
@@ -459,24 +578,74 @@ def _validar_impuestos(datos: dict, pais: str, suma_lineas: float,
             if not _cuadra(cuota_ret, esperado):
                 h.append(Hallazgo(
                     "RETENCION_NO_CUADRA", Gravedad.ERROR, "retencion.cuota",
-                    "La cuota de retención no sale de su base.",
+                    f"La retención dice ser del {pct:g} % y no sale de su base.",
                     esperado=esperado, encontrado=cuota_ret,
                 ))
 
-    total = _num(datos.get("total"))
+    # --- Recargo de equivalencia: suma, y va aparte del IVA -----------------
+    cuota_re = 0.0
+    recargo = datos.get("recargo")
+    for i, tramo in enumerate(recargo if isinstance(recargo, list) else [], start=1):
+        if not isinstance(tramo, dict):
+            continue
+        pct = _num(tramo.get("porcentaje"))
+        base_re = _num(tramo.get("base_imponible"))
+        cuota = _num(tramo.get("cuota")) or 0.0
+        cuota_re += cuota
+        if pais == "ES" and pct is not None and pct not in _TIPOS_RECARGO:
+            h.append(Hallazgo(
+                "RECARGO_TIPO_INEXISTENTE", Gravedad.ERROR, f"recargo[{i}].porcentaje",
+                f"El {pct:g} % no es un tipo de recargo de equivalencia.",
+                esperado=sorted(_TIPOS_RECARGO), encontrado=pct,
+            ))
+        if not tramo.get("base_deducida") and None not in (pct, base_re):
+            esperado = round(base_re * pct / 100, 2)
+            if not _cuadra(cuota, esperado):
+                h.append(Hallazgo(
+                    "RECARGO_NO_CUADRA", Gravedad.ERROR, f"recargo[{i}].cuota",
+                    f"El recargo del {pct:g} % no sale de su base.",
+                    esperado=esperado, encontrado=cuota,
+                ))
+    cuota_re = round(cuota_re, 2)
+
+    # --- Suplidos: ni base ni impuesto, pero se cobran -----------------------
+    suplidos = _num(datos.get("suplidos")) or 0.0
+
     if total is None:
         h.append(Hallazgo(
             "SIN_TOTAL", Gravedad.ERROR, "total",
             "La factura no declara total.",
         ))
     elif base is not None:
-        esperado = round(base + cuota_total - cuota_ret, 2)
+        esperado = round(base + cuota_total + cuota_re - cuota_ret + suplidos, 2)
         if not _cuadra(total, esperado):
+            formula = "base + impuestos - retención"
+            if cuota_re:
+                formula += " + recargo"
+            if suplidos:
+                formula += " + suplidos"
             h.append(Hallazgo(
                 "TOTAL_NO_CUADRA", Gravedad.ERROR, "total",
-                "El total no es base + impuestos - retención.",
+                f"El total no es {formula}.",
                 esperado=esperado, encontrado=total,
             ))
+
+
+def _validar_rectificacion(datos: dict, h: list[Hallazgo]) -> None:
+    total = _num(datos.get("total"))
+    if datos.get("rectificativa"):
+        if not str(datos.get("rectifica_a") or "").strip():
+            h.append(Hallazgo(
+                "RECTIFICATIVA_SIN_REFERENCIA", Gravedad.AVISO, "rectifica_a",
+                "Es una factura rectificativa y no dice qué factura rectifica.",
+            ))
+    elif total is not None and total < 0:
+        h.append(Hallazgo(
+            "TOTAL_NEGATIVO", Gravedad.ERROR, "total",
+            "El total es negativo y la factura no se declara rectificativa. "
+            "Un abono se emite como rectificativa, citando la factura original.",
+            encontrado=total,
+        ))
 
 
 def _validar_numeracion(datos: dict, h: list[Hallazgo]) -> None:
@@ -527,6 +696,7 @@ def validar(datos: dict, pais: Optional[str] = None) -> Informe:
     _validar_numeracion(datos, h)
     _validar_fechas(datos, h)
     _validar_identificadores(datos, codigo, h)
+    _validar_rectificacion(datos, h)
     suma = _validar_lineas(datos, h)
     _validar_impuestos(datos, codigo, suma, h)
     return Informe(pais=codigo, hallazgos=h)

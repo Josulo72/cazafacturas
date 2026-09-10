@@ -35,13 +35,33 @@ regular.** Un identificador con formato válido y control inválido se rechaza:
 - Estados Unidos — EIN, con la lista de prefijos que el IRS no asigna
 
 **Aritmética, línea a línea:** `cantidad × precio = importe` · suma de líneas =
-base imponible · `base × tipo = cuota` · `base + cuotas − retención = total`.
-Con dos céntimos de tolerancia, que eso es redondeo y no un error.
+base imponible · `base × tipo = cuota` ·
+`base + IVA + recargo − retención + suplidos = total`. Con dos céntimos de
+tolerancia, que eso es redondeo y no un error.
+
+**Cada concepto en su sitio.** IVA a varios tipos en la misma factura, con el
+IRPF metido entre medias si hace falta; recargo de equivalencia, que suma y
+va aparte del IVA; retención, que resta; suplidos, que se cobran pero no son
+base ni impuesto; descuento, que se aplica sobre la base **antes** del
+impuesto. Las líneas se comparan contra la base declarada: una base falsa con
+el IVA y el total calculados sobre ella cuadra en todo lo demás, y es
+justamente la que hay que cazar.
+
+**Una cuota cero es un dato.** Exenta, intracomunitaria, exportación o
+inversión del sujeto pasivo llevan IVA cero y es correcto; lo que no puede
+pasar es declarar la exención y repercutir IVA a la vez.
 
 **Coherencia del documento:** vencimiento posterior a la emisión, factura con
 número, emisor distinto del receptor, cantidades mayores que cero, tipos de
 impuesto vigentes en el país que corresponde —el 19 % es correcto en Alemania
-y no existe en España—.
+y no existe en España—. La rectificativa va en negativo y cita la factura que
+rectifica; un total negativo que no es rectificativa es un error. La
+simplificada puede no identificar al destinatario, y eso no se marca.
+
+**Y distingue «no conforme» de «no legible».** Si no ha podido leer los
+importes, no afirma que la factura esté mal: dice que no la ha podido leer.
+Decir «no conforme» de algo que no se ha sabido leer es el error que más
+confianza destruye en una herramienta así.
 
 **Y si no es una factura, lo dice.** Un albarán, un presupuesto o una proforma
 se identifican y se rechazan con una frase, en vez de listar los quince campos
@@ -49,43 +69,69 @@ de factura que les faltan.
 
 ## Cuánto acierta, y qué significa esa cifra
 
-Sobre el banco de pruebas del propio proyecto: 24 facturas y 40 casos trampa
-en cuatro países, con la respuesta correcta escrita de antemano.
+Hay dos bancos de pruebas, y miden cosas distintas.
+
+**El banco externo es el que cuenta.** 23 facturas en PDF de **15
+maquetaciones de terceros** —plantillas reales de otros, rellenadas con datos
+ficticios y fiscalmente correctos—, con la respuesta escrita de antemano en
+[`dataset/externo/manifest.json`](dataset/externo/manifest.json). Quince deben
+salir conformes; ocho traen un defecto deliberado y deben caer, cada una por
+su motivo y sin arrastrar ningún otro error.
 
 | | |
 |---|---|
-| Facturas PDF extraídas | 24 / 24 |
-| Precisión campo a campo | 100 % |
-| Casos trampa detectados | 50 / 50 |
-| Tiempo de los 24 documentos | 1,8 s |
+| Campos bien leídos: número, fecha, emisor, NIF, base, cuota, IRPF, recargo, suplidos, total | 153 / 153 |
+| Facturas correctas que salen conformes | 15 / 15 |
+| Defectuosas que caen por su motivo, y solo por él | 8 / 8 |
+| Documentos que se quedan en «No legible» | 0 |
 
 ```bash
-python cli.py --banco
+python cli.py --externo
 ```
 
-### Ahora la letra pequeña, que importa más que la cifra
+Entre las quince hay IVA a dos tipos con el IRPF intercalado, recargo de
+equivalencia, exenta, intracomunitaria, exportación, inversión del sujeto
+pasivo, rectificativa en negativo, simplificada con el IVA dentro de los
+precios, descuento global y suplidos. Entre las ocho, en cuatro el resto de la
+aritmética es coherente con el dato falso: no caen por un descuadre general,
+caen porque las líneas se comprueban contra la base.
 
-**Ese 100 % no significa que sepa leer la factura de tu proveedor.** Los PDF
-del banco los genera este mismo repositorio: `dataset/render_pdf.py` escribe
-las etiquetas y `backend/nucleo/extractor.py` las busca. Es circular. Lo que
-esa cifra demuestra es que la cadena es **coherente consigo misma** y que no
-se rompe al cambiarla —para eso sirve, y para eso está la línea base—, no que
-acierte en el mundo real.
+**El banco interno** —24 facturas y 50 casos trampa en cuatro países— lo
+genera este mismo repositorio, con **una sola maquetación**. Sirve para
+detectar regresiones y para eso está la línea base. Antes, aquí ponía «100 %
+de precisión campo a campo» sacado de ese banco. **Esa cifra no valía:** el
+primer pase contra el banco externo marcó como no conformes las quince
+facturas buenas. El extractor estaba ajustado a su propia plantilla, cogía el
+título «FACTURA» como emisor y no reconocía «IVA21%» como cuota. Se ha
+retirado.
 
-Frente a facturas de proveedores de verdad, con sus maquetas raras, sus
-logotipos y sus tablas a tres columnas, el número será bastante más bajo.
-Todavía no lo he medido, y hasta que lo mida no voy a fingir que lo sé.
+### La letra pequeña, que importa más que la cifra
 
-**El OCR tampoco está medido.** Los 74 documentos del banco llevan capa de
-texto. La lectura de escaneados funciona y está instalada, pero ningún número
-de esta tabla la ejercita.
+**El 153 de 153 también se ha conseguido con esas facturas delante.** El
+extractor se ha corregido mirando el banco externo, así que es un conjunto de
+desarrollo, no uno reservado. Demuestra que lee quince maquetaciones que no
+hizo él —mucho más que antes—; no demuestra que lea la decimosexta. La
+próxima medida honrada es contra facturas que el código no haya visto nunca.
+
+**El OCR sigue sin medir.** Las 23 facturas externas llevan capa de texto; sus
+versiones escaneada y fotografiada están pendientes de generar. La lectura de
+escaneados funciona y está instalada, pero ningún número de esta página la
+ejercita.
 
 **Las cuatro jurisdicciones no están al mismo nivel.** España está modelada en
 serio: DNI, NIE, CIF con su dígito de control según el tipo de sociedad,
-tipos de IVA vigentes, retención de IRPF. Reino Unido y Alemania llevan la
-comprobación del identificador —módulo 97 y módulo 11— y sus tipos de IVA.
-Estados Unidos solo valida el EIN: el *sales tax* varía por estado y aquí no
-se comprueba.
+tipos de IVA y de recargo vigentes, retención de IRPF, exenciones. Reino Unido
+y Alemania llevan la comprobación del identificador —módulo 97 y módulo 11— y
+sus tipos de IVA. Estados Unidos solo valida el EIN: el *sales tax* varía por
+estado y aquí no se comprueba.
+
+**Dos cosas del propio banco externo.** Tres números de factura del manifest
+(f05, f12 y f21) estaban leídos al revés: van en un rótulo vertical que se lee
+de abajo arriba —es «2026/0038», no «8300/6202»—. Está comprobado sobre la
+imagen de la página y el manifest del repositorio lleva la corrección. Y los
+NIF-IVA extranjeros del banco (FR83999123456, GB999000111) no superan el
+dígito de control de su país: de un identificador extranjero se comprueba el
+formato, y el informe lo dice así en vez de fingir más.
 
 Lo pongo por delante porque un revisor con oficio lo ve en treinta segundos,
 y prefiero decirlo yo.
@@ -150,7 +196,9 @@ python cli.py --doctor
 
 Revisa la instalación y **vuelve a medir el banco contra la línea base
 commiteada**. Si un cambio baja la precisión, dice qué campos han empezado a
-fallar; si se escapa un caso trampa, lo nombra. Devuelve 1 cuando algo ha
+fallar; si se escapa un caso trampa, lo nombra. Después pasa el banco
+externo, que no tiene línea base porque tiene que salir entero: una sola
+factura mal y el diagnóstico falla. Devuelve 1 cuando algo ha
 empeorado, así que sirve de puerta en integración continua y no solo para
 mirarlo.
 
@@ -204,6 +252,10 @@ python cli.py --banco -v
 ```
 
 ```bash
+python cli.py --externo
+```
+
+```bash
 python cli.py --csv salida.csv "facturas/*.pdf"
 ```
 
@@ -219,10 +271,11 @@ fichero → lectura → extractor → validador → informe
 
 | Módulo | Qué hace |
 |---|---|
-| [`lectura.py`](backend/nucleo/lectura.py) | PDF con capa de texto vía `pdfplumber`; escaneado se rasteriza y va a OCR local; imagen directa a OCR. Devuelve el texto con la posición de cada palabra. |
-| [`extractor.py`](backend/nucleo/extractor.py) | Busca la etiqueta y lee lo que hay a su derecha o debajo, en cuatro idiomas. Usa la geometría para separar columnas: emisor y cliente van en paralelo y no pueden mezclarse. Resuelve `1.234,56` y `1,234.56`, y sabe que `05/03` es 5 de marzo en España y 3 de mayo en Estados Unidos. |
+| [`lectura.py`](backend/nucleo/lectura.py) | PDF con capa de texto vía `pdfplumber`; escaneado se rasteriza y va a OCR local; imagen directa a OCR. Devuelve el texto con la posición de cada palabra. Recupera los espacios que las maquetas apretadas pierden, lee los rótulos en vertical en su sentido y, de dos capas de texto superpuestas, se queda con la que se ve. |
+| [`extractor.py`](backend/nucleo/extractor.py) | Busca la etiqueta y lee lo que hay a su derecha o en la celda de debajo, en cuatro idiomas. El emisor se ancla a su NIF, no a la primera línea del papel. Los totales se leen como conceptos —IVA, IRPF, recargo, suplidos, descuento— y no como un orden fijo. Resuelve `1.234,56` y `1,234.56`, y sabe que `05/03` es 5 de marzo en España y 3 de mayo en Estados Unidos. |
 | [`validador.py`](backend/nucleo/validador.py) | Las reglas fiscales. No lanza excepciones: una factura con errores es el caso interesante, así que cada regla incumplida sale como un hallazgo con su explicación. |
-| [`analizador.py`](backend/nucleo/analizador.py) | Orquesta la cadena y, cuando hay respuesta correcta conocida, puntúa. |
+| [`analizador.py`](backend/nucleo/analizador.py) | Orquesta la cadena, decide el estado —conforme, con avisos, no conforme, no legible— y, cuando hay respuesta correcta conocida, puntúa. |
+| [`banco_externo.py`](backend/nucleo/banco_externo.py) | Pasa las 23 facturas externas y las contrasta con su manifest, campo a campo y veredicto a veredicto. |
 
 Cada campo extraído lleva su confianza y la pista que lo produjo —qué etiqueta
 lo encontró—, para que puedas desconfiar con fundamento.
@@ -240,10 +293,11 @@ pip install -e ".[dev]"
 pytest
 ```
 
-120 tests, en cuatro familias:
+125 tests, en cinco familias:
 
 | | |
 |---|---|
+| Banco externo | las 23 facturas de terceros: cada campo, cada veredicto, y cada defectuosa por su motivo |
 | Reglas fiscales | cada regla con su caso, y el dataset entero como red |
 | Extracción | campo a campo contra el esperado, sobre PDF y no sobre diccionarios |
 | Seguridad | cada test reproduce el ataque que la defensa evita |

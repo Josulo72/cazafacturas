@@ -18,8 +18,8 @@ from typing import Any, Optional
 
 from backend.nucleo import lectura
 from backend.nucleo.extractor import Extraccion, extraer
-from backend.nucleo.lectura import Documento, LecturaNoSoportada
-from backend.nucleo.validador import Informe, validar
+from backend.nucleo.lectura import Documento, LecturaNoSoportada, Origen
+from backend.nucleo.validador import Gravedad, Hallazgo, Informe, validar
 
 # Campos que se comparan al puntuar contra un esperado.
 CAMPOS_PUNTUABLES = (
@@ -170,11 +170,48 @@ def _ahora() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+def _ilegible(doc: Optional[Documento], factura: dict) -> bool:
+    """¿Falta lo que hace falta para decir si la factura cuadra?
+
+    «No conforme» afirma que la factura está mal; solo se puede afirmar con
+    los importes delante. Si no se han podido leer ni la base ni el total, o
+    no hay rastro del impuesto ni del total, lo honrado es decir que no se ha
+    podido leer. Un número de factura o un NIF que no aparecen no cuentan
+    aquí: en un documento legible, que falten es un defecto de la factura.
+    """
+    if doc is not None and doc.origen is Origen.VACIO:
+        return True
+    base, total = factura.get("base_imponible"), factura.get("total")
+    if base is None and total is None:
+        return True
+    return not factura.get("iva") and total is None
+
+
+def estado(informe: dict) -> str:
+    """Conforme · con avisos · no conforme · no legible."""
+    codigos = {h["codigo"] for h in informe.get("hallazgos", [])}
+    if "NO_LEGIBLE" in codigos:
+        return "no_legible"
+    if informe.get("n_errores"):
+        return "no_conforme"
+    if informe.get("n_avisos"):
+        return "con_avisos"
+    return "conforme"
+
+
 def _analizar_documento(doc: Documento, pais: Optional[str],
                         esperado: Optional[dict], inicio: float) -> Resultado:
     ex: Extraccion = extraer(doc, pais)
     factura = ex.a_factura()
     informe: Informe = validar(factura, ex.pais)
+    if _ilegible(doc, factura):
+        informe.hallazgos.insert(0, Hallazgo(
+            "NO_LEGIBLE", Gravedad.ERROR, "documento",
+            "No se han podido leer los importes: falta la base, el impuesto "
+            "o el total. No se puede decir si la factura cuadra; revísala a mano.",
+        ))
+    dict_informe = informe.a_dict()
+    dict_informe["estado"] = estado(dict_informe)
 
     return Resultado(
         id=uuid.uuid4().hex[:12],
@@ -185,7 +222,7 @@ def _analizar_documento(doc: Documento, pais: Optional[str],
         documento=doc.a_dict(),
         extraccion=ex.a_dict(),
         factura=factura,
-        informe=informe.a_dict(),
+        informe=dict_informe,
         puntuacion=puntuar(factura, esperado).a_dict() if esperado else None,
     )
 
@@ -226,7 +263,8 @@ def analizar_json(datos: dict, nombre: str = "documento.json",
     """
     inicio = time.perf_counter()
     pais = str(datos.get("pais") or "ES").upper()
-    informe = validar(datos, pais)
+    informe = validar(datos, pais).a_dict()
+    informe["estado"] = estado(informe)
     return Resultado(
         id=uuid.uuid4().hex[:12],
         nombre=nombre,
@@ -237,7 +275,7 @@ def analizar_json(datos: dict, nombre: str = "documento.json",
                    "confianza": 1.0, "caracteres": 0, "avisos": []},
         extraccion=None,
         factura=datos,
-        informe=informe.a_dict(),
+        informe=informe,
         puntuacion=puntuar(datos, esperado).a_dict() if esperado else None,
     )
 
@@ -258,6 +296,7 @@ class ResumenLote:
     confianza_media: float
     hallazgos_frecuentes: list[dict]
     resultados: list[dict]
+    no_legibles: int = 0
 
     def a_dict(self) -> dict:
         return self.__dict__
@@ -301,6 +340,8 @@ def resumir(resultados: list[Resultado], id_lote: Optional[str] = None) -> Resum
             conteo.values(), key=lambda h: h["veces"], reverse=True
         )[:10],
         resultados=[r.a_dict() for r in resultados],
+        no_legibles=sum(1 for r in resultados
+                        if not r.ok or (r.informe or {}).get("estado") == "no_legible"),
     )
 
 

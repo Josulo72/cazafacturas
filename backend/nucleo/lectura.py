@@ -73,6 +73,7 @@ class Palabra:
     y1: float
     pagina: int
     confianza: float = 1.0
+    girada: bool = False     # rótulo en vertical, leído en su sentido
 
 
 @dataclass
@@ -237,6 +238,123 @@ def _rasterizar(ruta_o_bytes, indice: int) -> tuple[bytes, float]:
         pdf.close()
 
 
+# Hueco máximo entre letras de una misma palabra, en puntos. Con el valor por
+# defecto de pdfplumber (3) las maquetaciones apretadas pierden todos los
+# espacios —«EstudioLumbreGráficaS.L.»— y el emisor ya no se reconoce. Con 1
+# vuelven, y las cifras siguen enteras porque dentro de un número no hay hueco.
+TOLERANCIA_LETRAS = 1.0
+
+
+def _girado(caracter: dict) -> bool:
+    """Texto rotado: la matriz del carácter tiene componente de giro."""
+    return abs(caracter.get("matrix", (1, 0))[1]) > 0.5
+
+
+def _visibles(caracteres: list[dict]) -> list[dict]:
+    """Quita los caracteres tapados por otros pintados encima.
+
+    Una plantilla rellenada deja dos capas: el marcador de la plantilla
+    («#nro») y, encima, el dato real («#2026/0038»). En PDF lo que se pinta
+    después tapa a lo de antes, y el orden de `chars` es el de pintado; así
+    que de dos glifos que ocupan el mismo sitio se queda el último.
+    """
+    def solapa(a: dict, b: dict) -> bool:
+        ancho = min(a["x1"] - a["x0"], b["x1"] - b["x0"])
+        alto = min(a["bottom"] - a["top"], b["bottom"] - b["top"])
+        dx = min(a["x1"], b["x1"]) - max(a["x0"], b["x0"])
+        dy = min(a["bottom"], b["bottom"]) - max(a["top"], b["top"])
+        return ancho > 0 and alto > 0 and dx > 0.3 * ancho and dy > 0.3 * alto
+
+    utiles = [c for c in caracteres if not c["text"].isspace()]
+    tapados = {i for i, a in enumerate(utiles)
+               if any(solapa(a, b) for b in utiles[i + 1:])}
+    return [c for i, c in enumerate(utiles) if i not in tapados]
+
+
+def _palabras_pdf(pagina, numero: int) -> list[Palabra]:
+    rotados = _visibles([c for c in pagina.chars if _girado(c)])
+    recta = pagina.filter(
+        lambda o: o.get("object_type") != "char" or not _girado(o)
+    ) if rotados else pagina
+    palabras = [
+        Palabra(texto=w["text"], x0=w["x0"], y0=w["top"], x1=w["x1"],
+                y1=w["bottom"], pagina=numero)
+        for w in recta.extract_words(x_tolerance=TOLERANCIA_LETRAS,
+                                     use_text_flow=True)
+    ]
+    palabras.extend(_palabras_giradas(rotados, numero))
+    return palabras
+
+
+def _palabras_giradas(caracteres: list[dict], numero: int) -> list[Palabra]:
+    """Rótulos en vertical, como el «FACTURA #2026/0038» pegado al canto.
+
+    Cada columna (mismo x0) es un trazo de texto, y columnas vecinas forman
+    un rótulo: «FACTURA» y el número van en cuerpos de letra distintos, uno
+    al lado del otro. Se leen en el sentido de la rotación: girado a la
+    izquierda (matriz 0, 1, -1, 0) se lee de abajo arriba; leído de arriba
+    abajo, ese número sale «8300/6202». Cada palabra lleva una x ficticia que
+    avanza en el sentido de lectura y la misma y para todo el rótulo, así el
+    agrupado en líneas lo trata como un renglón propio.
+    """
+    # La columna la define la línea base del texto girado (el término e de
+    # la matriz), no la x0 de cada glifo: un guion es más bajo que una cifra
+    # y su caja empieza más a la derecha, pero va en la misma línea.
+    def base(c: dict) -> float:
+        return c["matrix"][4]
+
+    columnas: list[list[dict]] = []
+    for c in sorted(caracteres, key=base):
+        for col in columnas:
+            if abs(base(c) - base(col[0])) <= 1.0:
+                col.append(c)
+                break
+        else:
+            columnas.append([c])
+
+    rotulos: list[list[list[dict]]] = []
+    for col in sorted(columnas, key=lambda col: base(col[0])):
+        if rotulos and abs(base(col[0]) - base(rotulos[-1][-1][0])) <= 12:
+            rotulos[-1].append(col)
+        else:
+            rotulos.append([col])
+
+    palabras: list[Palabra] = []
+    for rotulo in rotulos:
+        todos = [c for col in rotulo for c in col]
+        y_rotulo = min(c["top"] for c in todos)
+        grueso = max(c["x1"] for c in todos) - min(c["x0"] for c in todos)
+        for col in rotulo:
+            hacia_arriba = col[0]["matrix"][1] > 0
+
+            def tramo(c: dict) -> tuple[float, float]:
+                if hacia_arriba:
+                    return 10_000 - c["bottom"], 10_000 - c["top"]
+                return c["top"], c["bottom"]
+
+            grupo: list[dict] = []
+
+            def cerrar() -> None:
+                if grupo:
+                    palabras.append(Palabra(
+                        texto="".join(c["text"] for c in grupo),
+                        x0=tramo(grupo[0])[0], y0=y_rotulo,
+                        x1=tramo(grupo[-1])[1], y1=y_rotulo + grueso,
+                        pagina=numero, girada=True,
+                    ))
+                    grupo.clear()
+
+            for c in sorted(col, key=lambda c: tramo(c)[0]):
+                if c["text"].isspace():
+                    cerrar()
+                    continue
+                if grupo and tramo(c)[0] - tramo(grupo[-1])[1] > TOLERANCIA_LETRAS:
+                    cerrar()
+                grupo.append(c)
+            cerrar()
+    return palabras
+
+
 def _leer_pdf(contenido: bytes, nombre: str, permitir_ocr: bool) -> Documento:
     import pdfplumber
 
@@ -267,12 +385,7 @@ def _leer_pdf(contenido: bytes, nombre: str, permitir_ocr: bool) -> Documento:
             palabras: list[Palabra] = []
 
             if len(texto.strip()) >= MIN_CARACTERES_CAPA_TEXTO:
-                for w in pagina.extract_words(use_text_flow=True):
-                    palabras.append(Palabra(
-                        texto=w["text"],
-                        x0=w["x0"], y0=w["top"], x1=w["x1"], y1=w["bottom"],
-                        pagina=i + 1,
-                    ))
+                palabras = _palabras_pdf(pagina, i + 1)
                 origen = Origen.CAPA_TEXTO
 
             elif permitir_ocr and caps["ocr"] and caps["rasterizado"]:

@@ -1,0 +1,403 @@
+{
+  "banco": "Cazafacturas - banco de pruebas",
+  "version": "1.0",
+  "fecha_generacion": "2026-09-10",
+  "nota": "Datos ficticios. Importes verificados al centimo. 'esperado' es la verdad contra la que debe contrastarse la salida de Cazafacturas.",
+  "correcciones": [
+    "2026-09-10: f05, f12 y f21 llevan el número en un rótulo vertical girado a la izquierda, que se lee de abajo arriba. El manifest original los tenía leídos de arriba abajo (8300/6202, 7000-6202-R, 9000-6202-SH); corregidos a 2026/0038, R-2026-0007 y HS-2026-0009, comprobado sobre la imagen de la página."
+  ],
+  "facturas": [
+    {
+      "fichero": "f01_ordinaria_iva21",
+      "numero": "2026-0147",
+      "fecha": "14/07/2026",
+      "emisor": "Estudio Lumbre Grafica S.L.",
+      "nif_emisor": "B99123408",
+      "base": 1795.0,
+      "desglose_iva": [
+        {
+          "tipo": 21,
+          "base": 1795.0,
+          "cuota": 376.95
+        }
+      ],
+      "total": 2171.95,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f02_ordinaria_iva10",
+      "numero": "A-2026-0312",
+      "fecha": "02/07/2026",
+      "emisor": "Cocina Alameda Catering S.L.",
+      "nif_emisor": "B99345605",
+      "base": 924.0,
+      "desglose_iva": [
+        {
+          "tipo": 10,
+          "base": 924.0,
+          "cuota": 92.4
+        }
+      ],
+      "total": 1016.4,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f03_superreducido_iva4",
+      "numero": "PN-26-0089",
+      "fecha": "01/09/2026",
+      "emisor": "Libreria Papel de Nieve S.L.",
+      "nif_emisor": "B99567802",
+      "base": 640.8,
+      "desglose_iva": [
+        {
+          "tipo": 4,
+          "base": 640.8,
+          "cuota": 25.63
+        }
+      ],
+      "total": 666.43,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f04_varios_tipos_iva",
+      "numero": "VC/2026/0561",
+      "fecha": "22/07/2026",
+      "emisor": "Distribuciones Vega Clara S.L.",
+      "nif_emisor": "B99789000",
+      "base": 616.0,
+      "desglose_iva": [
+        {
+          "tipo": 21,
+          "base": 340.0,
+          "cuota": 71.4
+        },
+        {
+          "tipo": 10,
+          "base": 276.0,
+          "cuota": 27.6
+        }
+      ],
+      "total": 715.0,
+      "esperado": "Conforme",
+      "reto": "IRPF intercalado entre las dos lineas de IVA"
+    },
+    {
+      "fichero": "f05_profesional_irpf15",
+      "numero": "2026/0038",
+      "fecha": "31/07/2026",
+      "emisor": "Marta Olmedo Ruiz",
+      "nif_emisor": "99123401W",
+      "base": 1250.0,
+      "desglose_iva": [
+        {
+          "tipo": 21,
+          "base": 1250.0,
+          "cuota": 262.5
+        }
+      ],
+      "irpf": {
+        "tipo": 15,
+        "importe": -187.5
+      },
+      "total": 1325.0,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f06_profesional_irpf7",
+      "numero": "DC-2026-011",
+      "fecha": "10/08/2026",
+      "emisor": "Daniel Cortes Anaya",
+      "nif_emisor": "99234512T",
+      "base": 690.0,
+      "desglose_iva": [
+        {
+          "tipo": 21,
+          "base": 690.0,
+          "cuota": 144.9
+        }
+      ],
+      "irpf": {
+        "tipo": 7,
+        "importe": -48.3
+      },
+      "total": 786.6,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f07_recargo_equivalencia",
+      "numero": "TA-0926-0077",
+      "fecha": "03/09/2026",
+      "emisor": "Textiles Almendro S.L.",
+      "nif_emisor": "B99235608",
+      "base": 421.0,
+      "desglose_iva": [
+        {
+          "tipo": 21,
+          "base": 421.0,
+          "cuota": 88.41
+        }
+      ],
+      "recargo_equivalencia": {
+        "tipo": 5.2,
+        "importe": 21.89
+      },
+      "total": 531.3,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f08_exenta_art20",
+      "numero": "FI-2026-0204",
+      "fecha": "05/09/2026",
+      "emisor": "Academia Faro de Idiomas S.L.",
+      "nif_emisor": "B99346702",
+      "base": 600.0,
+      "desglose_iva": [
+        {
+          "tipo": 0,
+          "base": 600.0,
+          "cuota": 0.0
+        }
+      ],
+      "mencion_legal": "art. 20.Uno.9 Ley 37/1992",
+      "total": 600.0,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f09_intracomunitaria",
+      "numero": "MR-2026-0419",
+      "fecha": "18/08/2026",
+      "emisor": "Maquinaria Robledal S.L.",
+      "nif_emisor": "B99568909",
+      "nif_iva_cliente": "FR83999123456",
+      "base": 2525.0,
+      "desglose_iva": [
+        {
+          "tipo": 0,
+          "base": 2525.0,
+          "cuota": 0.0
+        }
+      ],
+      "mencion_legal": "art. 25 Ley 37/1992",
+      "total": 2525.0,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f10_exportacion",
+      "numero": "PB-EXP-2026-031",
+      "fecha": "27/07/2026",
+      "emisor": "Conservas Punta Brava S.L.",
+      "nif_emisor": "B99679003",
+      "base": 5376.0,
+      "desglose_iva": [
+        {
+          "tipo": 0,
+          "base": 5376.0,
+          "cuota": 0.0
+        }
+      ],
+      "mencion_legal": "art. 21 Ley 37/1992",
+      "total": 5376.0,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f11_inversion_sujeto_pasivo",
+      "numero": "RC-26-0152",
+      "fecha": "29/08/2026",
+      "emisor": "Reformas Cantil S.L.",
+      "nif_emisor": "B99780108",
+      "base": 4420.0,
+      "desglose_iva": [
+        {
+          "tipo": 0,
+          "base": 4420.0,
+          "cuota": 0.0
+        }
+      ],
+      "mencion_legal": "art. 84.Uno.2 f) Ley 37/1992",
+      "total": 4420.0,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f12_rectificativa",
+      "numero": "R-2026-0007",
+      "fecha": "04/09/2026",
+      "emisor": "Electrodomesticos Brisa S.L.",
+      "nif_emisor": "B99902306",
+      "base": -649.0,
+      "desglose_iva": [
+        {
+          "tipo": 21,
+          "base": -649.0,
+          "cuota": -136.29
+        }
+      ],
+      "rectifica_a": "2026-0412 de 18/06/2026",
+      "total": -785.29,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f13_simplificada",
+      "numero": "T-2026-004512",
+      "fecha": "08/09/2026",
+      "emisor": "Ferreteria El Clavo Azul S.L.",
+      "nif_emisor": "B99125601",
+      "base": 84.17,
+      "desglose_iva": [
+        {
+          "tipo": 21,
+          "base": 84.17,
+          "cuota": 17.68
+        }
+      ],
+      "total": 101.85,
+      "esperado": "Conforme",
+      "reto": "precios con IVA incluido; sin datos del destinatario"
+    },
+    {
+      "fichero": "f14_descuento_global",
+      "numero": "ET-2026-0233",
+      "fecha": "12/08/2026",
+      "emisor": "Mobiliario Encina Taller S.L.",
+      "nif_emisor": "B99236705",
+      "base_bruta": 2420.0,
+      "descuento": {
+        "tipo": 10,
+        "importe": -242.0
+      },
+      "base": 2178.0,
+      "desglose_iva": [
+        {
+          "tipo": 21,
+          "base": 2178.0,
+          "cuota": 457.38
+        }
+      ],
+      "total": 2635.38,
+      "esperado": "Conforme"
+    },
+    {
+      "fichero": "f15_suplidos",
+      "numero": "AL-2026-0098",
+      "fecha": "20/07/2026",
+      "emisor": "Gestoria Arcos y Llano S.L.",
+      "nif_emisor": "B99458903",
+      "base": 450.0,
+      "desglose_iva": [
+        {
+          "tipo": 21,
+          "base": 450.0,
+          "cuota": 94.5
+        }
+      ],
+      "suplidos": 110.4,
+      "total": 654.9,
+      "esperado": "Conforme",
+      "reto": "los suplidos no forman parte de la base imponible"
+    },
+    {
+      "fichero": "f16_base_no_suma",
+      "numero": "TC-2026-0071",
+      "fecha": "16/07/2026",
+      "emisor": "Taller Creativo Cardo S.L.",
+      "suma_lineas": 1370.0,
+      "base_declarada": 1410.0,
+      "total": 1706.1,
+      "esperado": "No conforme",
+      "incidencia": "Las lineas suman 1370,00 pero declara 1410,00 de base. Desfase de 40,00. El IVA y el total son coherentes con la base falsa."
+    },
+    {
+      "fichero": "f17_cuota_iva_erronea",
+      "numero": "PS-26-0133",
+      "fecha": "25/07/2026",
+      "emisor": "Meson La Parrilla Serrana S.L.",
+      "base": 585.0,
+      "cuota_declarada": 85.5,
+      "cuota_correcta": 58.5,
+      "total": 670.5,
+      "esperado": "No conforme",
+      "incidencia": "La cuota al 10% deberia ser 58,50 y declara 85,50."
+    },
+    {
+      "fichero": "f18_sin_numero_factura",
+      "numero": null,
+      "fecha": "11/08/2026",
+      "emisor": "Quiosco Letras del Parque S.L.",
+      "base": 170.7,
+      "total": 177.53,
+      "esperado": "No conforme",
+      "incidencia": "Falta el numero de factura, requisito del RD 1619/2012. La aritmetica es correcta."
+    },
+    {
+      "fichero": "f19_total_no_cuadra",
+      "numero": "DD-2026-0918",
+      "fecha": "19/08/2026",
+      "emisor": "Almacenes Duna Dorada S.L.",
+      "base": 430.0,
+      "desglose_iva": [
+        {
+          "tipo": 21,
+          "base": 180.0,
+          "cuota": 37.8
+        },
+        {
+          "tipo": 10,
+          "base": 250.0,
+          "cuota": 25.0
+        }
+      ],
+      "total_declarado": 498.2,
+      "total_correcto": 492.8,
+      "esperado": "No conforme",
+      "incidencia": "Descuadre de 5,40 en el total.",
+      "reto": "IRPF intercalado entre las dos lineas de IVA"
+    },
+    {
+      "fichero": "f20_nif_emisor_invalido",
+      "numero": "LBQ-2026-015",
+      "fecha": "28/08/2026",
+      "emisor": "Lucia Barrios Quintana",
+      "nif_declarado": "99456734R",
+      "nif_letra_correcta": "L",
+      "base": 960.0,
+      "total": 1017.6,
+      "esperado": "No conforme",
+      "incidencia": "Digito de control del NIF del emisor invalido. La aritmetica es correcta."
+    },
+    {
+      "fichero": "f21_irpf_mal_calculado",
+      "numero": "HS-2026-0009",
+      "fecha": "07/09/2026",
+      "emisor": "Hugo Serrano Lillo",
+      "base": 460.0,
+      "irpf_declarado": {
+        "tipo": 7,
+        "importe": -69.0
+      },
+      "irpf_correcto": -32.2,
+      "total": 487.6,
+      "esperado": "No conforme",
+      "incidencia": "Declara retencion del 7% pero aplica 69,00, que es el 15% de la base."
+    },
+    {
+      "fichero": "f22_falta_nif_cliente",
+      "numero": "SR-2026-0366",
+      "fecha": "21/08/2026",
+      "emisor": "Calzados Senda Roja S.L.",
+      "nif_cliente": null,
+      "base": 396.0,
+      "total": 499.75,
+      "esperado": "No conforme",
+      "incidencia": "Falta el NIF del destinatario. La aritmetica y el recargo de equivalencia son correctos."
+    },
+    {
+      "fichero": "f23_iva_en_exenta",
+      "numero": "FB-2026-0120",
+      "fecha": "26/08/2026",
+      "emisor": "Centro de Formacion Brujula S.L.",
+      "base": 400.0,
+      "total": 484.0,
+      "esperado": "No conforme",
+      "incidencia": "Declara operacion exenta del art. 20 y a la vez repercute IVA al 21%. Contradiccion interna."
+    }
+  ]
+}

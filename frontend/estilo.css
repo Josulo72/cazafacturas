@@ -732,6 +732,8 @@ tr.f-error .c-folio { color: var(--rojo); }
   white-space: nowrap;
 }
 .sello-mal { color: var(--rojo); transform: rotate(2.4deg); }
+/* No legible no es un error de la factura: va en ocre, no en rojo. */
+.sello-aviso { color: var(--ocre); transform: rotate(-1.6deg); }
 .veredicto-pie { margin: 0; font-size: 0.8125rem; color: var(--tinta-media); }
 .veredicto-fichero {
   font-family: var(--maquina); font-style: italic;
