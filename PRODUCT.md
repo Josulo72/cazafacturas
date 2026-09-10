@@ -136,7 +136,10 @@ inventarse ni inflarse en ninguna superficie:
   **Qué mide y qué no, y esto no se puede omitir en ninguna superficie.**
   El extractor se corrigió con esas 23 facturas delante: es un conjunto de
   desarrollo, no uno reservado. Demuestra que lee quince maquetaciones ajenas,
-  no que lea cualquiera. El OCR no está medido: las 23 llevan capa de texto.
+  no que lea cualquiera. El OCR está medido y suspende: sobre las versiones
+  escaneada y fotografiada de las mismas 23, 45/153 y 66/153 campos, y 0 de 23
+  veredictos correctos en ambas. Ninguna superficie puede presentar la lectura
+  de escaneados o fotos como resuelta.
 
 - **Banco interno:** 24 facturas y 50 casos trampa en cuatro países,
   generados por el propio repositorio con una sola maquetación. Sirve para

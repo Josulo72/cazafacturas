@@ -3,7 +3,8 @@
 Extrae los datos de una factura y comprueba que la factura es correcta.
 En tu máquina. **Sin IA, sin red y sin claves de API.**
 
-Sueltas PDF o fotos, y te dice cuáles no puedes contabilizar y por qué.
+Sueltas PDF y te dice cuáles no puedes contabilizar y por qué. Escaneados y
+fotos también los abre, pero hoy los lee mal, y está medido: más abajo.
 
 ---
 
@@ -113,10 +114,21 @@ desarrollo, no uno reservado. Demuestra que lee quince maquetaciones que no
 hizo él —mucho más que antes—; no demuestra que lea la decimosexta. La
 próxima medida honrada es contra facturas que el código no haya visto nunca.
 
-**El OCR sigue sin medir.** Las 23 facturas externas llevan capa de texto; sus
-versiones escaneada y fotografiada están pendientes de generar. La lectura de
-escaneados funciona y está instalada, pero ningún número de esta página la
-ejercita.
+**El OCR está medido, y suspende.** Sobre las versiones escaneada y
+fotografiada de esas mismas 23 facturas —las que genera el degradador que se
+describe abajo—, con el mismo extractor que acierta 153 de 153 en PDF:
+
+| | Escaneado | Foto |
+|---|---|---|
+| Campos bien leídos | 45 / 153 | 66 / 153 |
+| Facturas con el veredicto correcto | 0 / 23 | 0 / 23 |
+| Tiempo por imagen | 20 a 60 s | 17 a 52 s |
+
+En imagen no reconoce nunca la tabla de líneas ni el número de factura, y casi
+nunca la fecha. Todavía no he analizado por qué, y no voy a adelantar una
+causa sin haberla medido. Lo que sí hace bien es no mentir: la mayoría sale
+«No legible» y no «No conforme». Arreglarlo es el trabajo siguiente, y ya hay
+con qué medirlo.
 
 **Las cuatro jurisdicciones no están al mismo nivel.** España está modelada en
 serio: DNI, NIE, CIF con su dígito de control según el tipo de sociedad,
@@ -135,6 +147,31 @@ formato, y el informe lo dice así en vez de fingir más.
 
 Lo pongo por delante porque un revisor con oficio lo ve en treinta segundos,
 y prefiero decirlo yo.
+
+### Las mismas facturas, escaneadas y fotografiadas
+
+[`dataset/degradar.py`](dataset/degradar.py) convierte cada PDF del banco
+externo en un escaneo de oficina —300 ppp en gris, torcido, con ruido y un
+borde oscurecido— y en una foto de móvil sobre una mesa: perspectiva, luz de
+ventana, sombra en una esquina, JPEG. Hay tres niveles de dureza.
+
+<p>
+<img src="docs/muestras/f05_profesional_irpf15_escaneado.png" width="32%" alt="Factura f05 escaneada">
+<img src="docs/muestras/f05_profesional_irpf15_foto.jpg" width="32%" alt="Factura f05 fotografiada">
+<img src="docs/muestras/f21_irpf_mal_calculado_foto.jpg" width="32%" alt="Factura f21 fotografiada">
+</p>
+
+Es determinista byte a byte: la semilla sale del nombre de la factura, las
+versiones que deciden el píxel están fijadas en
+[`dataset/requirements-degradar.txt`](dataset/requirements-degradar.txt), y lo
+que se aplicó a cada factura queda en
+[`dataset/externo/degradacion.json`](dataset/externo/degradacion.json). Por eso
+las imágenes no van en el repositorio —los PNG pesan unos 5 MB, y es el ruido,
+que sin pérdida no se comprime—: se regeneran idénticas.
+
+```bash
+python -m dataset.degradar
+```
 
 ## Instalación
 

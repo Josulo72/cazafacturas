@@ -41,6 +41,10 @@ MOTIVOS = {
 
 TOLERANCIA = 0.01
 
+# Cada calidad del banco y su extensión: el PDF limpio, y lo que genera
+# `dataset/degradar.py`.
+EXTENSIONES = {"limpio": "pdf", "escaneado": "png", "foto": "jpg"}
+
 
 @dataclass
 class Campo:
@@ -193,8 +197,8 @@ def _igual(nombre: str, esperado: Any, obtenido: Any) -> bool:
 # Pasarlo
 # ---------------------------------------------------------------------------
 
-def disponible() -> bool:
-    return MANIFIESTO.is_file() and (CARPETA / "limpio").is_dir()
+def disponible(calidad: str = "limpio") -> bool:
+    return MANIFIESTO.is_file() and (CARPETA / calidad).is_dir()
 
 
 def ejecutar(calidad: str = "limpio") -> Informe:
@@ -202,7 +206,7 @@ def ejecutar(calidad: str = "limpio") -> Informe:
     informe = Informe()
     inicio = time.perf_counter()
     for m in manifiesto["facturas"]:
-        pdf = CARPETA / calidad / f"{m['fichero']}_{calidad}.pdf"
+        pdf = CARPETA / calidad / f"{m['fichero']}_{calidad}.{EXTENSIONES[calidad]}"
         if not pdf.is_file():
             continue
         r = analizar_fichero(pdf)          # sin forzar país: también se mide eso

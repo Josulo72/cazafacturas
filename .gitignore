@@ -23,3 +23,9 @@ Thumbs.db
 # Lanzadores que crea el instalador en cada máquina
 /Cazafacturas.cmd
 /cazafacturas
+
+# Imágenes que genera dataset/degradar.py: se regeneran idénticas con las
+# versiones fijadas, y los PNG pesan ~5 MB cada uno por el ruido.
+# degradacion.json sí va: es el registro de lo que se aplicó a cada una.
+/dataset/externo/escaneado*/
+/dataset/externo/foto*/

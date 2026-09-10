@@ -43,7 +43,7 @@ MUESTRAS = DATASET / "pdf"
 MAX_BYTES_FICHERO = 25 * 1024 * 1024
 MAX_FICHEROS = 50
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 app = FastAPI(
     title="Cazafacturas",

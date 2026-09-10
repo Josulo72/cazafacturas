@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cazafacturas"
-version = "1.0.0"
+version = "1.1.0"
 description = "Extrae y valida facturas en local: PDF y escaneados, sin IA, sin red y sin claves"
 readme = "README.md"
 requires-python = ">=3.10"

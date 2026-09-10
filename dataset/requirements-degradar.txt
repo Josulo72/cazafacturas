@@ -1,0 +1,7 @@
+# Versiones exactas con las que dataset/degradar.py genera sus imágenes.
+# Otra versión de Pillow o NumPy puede dar otros píxeles: el remuestreo de
+# Pillow ha cambiado entre versiones y NumPy no garantiza la misma serie
+# aleatoria de una versión a otra. Son las mismas de requirements.lock.
+numpy==2.5.3
+pillow==12.3.0
+pypdfium2==5.13.0
